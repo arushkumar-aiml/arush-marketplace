@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { createUserWithEmailAndPassword, updateProfile, FirebaseError } from "firebase/auth";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { FirebaseError } from "firebase/app";
 import { doc, setDoc } from "firebase/firestore";
 import { auth, db } from "../../lib/firebase";
 import type { UserRole } from "../../types/user";
@@ -50,7 +51,7 @@ export default function SignupPage() {
                 createdAt: Date.now(),
             });
             router.push(`/dashboard/${role}`);
-        } catch (err) {
+        } catch (err: unknown) {
             setError(getErrorMessage(err));
             setLoading(false);
         }

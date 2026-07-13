@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Sparkles, Wallet, Clock, ThumbsUp, ThumbsDown, Check } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Sparkles, Wallet, Clock, ThumbsUp, ThumbsDown, Check, FileStack } from "lucide-react";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../../lib/firebase";
 import type { ProjectBrief } from "../../types/brief";
@@ -9,6 +10,7 @@ import type { ProjectBrief } from "../../types/brief";
 type FeedbackState = "up" | "down" | null;
 
 export default function BriefPanel({ brief }: { brief: ProjectBrief | null }) {
+    const router = useRouter();
     const [feedback, setFeedback] = useState<FeedbackState>(null);
     const [correctionNote, setCorrectionNote] = useState("");
     const [showCorrectionBox, setShowCorrectionBox] = useState(false);
@@ -53,6 +55,13 @@ export default function BriefPanel({ brief }: { brief: ProjectBrief | null }) {
     function handleCorrectionSubmit() {
         submitFeedback("down", correctionNote.trim() || undefined);
         setShowCorrectionBox(false);
+    }
+
+    function handleUpgradeToPRD() {
+        if (!brief) return;
+        sessionStorage.setItem("adeel-planning-brief", JSON.stringify(brief));
+        sessionStorage.setItem("adeel-planning-message", brief.originalMessage || "");
+        router.push("/dashboard/client/planning-agent");
     }
 
     return (
@@ -198,6 +207,29 @@ export default function BriefPanel({ brief }: { brief: ProjectBrief | null }) {
                             )}
                         </div>
                     )}
+
+                    <button
+                        onClick={handleUpgradeToPRD}
+                        style={{
+                            width: "100%",
+                            background: "white",
+                            color: "#12131A",
+                            fontSize: "0.85rem",
+                            fontWeight: 600,
+                            borderRadius: "12px",
+                            border: "1.5px solid #C9A227",
+                            padding: "0.8rem",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            gap: "0.5rem",
+                            cursor: "pointer",
+                            marginBottom: "0.75rem",
+                        }}
+                    >
+                        <FileStack size={15} color="#C9A227" />
+                        Upgrade to Full PRD
+                    </button>
 
                     <button
                         style={{

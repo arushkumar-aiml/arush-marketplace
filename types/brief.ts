@@ -6,4 +6,5 @@ export interface ProjectBrief {
     timelineWeeksMax: number;
     skills: string[];
     logId?: string;
+    originalMessage?: string;
 }
