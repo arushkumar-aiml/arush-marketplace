@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { collection, query, where, orderBy, getDocs, addDoc } from "firebase/firestore";
 import { db } from "../../../lib/firebase";
 import { useAuth } from "../../../lib/useAuth";
+import { useTheme } from "../../../lib/useTheme";
 import RequireRole from "../../../components/RequireRole";
 import Sidebar from "../../../components/dashboard/Sidebar";
 import DashboardHeader from "../../../components/dashboard/DashboardHeader";
@@ -22,6 +23,7 @@ function calculateMatch(projectText: string, skills: string[]): number {
 function FreelancerDashboardContent() {
     const { user, profile } = useAuth();
     const router = useRouter();
+    const { colors } = useTheme();
     const [projects, setProjects] = useState<Project[]>([]);
     const [loadingProjects, setLoadingProjects] = useState(true);
     const [respondedIds, setRespondedIds] = useState<Set<string>>(new Set());
@@ -67,7 +69,7 @@ function FreelancerDashboardContent() {
             : 0;
 
     return (
-        <div style={{ display: "flex", minHeight: "100vh", background: "white" }}>
+        <div style={{ display: "flex", minHeight: "100vh", background: colors.bgPrimary }}>
             <Sidebar />
             <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0 }}>
                 <DashboardHeader
@@ -80,8 +82,8 @@ function FreelancerDashboardContent() {
                     {!hasProfile && (
                         <div
                             style={{
-                                background: "#C9A22715",
-                                border: "1px solid #C9A22750",
+                                background: colors.accentGoldSoft,
+                                border: `1px solid ${colors.accentGold}80`,
                                 borderRadius: "12px",
                                 padding: "1rem",
                                 marginBottom: "2rem",
@@ -90,12 +92,12 @@ function FreelancerDashboardContent() {
                                 alignItems: "center",
                             }}
                         >
-                            <p style={{ fontSize: "0.9rem", color: "#12131A" }}>
+                            <p style={{ fontSize: "0.9rem", color: colors.textPrimary }}>
                                 Complete your profile to start getting matched with projects.
                             </p>
                             <button
                                 onClick={() => router.push("/dashboard/freelancer/profile")}
-                                style={{ fontSize: "0.9rem", fontWeight: 600, color: "#C9A227", background: "none", border: "none", cursor: "pointer", whiteSpace: "nowrap", marginLeft: "1rem" }}
+                                style={{ fontSize: "0.9rem", fontWeight: 600, color: colors.accentGold, background: "none", border: "none", cursor: "pointer", whiteSpace: "nowrap", marginLeft: "1rem" }}
                             >
                                 Complete now →
                             </button>
@@ -103,34 +105,34 @@ function FreelancerDashboardContent() {
                     )}
 
                     <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "0.9rem", marginBottom: "2rem" }}>
-                        <div style={{ border: "1px solid #E8E9ED", borderRadius: "12px", padding: "1rem" }}>
-                            <Briefcase size={16} color="#2563EB" style={{ marginBottom: "0.5rem" }} />
-                            <div style={{ fontSize: "1.3rem", fontWeight: 700, color: "#12131A" }}>{projects.length}</div>
-                            <div style={{ fontSize: "0.78rem", color: "#7A7C87" }}>Open Projects</div>
+                        <div style={{ border: `1px solid ${colors.border}`, borderRadius: "12px", padding: "1rem" }}>
+                            <Briefcase size={16} color={colors.accentBlue} style={{ marginBottom: "0.5rem" }} />
+                            <div style={{ fontSize: "1.3rem", fontWeight: 700, color: colors.textPrimary }}>{projects.length}</div>
+                            <div style={{ fontSize: "0.78rem", color: colors.textMuted }}>Open Projects</div>
                         </div>
-                        <div style={{ border: "1px solid #E8E9ED", borderRadius: "12px", padding: "1rem" }}>
-                            <CheckCircle2 size={16} color="#16A34A" style={{ marginBottom: "0.5rem" }} />
-                            <div style={{ fontSize: "1.3rem", fontWeight: 700, color: "#12131A" }}>{acceptedCount}</div>
-                            <div style={{ fontSize: "0.78rem", color: "#7A7C87" }}>Responses Sent</div>
+                        <div style={{ border: `1px solid ${colors.border}`, borderRadius: "12px", padding: "1rem" }}>
+                            <CheckCircle2 size={16} color={colors.success} style={{ marginBottom: "0.5rem" }} />
+                            <div style={{ fontSize: "1.3rem", fontWeight: 700, color: colors.textPrimary }}>{acceptedCount}</div>
+                            <div style={{ fontSize: "0.78rem", color: colors.textMuted }}>Responses Sent</div>
                         </div>
-                        <div style={{ border: "1px solid #E8E9ED", borderRadius: "12px", padding: "1rem" }}>
-                            <TrendingUp size={16} color="#C9A227" style={{ marginBottom: "0.5rem" }} />
-                            <div style={{ fontSize: "1.3rem", fontWeight: 700, color: "#12131A" }}>
+                        <div style={{ border: `1px solid ${colors.border}`, borderRadius: "12px", padding: "1rem" }}>
+                            <TrendingUp size={16} color={colors.accentGold} style={{ marginBottom: "0.5rem" }} />
+                            <div style={{ fontSize: "1.3rem", fontWeight: 700, color: colors.textPrimary }}>
                                 {hasProfile ? `${avgMatch}%` : "—"}
                             </div>
-                            <div style={{ fontSize: "0.78rem", color: "#7A7C87" }}>Avg. AI Match</div>
+                            <div style={{ fontSize: "0.78rem", color: colors.textMuted }}>Avg. AI Match</div>
                         </div>
                     </div>
 
-                    <h2 style={{ fontSize: "1.1rem", fontWeight: 600, color: "#12131A", marginBottom: "1.5rem" }}>
+                    <h2 style={{ fontSize: "1.1rem", fontWeight: 600, color: colors.textPrimary, marginBottom: "1.5rem" }}>
                         Open Projects
                     </h2>
 
                     {loadingProjects ? (
-                        <p style={{ color: "#7A7C87" }}>Loading projects...</p>
+                        <p style={{ color: colors.textMuted }}>Loading projects...</p>
                     ) : projects.length === 0 ? (
-                        <div style={{ background: "#F7F8FA", border: "1px solid #E8E9ED", borderRadius: "16px", padding: "2rem", textAlign: "center" }}>
-                            <p style={{ color: "#7A7C87" }}>No open projects right now. Check back soon.</p>
+                        <div style={{ background: colors.bgSecondary, border: `1px solid ${colors.border}`, borderRadius: "16px", padding: "2rem", textAlign: "center" }}>
+                            <p style={{ color: colors.textMuted }}>No open projects right now. Check back soon.</p>
                         </div>
                     ) : (
                         <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
@@ -138,15 +140,15 @@ function FreelancerDashboardContent() {
                                 const responded = respondedIds.has(p.id);
                                 const match = calculateMatch(`${p.title} ${p.rawDescription}`, profile?.skills || []);
                                 return (
-                                    <div key={p.id} style={{ border: "1px solid #E8E9ED", borderRadius: "12px", padding: "1.25rem" }}>
+                                    <div key={p.id} style={{ border: `1px solid ${colors.border}`, borderRadius: "12px", padding: "1.25rem" }}>
                                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "0.5rem" }}>
-                                            <h3 style={{ fontWeight: 600, color: "#12131A" }}>{p.title}</h3>
+                                            <h3 style={{ fontWeight: 600, color: colors.textPrimary }}>{p.title}</h3>
                                             <span
                                                 style={{
                                                     fontSize: "0.75rem",
                                                     fontWeight: 700,
-                                                    color: match >= 85 ? "#16A34A" : "#2563EB",
-                                                    background: match >= 85 ? "#16A34A15" : "#2563EB15",
+                                                    color: match >= 85 ? colors.success : colors.accentBlue,
+                                                    background: match >= 85 ? colors.successSoft : colors.accentBlueSoft,
                                                     borderRadius: "999px",
                                                     padding: "0.25rem 0.7rem",
                                                     whiteSpace: "nowrap",
@@ -155,11 +157,11 @@ function FreelancerDashboardContent() {
                                                 {match}% Match
                                             </span>
                                         </div>
-                                        <p style={{ fontSize: "0.9rem", color: "#4A4C56", marginBottom: "1rem", lineHeight: 1.5 }}>
+                                        <p style={{ fontSize: "0.9rem", color: colors.textSecondary, marginBottom: "1rem", lineHeight: 1.5 }}>
                                             {p.rawDescription}
                                         </p>
                                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                                            <div style={{ display: "flex", gap: "1.25rem", fontSize: "0.8rem", color: "#7A7C87" }}>
+                                            <div style={{ display: "flex", gap: "1.25rem", fontSize: "0.8rem", color: colors.textMuted }}>
                                                 <span style={{ display: "flex", alignItems: "center", gap: "0.35rem" }}>
                                                     <Wallet size={14} /> ₹{p.budget.toLocaleString()}
                                                 </span>
@@ -169,18 +171,18 @@ function FreelancerDashboardContent() {
                                             </div>
 
                                             {responded ? (
-                                                <span style={{ fontSize: "0.8rem", color: "#7A7C87" }}>Response sent ✓</span>
+                                                <span style={{ fontSize: "0.8rem", color: colors.textMuted }}>Response sent ✓</span>
                                             ) : (
                                                 <div style={{ display: "flex", gap: "0.5rem" }}>
                                                     <button
                                                         onClick={() => handleRespond(p.id, "declined")}
-                                                        style={{ fontSize: "0.8rem", border: "1px solid #E8E9ED", background: "white", borderRadius: "999px", padding: "0.4rem 1rem", cursor: "pointer" }}
+                                                        style={{ fontSize: "0.8rem", border: `1px solid ${colors.border}`, background: colors.bgPrimary, color: colors.textPrimary, borderRadius: "999px", padding: "0.4rem 1rem", cursor: "pointer" }}
                                                     >
                                                         Decline
                                                     </button>
                                                     <button
                                                         onClick={() => handleRespond(p.id, "accepted")}
-                                                        style={{ fontSize: "0.8rem", background: "#2563EB", color: "white", border: "none", borderRadius: "999px", padding: "0.4rem 1rem", cursor: "pointer" }}
+                                                        style={{ fontSize: "0.8rem", background: colors.accentBlue, color: "#FFFFFF", border: "none", borderRadius: "999px", padding: "0.4rem 1rem", cursor: "pointer" }}
                                                     >
                                                         Accept
                                                     </button>

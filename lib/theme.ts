@@ -1,0 +1,46 @@
+export type ThemeMode = "light" | "dark";
+
+export const themeColors = {
+    light: {
+        bgPrimary: "#FFFFFF",
+        bgSecondary: "#F7F8FA",
+        bgTertiary: "#EFF3FF",
+        bgCanvas: "#F7F8FA",
+        border: "#E8E9ED",
+        textPrimary: "#12131A",
+        textSecondary: "#4A4C56",
+        textMuted: "#9A9CA5",
+        accentBlue: "#2563EB",
+        accentBlueSoft: "#EFF3FF",
+        accentGold: "#C9A227",
+        accentGoldSoft: "#C9A22715",
+        success: "#16A34A",
+        successSoft: "#16A34A15",
+        danger: "#F87171",
+        dangerSoft: "#FEF2F2",
+        codeBg: "#0B0C10",
+        codeText: "#E8E9ED",
+    },
+    dark: {
+        bgPrimary: "#101218",
+        bgSecondary: "#181A22",
+        bgTertiary: "#1C2436",
+        bgCanvas: "#0D0E13",
+        border: "#2A2D38",
+        textPrimary: "#F2F3F5",
+        textSecondary: "#C9CBD3",
+        textMuted: "#7A7C87",
+        accentBlue: "#5B82FF",
+        accentBlueSoft: "#1C2436",
+        accentGold: "#D9B84A",
+        accentGoldSoft: "#3A2F12",
+        success: "#4ADE80",
+        successSoft: "#123B22",
+        danger: "#F87171",
+        dangerSoft: "#3B1616",
+        codeBg: "#05060A",
+        codeText: "#E8E9ED",
+    },
+} as const;
+
+export type ThemeColors = typeof themeColors.light;

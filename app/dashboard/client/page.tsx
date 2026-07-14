@@ -6,13 +6,15 @@ import DashboardHeader from "../../../components/dashboard/DashboardHeader";
 import AIChatPanel from "../../../components/dashboard/AIChatPanel";
 import BriefPanel from "../../../components/dashboard/BriefPanel";
 import RequireRole from "../../../components/RequireRole";
+import { useTheme } from "../../../lib/useTheme";
 import type { ProjectBrief } from "../../../types/brief";
 
 function DashboardContent() {
     const [brief, setBrief] = useState<ProjectBrief | null>(null);
+    const { colors } = useTheme();
 
     return (
-        <div style={{ display: "flex", minHeight: "100vh", background: "white" }}>
+        <div style={{ display: "flex", minHeight: "100vh", background: colors.bgPrimary }}>
             <Sidebar />
             <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0 }}>
                 <DashboardHeader ctaLabel="New Project" />

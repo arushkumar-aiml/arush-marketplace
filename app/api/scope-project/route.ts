@@ -2,13 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
     try {
-        const { originalMessage, brief } = await req.json();
+        const { message } = await req.json();
 
-        if (!originalMessage || !brief) {
-            return NextResponse.json(
-                { error: "originalMessage and brief are required" },
-                { status: 400 }
-            );
+        if (!message || typeof message !== "string") {
+            return NextResponse.json({ error: "message is required" }, { status: 400 });
         }
 
         const apiKey = process.env.GROQ_API_KEY;
@@ -19,22 +16,20 @@ export async function POST(req: NextRequest) {
             );
         }
 
-        const prompt = `You are Adeel AI, a senior technical product planner for a freelance marketplace platform.
+        const prompt = `You are Adeel AI, a project scoping assistant for a freelance marketplace. A client described their project like this:
 
-A client described their project like this:
-"${originalMessage}"
+"${message}"
 
-An initial scoping brief was already generated:
-${JSON.stringify(brief, null, 2)}
-
-Your task: generate 3 to 5 sharp clarifying questions that a senior product manager would ask BEFORE writing a full Product Requirements Document (PRD). Focus on ambiguities around: target users, must-have vs nice-to-have features, platforms (web/mobile/both), integrations, and any technical constraints.
+Generate a realistic scoping brief: a short overview, a realistic USD budget range, a realistic timeline range in weeks, and a list of required skills.
 
 Respond ONLY with valid JSON, no markdown, no preamble, in exactly this shape:
 {
-  "questions": [
-    { "id": "q1", "question": "..." },
-    { "id": "q2", "question": "..." }
-  ]
+  "overview": "2-3 sentence summary of the project",
+  "budgetMin": 500,
+  "budgetMax": 2000,
+  "timelineWeeksMin": 2,
+  "timelineWeeksMax": 6,
+  "skills": ["React", "Node.js"]
 }`;
 
         const groqRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -55,7 +50,7 @@ Respond ONLY with valid JSON, no markdown, no preamble, in exactly this shape:
             const errText = await groqRes.text();
             console.error("Groq API error:", errText);
             return NextResponse.json(
-                { error: "Failed to generate clarifying questions" },
+                { error: "Failed to generate project brief" },
                 { status: 502 }
             );
         }
@@ -70,9 +65,9 @@ Respond ONLY with valid JSON, no markdown, no preamble, in exactly this shape:
         const parsed = JSON.parse(rawText);
         return NextResponse.json(parsed);
     } catch (err: unknown) {
-        console.error("Clarify route error:", err);
+        console.error("Scope-project route error:", err);
         return NextResponse.json(
-            { error: "Something went wrong generating clarifying questions" },
+            { error: "Something went wrong generating the brief" },
             { status: 500 }
         );
     }

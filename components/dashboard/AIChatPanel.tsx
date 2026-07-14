@@ -15,6 +15,7 @@ import {
 import { collection, addDoc } from "firebase/firestore";
 import { db } from "../../lib/firebase";
 import { useAuth } from "../../lib/useAuth";
+import { useTheme } from "../../lib/useTheme";
 import type { ProjectBrief } from "../../types/brief";
 
 interface Message {
@@ -37,6 +38,7 @@ export default function AIChatPanel({
     onBriefGenerated: (brief: ProjectBrief) => void;
 }) {
     const { user } = useAuth();
+    const { colors } = useTheme();
     const [messages, setMessages] = useState<Message[]>([
         {
             id: "welcome",
@@ -79,9 +81,6 @@ export default function AIChatPanel({
             };
             setMessages((prev) => [...prev, aiMessage]);
 
-            // Log this exchange for Adeel Trainer (future fine-tuning dataset)
-            // Capture the generated doc ID so feedback (thumbs up/down) can be
-            // attached to this exact log entry later from BriefPanel.
             let logId: string | undefined;
             if (user) {
                 const logRef = await addDoc(collection(db, "adeel-trainer-logs"), {
@@ -95,7 +94,7 @@ export default function AIChatPanel({
                 logId = logRef.id;
             }
 
-            onBriefGenerated({ ...brief, logId });
+            onBriefGenerated({ ...brief, logId, originalMessage: trimmed });
         } catch (err: unknown) {
             console.error("Scoping error:", err);
             const errorMessage: Message = {
@@ -117,28 +116,28 @@ export default function AIChatPanel({
     }
 
     return (
-        <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "white", borderLeft: "1px solid #E8E9ED", borderRight: "1px solid #E8E9ED" }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "1rem 1.5rem", borderBottom: "1px solid #E8E9ED" }}>
+        <div style={{ flex: 1, display: "flex", flexDirection: "column", background: colors.bgPrimary, borderLeft: `1px solid ${colors.border}`, borderRight: `1px solid ${colors.border}` }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "1rem 1.5rem", borderBottom: `1px solid ${colors.border}` }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-                    <div style={{ position: "relative", width: "40px", height: "40px", borderRadius: "50%", background: "#0B0C10", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                        <span style={{ color: "#2563EB", fontSize: "1.1rem" }}>✦</span>
-                        <span style={{ position: "absolute", bottom: 0, right: 0, width: "10px", height: "10px", borderRadius: "50%", background: "#22C55E", border: "2px solid white" }} />
+                    <div style={{ position: "relative", width: "40px", height: "40px", borderRadius: "50%", background: colors.codeBg, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        <span style={{ color: colors.accentBlue, fontSize: "1.1rem" }}>✦</span>
+                        <span style={{ position: "absolute", bottom: 0, right: 0, width: "10px", height: "10px", borderRadius: "50%", background: colors.success, border: `2px solid ${colors.bgPrimary}` }} />
                     </div>
                     <div>
                         <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                            <span style={{ fontWeight: 600, color: "#12131A" }}>Adeel AI</span>
-                            <span style={{ fontSize: "0.7rem", background: "#EFF3FF", color: "#2563EB", fontWeight: 500, padding: "0.15rem 0.5rem", borderRadius: "999px" }}>
+                            <span style={{ fontWeight: 600, color: colors.textPrimary }}>Adeel AI</span>
+                            <span style={{ fontSize: "0.7rem", background: colors.accentBlueSoft, color: colors.accentBlue, fontWeight: 500, padding: "0.15rem 0.5rem", borderRadius: "999px" }}>
                                 AI Assistant
                             </span>
                         </div>
                     </div>
                 </div>
                 <div style={{ display: "flex", gap: "0.5rem" }}>
-                    <button style={{ width: "36px", height: "36px", display: "flex", alignItems: "center", justifyContent: "center", borderRadius: "8px", border: "1px solid #E8E9ED", background: "white", cursor: "pointer" }}>
-                        <FileText size={16} color="#4A4C56" />
+                    <button style={{ width: "36px", height: "36px", display: "flex", alignItems: "center", justifyContent: "center", borderRadius: "8px", border: `1px solid ${colors.border}`, background: colors.bgPrimary, cursor: "pointer" }}>
+                        <FileText size={16} color={colors.textSecondary} />
                     </button>
-                    <button style={{ width: "36px", height: "36px", display: "flex", alignItems: "center", justifyContent: "center", borderRadius: "8px", border: "1px solid #E8E9ED", background: "white", cursor: "pointer" }}>
-                        <MoreHorizontal size={16} color="#4A4C56" />
+                    <button style={{ width: "36px", height: "36px", display: "flex", alignItems: "center", justifyContent: "center", borderRadius: "8px", border: `1px solid ${colors.border}`, background: colors.bgPrimary, cursor: "pointer" }}>
+                        <MoreHorizontal size={16} color={colors.textSecondary} />
                     </button>
                 </div>
             </div>
@@ -147,7 +146,7 @@ export default function AIChatPanel({
                 {messages.map((m) => (
                     <div key={m.id} style={{ display: "flex", justifyContent: m.role === "user" ? "flex-end" : "flex-start", alignItems: "flex-end", gap: "0.5rem" }}>
                         {m.role === "ai" && (
-                            <div style={{ width: "32px", height: "32px", borderRadius: "50%", background: "#0B0C10", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, color: "#2563EB" }}>
+                            <div style={{ width: "32px", height: "32px", borderRadius: "50%", background: colors.codeBg, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, color: colors.accentBlue }}>
                                 ✦
                             </div>
                         )}
@@ -158,12 +157,12 @@ export default function AIChatPanel({
                                 padding: "0.75rem 1rem",
                                 fontSize: "0.9rem",
                                 lineHeight: 1.6,
-                                background: m.role === "user" ? "#EFF3FF" : "#F7F8FA",
-                                color: "#12131A",
+                                background: m.role === "user" ? colors.accentBlueSoft : colors.bgSecondary,
+                                color: colors.textPrimary,
                             }}
                         >
                             {m.text}
-                            <div style={{ fontSize: "0.7rem", color: "#9A9CA5", marginTop: "0.4rem" }}>{m.time}</div>
+                            <div style={{ fontSize: "0.7rem", color: colors.textMuted, marginTop: "0.4rem" }}>{m.time}</div>
                         </div>
                     </div>
                 ))}
@@ -173,7 +172,7 @@ export default function AIChatPanel({
                         {[0, 1, 2].map((i) => (
                             <motion.span
                                 key={i}
-                                style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#2563EB" }}
+                                style={{ width: "6px", height: "6px", borderRadius: "50%", background: colors.accentBlue }}
                                 animate={{ opacity: [0.3, 1, 0.3] }}
                                 transition={{ duration: 1.2, repeat: Infinity, delay: i * 0.2 }}
                             />
@@ -183,26 +182,26 @@ export default function AIChatPanel({
             </div>
 
             <div style={{ padding: "0 1.5rem 1rem" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", border: "1px solid #E8E9ED", borderRadius: "12px", padding: "0.6rem 0.75rem", marginBottom: "0.75rem" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", border: `1px solid ${colors.border}`, borderRadius: "12px", padding: "0.6rem 0.75rem", marginBottom: "0.75rem" }}>
                     <input
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
                         onKeyDown={handleKeyDown}
                         placeholder="Describe your project..."
-                        style={{ flex: 1, fontSize: "0.9rem", border: "none", outline: "none" }}
+                        style={{ flex: 1, fontSize: "0.9rem", border: "none", outline: "none", background: "transparent", color: colors.textPrimary }}
                     />
-                    <button style={{ background: "none", border: "none", color: "#9A9CA5", cursor: "pointer" }}>
+                    <button style={{ background: "none", border: "none", color: colors.textMuted, cursor: "pointer" }}>
                         <Paperclip size={18} />
                     </button>
-                    <button style={{ background: "none", border: "none", color: "#9A9CA5", cursor: "pointer" }}>
+                    <button style={{ background: "none", border: "none", color: colors.textMuted, cursor: "pointer" }}>
                         <Mic size={18} />
                     </button>
                     <button
                         onClick={handleSend}
                         disabled={isThinking}
-                        style={{ width: "36px", height: "36px", borderRadius: "8px", background: "#2563EB", border: "none", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", opacity: isThinking ? 0.6 : 1 }}
+                        style={{ width: "36px", height: "36px", borderRadius: "8px", background: colors.accentBlue, border: "none", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", opacity: isThinking ? 0.6 : 1 }}
                     >
-                        <Send size={16} color="white" />
+                        <Send size={16} color="#FFFFFF" />
                     </button>
                 </div>
 
@@ -215,11 +214,11 @@ export default function AIChatPanel({
                                 alignItems: "center",
                                 gap: "0.4rem",
                                 fontSize: "0.75rem",
-                                color: "#4A4C56",
-                                border: "1px solid #E8E9ED",
+                                color: colors.textSecondary,
+                                border: `1px solid ${colors.border}`,
                                 borderRadius: "999px",
                                 padding: "0.4rem 0.75rem",
-                                background: "white",
+                                background: colors.bgPrimary,
                                 cursor: "pointer",
                             }}
                         >

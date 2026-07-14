@@ -2,13 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
     try {
-        const { originalMessage, brief } = await req.json();
+        const { prd } = await req.json();
 
-        if (!originalMessage || !brief) {
-            return NextResponse.json(
-                { error: "originalMessage and brief are required" },
-                { status: 400 }
-            );
+        if (!prd) {
+            return NextResponse.json({ error: "prd is required" }, { status: 400 });
         }
 
         const apiKey = process.env.GROQ_API_KEY;
@@ -19,22 +16,18 @@ export async function POST(req: NextRequest) {
             );
         }
 
-        const prompt = `You are Adeel AI, a senior technical product planner for a freelance marketplace platform.
+        const prompt = `You are Adeel AI, a senior software engineer generating a starter code scaffold for a project based on this PRD:
 
-A client described their project like this:
-"${originalMessage}"
+${JSON.stringify(prd, null, 2)}
 
-An initial scoping brief was already generated:
-${JSON.stringify(brief, null, 2)}
-
-Your task: generate 3 to 5 sharp clarifying questions that a senior product manager would ask BEFORE writing a full Product Requirements Document (PRD). Focus on ambiguities around: target users, must-have vs nice-to-have features, platforms (web/mobile/both), integrations, and any technical constraints.
+Generate 4 to 6 practical starter code files based on the recommended tech stack. Include things like: main entry component, one core API route, a data model/type definition, and a README with setup instructions. Keep each file's code concise (30-60 lines) but realistic and runnable, using the exact tech stack recommended in the PRD.
 
 Respond ONLY with valid JSON, no markdown, no preamble, in exactly this shape:
 {
-  "questions": [
-    { "id": "q1", "question": "..." },
-    { "id": "q2", "question": "..." }
-  ]
+  "files": [
+    { "path": "app/page.tsx", "language": "typescript", "description": "short one-line purpose", "code": "actual code here" }
+  ],
+  "setupInstructions": ["step 1...", "step 2..."]
 }`;
 
         const groqRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -48,6 +41,7 @@ Respond ONLY with valid JSON, no markdown, no preamble, in exactly this shape:
                 messages: [{ role: "user", content: prompt }],
                 response_format: { type: "json_object" },
                 temperature: 0.4,
+                max_tokens: 4096,
             }),
         });
 
@@ -55,7 +49,7 @@ Respond ONLY with valid JSON, no markdown, no preamble, in exactly this shape:
             const errText = await groqRes.text();
             console.error("Groq API error:", errText);
             return NextResponse.json(
-                { error: "Failed to generate clarifying questions" },
+                { error: "Failed to generate code scaffold" },
                 { status: 502 }
             );
         }
@@ -70,9 +64,9 @@ Respond ONLY with valid JSON, no markdown, no preamble, in exactly this shape:
         const parsed = JSON.parse(rawText);
         return NextResponse.json(parsed);
     } catch (err: unknown) {
-        console.error("Clarify route error:", err);
+        console.error("Scaffold route error:", err);
         return NextResponse.json(
-            { error: "Something went wrong generating clarifying questions" },
+            { error: "Something went wrong generating the code scaffold" },
             { status: 500 }
         );
     }

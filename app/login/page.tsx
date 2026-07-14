@@ -12,6 +12,7 @@ import { doc, getDoc } from "firebase/firestore";
 import { auth, db } from "../../lib/firebase";
 import type { UserProfile } from "../../types/user";
 import AuthTransition from "../../components/AuthTransition";
+import { useTheme } from "../../lib/useTheme";
 
 function getErrorMessage(err: unknown): string {
     if (err instanceof FirebaseError) {
@@ -34,6 +35,7 @@ function getErrorMessage(err: unknown): string {
 
 export default function LoginPage() {
     const router = useRouter();
+    const { colors } = useTheme();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
@@ -96,7 +98,7 @@ export default function LoginPage() {
                 alignItems: "center",
                 justifyContent: "center",
                 padding: "1rem",
-                background: "#05060A",
+                background: colors.codeBg,
                 position: "relative",
                 overflow: "hidden",
             }}
@@ -108,7 +110,7 @@ export default function LoginPage() {
                     left: "-10%",
                     width: "500px",
                     height: "500px",
-                    background: "radial-gradient(circle, #4C6FFF33 0%, transparent 70%)",
+                    background: `radial-gradient(circle, ${colors.accentBlue}33 0%, transparent 70%)`,
                     filter: "blur(40px)",
                     pointerEvents: "none",
                 }}
@@ -120,7 +122,7 @@ export default function LoginPage() {
                     right: "-10%",
                     width: "600px",
                     height: "600px",
-                    background: "radial-gradient(circle, #C9A22733 0%, transparent 70%)",
+                    background: `radial-gradient(circle, ${colors.accentGold}33 0%, transparent 70%)`,
                     filter: "blur(40px)",
                     pointerEvents: "none",
                 }}
@@ -132,12 +134,12 @@ export default function LoginPage() {
                     maxWidth: "420px",
                     background: "rgba(15, 16, 22, 0.85)",
                     backdropFilter: "blur(12px)",
-                    border: "1px solid rgba(76, 111, 255, 0.25)",
+                    border: `1px solid ${colors.accentBlue}40`,
                     borderRadius: "20px",
                     padding: "2.5rem",
                     position: "relative",
                     zIndex: 1,
-                    boxShadow: "0 0 60px rgba(76, 111, 255, 0.08)",
+                    boxShadow: `0 0 60px ${colors.accentBlue}15`,
                 }}
             >
                 <div style={{ display: "flex", justifyContent: "center", marginBottom: "2rem" }}>
@@ -181,7 +183,7 @@ export default function LoginPage() {
                             <button
                                 type="button"
                                 onClick={handleForgotPassword}
-                                style={{ background: "none", border: "none", color: "#4C6FFF", fontSize: "0.8rem", cursor: "pointer" }}
+                                style={{ background: "none", border: "none", color: colors.accentBlue, fontSize: "0.8rem", cursor: "pointer" }}
                             >
                                 Forgot password?
                             </button>
@@ -214,7 +216,7 @@ export default function LoginPage() {
                                     transform: "translateY(-50%)",
                                     background: "none",
                                     border: "none",
-                                    color: "#C9A227",
+                                    color: colors.accentGold,
                                     cursor: "pointer",
                                     fontSize: "0.8rem",
                                 }}
@@ -233,7 +235,7 @@ export default function LoginPage() {
                             padding: "0.9rem",
                             borderRadius: "10px",
                             border: "none",
-                            background: "linear-gradient(135deg, #2563EB, #4C6FFF)",
+                            background: `linear-gradient(135deg, ${colors.accentBlue}, #4C6FFF)`,
                             color: "white",
                             fontWeight: 600,
                             cursor: "pointer",
@@ -246,7 +248,7 @@ export default function LoginPage() {
 
                 <p style={{ fontSize: "0.85rem", color: "#9A9CA5", marginTop: "1.75rem", textAlign: "center" }}>
                     Don&apos;t have an account?{" "}
-                    <a href="/signup" style={{ color: "#C9A227", fontWeight: 600, textDecoration: "none" }}>
+                    <a href="/signup" style={{ color: colors.accentGold, fontWeight: 600, textDecoration: "none" }}>
                         Sign up
                     </a>
                 </p>

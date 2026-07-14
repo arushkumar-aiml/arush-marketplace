@@ -9,6 +9,7 @@ import { doc, setDoc } from "firebase/firestore";
 import { auth, db } from "../../lib/firebase";
 import type { UserRole } from "../../types/user";
 import AuthTransition from "../../components/AuthTransition";
+import { useTheme } from "../../lib/useTheme";
 import { Bot, ShieldCheck, Zap } from "lucide-react";
 
 function getErrorMessage(err: unknown): string {
@@ -29,6 +30,7 @@ function getErrorMessage(err: unknown): string {
 
 export default function SignupPage() {
     const router = useRouter();
+    const { colors } = useTheme();
     const [role, setRole] = useState<UserRole>("client");
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
@@ -62,10 +64,10 @@ export default function SignupPage() {
     }
 
     return (
-        <main style={{ minHeight: "100vh", display: "flex", background: "#05060A" }}>
+        <main style={{ minHeight: "100vh", display: "flex", background: colors.codeBg }}>
             {/* Left panel */}
             <div style={{ flex: 1, padding: "3rem", display: "flex", flexDirection: "column", justifyContent: "space-between", position: "relative", overflow: "hidden" }}>
-                <div style={{ position: "absolute", bottom: "-20%", left: "-10%", width: "500px", height: "500px", background: "radial-gradient(circle, #4C6FFF22 0%, transparent 70%)", filter: "blur(40px)" }} />
+                <div style={{ position: "absolute", bottom: "-20%", left: "-10%", width: "500px", height: "500px", background: `radial-gradient(circle, ${colors.accentBlue}22 0%, transparent 70%)`, filter: "blur(40px)" }} />
                 <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", position: "relative", zIndex: 1 }}>
                     <Image src="/logo.png" alt="Arush Labs" width={140} height={36} style={{ objectFit: "contain" }} />
                 </div>
@@ -73,7 +75,7 @@ export default function SignupPage() {
                 <div style={{ position: "relative", zIndex: 1, maxWidth: "460px" }}>
                     <h1 style={{ fontSize: "2.2rem", fontWeight: 700, color: "white", lineHeight: 1.2, marginBottom: "1rem" }}>
                         Join the Future of Freelancing.{" "}
-                        <span style={{ background: "linear-gradient(135deg, #4C6FFF, #C9A227)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+                        <span style={{ background: `linear-gradient(135deg, ${colors.accentBlue}, ${colors.accentGold})`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
                             Powered by AI.
                         </span>
                     </h1>
@@ -83,8 +85,8 @@ export default function SignupPage() {
 
                     <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
                         <div style={{ display: "flex", gap: "0.9rem", alignItems: "flex-start" }}>
-                            <div style={{ width: "40px", height: "40px", borderRadius: "10px", background: "#4C6FFF22", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                                <Bot size={18} color="#4C6FFF" />
+                            <div style={{ width: "40px", height: "40px", borderRadius: "10px", background: `${colors.accentBlue}22`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                                <Bot size={18} color={colors.accentBlue} />
                             </div>
                             <div>
                                 <div style={{ color: "white", fontWeight: 600, fontSize: "0.95rem" }}>AI-Powered Matching</div>
@@ -92,8 +94,8 @@ export default function SignupPage() {
                             </div>
                         </div>
                         <div style={{ display: "flex", gap: "0.9rem", alignItems: "flex-start" }}>
-                            <div style={{ width: "40px", height: "40px", borderRadius: "10px", background: "#C9A22722", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                                <ShieldCheck size={18} color="#C9A227" />
+                            <div style={{ width: "40px", height: "40px", borderRadius: "10px", background: `${colors.accentGold}22`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                                <ShieldCheck size={18} color={colors.accentGold} />
                             </div>
                             <div>
                                 <div style={{ color: "white", fontWeight: 600, fontSize: "0.95rem" }}>Secure &amp; Trusted</div>
@@ -101,8 +103,8 @@ export default function SignupPage() {
                             </div>
                         </div>
                         <div style={{ display: "flex", gap: "0.9rem", alignItems: "flex-start" }}>
-                            <div style={{ width: "40px", height: "40px", borderRadius: "10px", background: "#4C6FFF22", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                                <Zap size={18} color="#4C6FFF" />
+                            <div style={{ width: "40px", height: "40px", borderRadius: "10px", background: `${colors.accentBlue}22`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                                <Zap size={18} color={colors.accentBlue} />
                             </div>
                             <div>
                                 <div style={{ color: "white", fontWeight: 600, fontSize: "0.95rem" }}>Lightning Fast</div>
@@ -125,7 +127,7 @@ export default function SignupPage() {
                         maxWidth: "440px",
                         background: "rgba(15, 16, 22, 0.85)",
                         backdropFilter: "blur(12px)",
-                        border: "1px solid rgba(201, 162, 39, 0.25)",
+                        border: `1px solid ${colors.accentGold}40`,
                         borderRadius: "20px",
                         padding: "2.5rem",
                     }}
@@ -147,7 +149,7 @@ export default function SignupPage() {
                                     border: "none",
                                     textTransform: "capitalize",
                                     cursor: "pointer",
-                                    background: role === r ? "linear-gradient(135deg, #2563EB, #4C6FFF)" : "transparent",
+                                    background: role === r ? `linear-gradient(135deg, ${colors.accentBlue}, #4C6FFF)` : "transparent",
                                     color: role === r ? "white" : "#9A9CA5",
                                     fontWeight: 500,
                                 }}
@@ -188,7 +190,7 @@ export default function SignupPage() {
 
                         <button
                             type="submit"
-                            style={{ padding: "0.9rem", borderRadius: "10px", border: "none", background: "linear-gradient(135deg, #C9A227, #E0C158)", color: "#0B0C10", fontWeight: 700, cursor: "pointer", marginTop: "0.5rem" }}
+                            style={{ padding: "0.9rem", borderRadius: "10px", border: "none", background: `linear-gradient(135deg, ${colors.accentGold}, #E0C158)`, color: "#0B0C10", fontWeight: 700, cursor: "pointer", marginTop: "0.5rem" }}
                         >
                             Create Account →
                         </button>
@@ -196,7 +198,7 @@ export default function SignupPage() {
 
                     <p style={{ fontSize: "0.85rem", color: "#9A9CA5", marginTop: "1.5rem", textAlign: "center" }}>
                         Already have an account?{" "}
-                        <a href="/login" style={{ color: "#4C6FFF", fontWeight: 600, textDecoration: "none" }}>
+                        <a href="/login" style={{ color: colors.accentBlue, fontWeight: 600, textDecoration: "none" }}>
                             Login
                         </a>
                     </p>

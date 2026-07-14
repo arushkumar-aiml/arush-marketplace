@@ -3,10 +3,13 @@
 import Sidebar from "./Sidebar";
 import DashboardHeader from "./DashboardHeader";
 import { Construction } from "lucide-react";
+import { useTheme } from "../../lib/useTheme";
 
 export default function ComingSoon({ pageName }: { pageName: string }) {
+    const { colors } = useTheme();
+
     return (
-        <div style={{ display: "flex", minHeight: "100vh", background: "white" }}>
+        <div style={{ display: "flex", minHeight: "100vh", background: colors.bgPrimary }}>
             <Sidebar />
             <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0 }}>
                 <DashboardHeader subtitle={`${pageName} is on its way.`} />
@@ -17,19 +20,19 @@ export default function ComingSoon({ pageName }: { pageName: string }) {
                                 width: "64px",
                                 height: "64px",
                                 borderRadius: "16px",
-                                background: "#EFF3FF",
+                                background: colors.accentBlueSoft,
                                 display: "flex",
                                 alignItems: "center",
                                 justifyContent: "center",
                                 margin: "0 auto 1.5rem",
                             }}
                         >
-                            <Construction size={28} color="#2563EB" />
+                            <Construction size={28} color={colors.accentBlue} />
                         </div>
-                        <h2 style={{ fontSize: "1.2rem", fontWeight: 600, color: "#12131A", marginBottom: "0.5rem" }}>
+                        <h2 style={{ fontSize: "1.2rem", fontWeight: 600, color: colors.textPrimary, marginBottom: "0.5rem" }}>
                             {pageName} — Coming Soon
                         </h2>
-                        <p style={{ color: "#7A7C87", fontSize: "0.9rem" }}>
+                        <p style={{ color: colors.textMuted, fontSize: "0.9rem" }}>
                             We&apos;re building this next. Check back soon!
                         </p>
                     </div>

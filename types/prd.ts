@@ -33,3 +33,15 @@ export interface FullPRD {
     risks: string[];
     logId?: string;
 }
+
+export interface CodeScaffoldFile {
+    path: string;
+    language: string;
+    description: string;
+    code: string;
+}
+
+export interface CodeScaffold {
+    files: CodeScaffoldFile[];
+    setupInstructions: string[];
+}

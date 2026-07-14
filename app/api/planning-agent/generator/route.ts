@@ -11,10 +11,10 @@ export async function POST(req: NextRequest) {
             );
         }
 
-        const apiKey = process.env.GEMINI_API_KEY;
+        const apiKey = process.env.GROQ_API_KEY;
         if (!apiKey) {
             return NextResponse.json(
-                { error: "Server misconfiguration: missing Gemini API key" },
+                { error: "Server misconfiguration: missing Groq API key" },
                 { status: 500 }
             );
         }
@@ -52,36 +52,34 @@ Respond ONLY with valid JSON, no markdown, no preamble, in exactly this shape:
   "risks": ["...", "..."]
 }`;
 
-        const geminiRes = await fetch(
-            `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${apiKey}`,
-            {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    contents: [{ parts: [{ text: prompt }] }],
-                    generationConfig: { responseMimeType: "application/json" },
-                }),
-            }
-        );
+        const groqRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${apiKey}`,
+            },
+            body: JSON.stringify({
+                model: "llama-3.3-70b-versatile",
+                messages: [{ role: "user", content: prompt }],
+                response_format: { type: "json_object" },
+                temperature: 0.4,
+            }),
+        });
 
-        if (!geminiRes.ok) {
-            const errText = await geminiRes.text();
-            console.error("Gemini API error:", errText);
+        if (!groqRes.ok) {
+            const errText = await groqRes.text();
+            console.error("Groq API error:", errText);
             return NextResponse.json(
                 { error: "Failed to generate PRD" },
                 { status: 502 }
             );
         }
 
-        const geminiData = await geminiRes.json();
-        const rawText: string | undefined =
-            geminiData?.candidates?.[0]?.content?.parts?.[0]?.text;
+        const groqData = await groqRes.json();
+        const rawText: string | undefined = groqData?.choices?.[0]?.message?.content;
 
         if (!rawText) {
-            return NextResponse.json(
-                { error: "Empty response from Gemini" },
-                { status: 502 }
-            );
+            return NextResponse.json({ error: "Empty response from Groq" }, { status: 502 });
         }
 
         const parsed = JSON.parse(rawText);

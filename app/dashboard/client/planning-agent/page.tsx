@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
     Sparkles,
     ArrowLeft,
@@ -10,15 +10,23 @@ import {
     Wrench,
     AlertTriangle,
     CheckCircle2,
+    Lock,
+    Code2,
+    Copy,
 } from "lucide-react";
 import RequireRole from "../../../../components/RequireRole";
+import { useAuth } from "../../../../lib/useAuth";
 import type { ProjectBrief } from "../../../../types/brief";
-import type { ClarifyingQuestion, FullPRD } from "../../../../types/prd";
+import type { ClarifyingQuestion, FullPRD, CodeScaffold } from "../../../../types/prd";
 
 type Stage = "loading" | "no-brief" | "clarifying" | "generating" | "result" | "error";
+type UnlockStage = "locked" | "verifying" | "unlocked" | "generating-scaffold" | "unlock-error";
 
 function PlanningAgentContent() {
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const { user } = useAuth();
+
     const [stage, setStage] = useState<Stage>("loading");
     const [originalMessage, setOriginalMessage] = useState("");
     const [brief, setBrief] = useState<ProjectBrief | null>(null);
@@ -26,6 +34,9 @@ function PlanningAgentContent() {
     const [answers, setAnswers] = useState<Record<string, string>>({});
     const [prd, setPrd] = useState<FullPRD | null>(null);
     const [errorMsg, setErrorMsg] = useState("");
+
+    const [unlockStage, setUnlockStage] = useState<UnlockStage>("locked");
+    const [scaffold, setScaffold] = useState<CodeScaffold | null>(null);
 
     useEffect(() => {
         const storedBrief = sessionStorage.getItem("adeel-planning-brief");
@@ -41,6 +52,16 @@ function PlanningAgentContent() {
         setOriginalMessage(storedMessage);
         fetchClarifyingQuestions(storedMessage, parsedBrief);
     }, []);
+
+    // Handle redirect back from Stripe Checkout
+    useEffect(() => {
+        const unlockedParam = searchParams.get("unlocked");
+        const sessionId = searchParams.get("session_id");
+
+        if (unlockedParam === "true" && sessionId) {
+            verifyPayment(sessionId);
+        }
+    }, [searchParams]);
 
     async function fetchClarifyingQuestions(message: string, briefData: ProjectBrief) {
         setStage("loading");
@@ -85,6 +106,77 @@ function PlanningAgentContent() {
             setErrorMsg("Couldn't generate the full PRD. Please try again.");
             setStage("error");
         }
+    }
+
+    async function handleUnlockClick() {
+        if (!prd?.logId || !user) return;
+        try {
+            const res = await fetch("/api/create-checkout-session", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    logId: prd.logId,
+                    clientId: user.uid,
+                    prdTitle: prd.title,
+                }),
+            });
+            if (!res.ok) throw new Error("Failed to start checkout");
+            const data = await res.json();
+            if (data.url) {
+                window.location.href = data.url;
+            }
+        } catch (err: unknown) {
+            console.error(err);
+            setUnlockStage("unlock-error");
+        }
+    }
+
+    async function verifyPayment(sessionId: string) {
+        setUnlockStage("verifying");
+        try {
+            const res = await fetch("/api/verify-payment", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ sessionId }),
+            });
+            if (!res.ok) throw new Error("Verification failed");
+            const data = await res.json();
+
+            if (data.paid) {
+                setUnlockStage("unlocked");
+                if (prd) {
+                    generateScaffold();
+                }
+            } else {
+                setUnlockStage("unlock-error");
+            }
+        } catch (err: unknown) {
+            console.error(err);
+            setUnlockStage("unlock-error");
+        }
+    }
+
+    async function generateScaffold() {
+        if (!prd) return;
+        setUnlockStage("generating-scaffold");
+        try {
+            const res = await fetch("/api/planning-agent/scaffold", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ prd }),
+            });
+            if (!res.ok) throw new Error("Failed to generate scaffold");
+            const data: CodeScaffold = await res.json();
+            setScaffold(data);
+            setUnlockStage("unlocked");
+        } catch (err: unknown) {
+            console.error(err);
+            setUnlockStage("unlock-error");
+        }
+    }
+
+    function copyCode(code: string) {
+        navigator.clipboard.writeText(code).catch((err) => console.error("Copy failed:", err));
     }
 
     const sectionStyle: React.CSSProperties = {
@@ -369,10 +461,155 @@ function PlanningAgentContent() {
                             </div>
                         )}
 
-                        <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", color: "#22C55E", fontSize: "0.85rem", marginTop: "0.5rem" }}>
-                            <CheckCircle2 size={16} />
-                            PRD generated. Full unlock (code scaffold) coming soon.
-                        </div>
+                        {/* Unlock section */}
+                        {unlockStage === "locked" && (
+                            <div style={{ ...sectionStyle, textAlign: "center", padding: "2rem" }}>
+                                <Lock size={22} color="#C9A227" style={{ marginBottom: "0.75rem" }} />
+                                <h3 style={{ fontSize: "1rem", fontWeight: 700, color: "#12131A", marginBottom: "0.4rem" }}>
+                                    Unlock AI-Generated Code Scaffold
+                                </h3>
+                                <p style={{ fontSize: "0.85rem", color: "#9A9CA5", marginBottom: "1.25rem" }}>
+                                    Get starter code files (components, API routes, README) based on this exact PRD — for $10.
+                                </p>
+                                <button
+                                    onClick={handleUnlockClick}
+                                    style={{
+                                        background: "linear-gradient(135deg, #C9A227, #E0C158)",
+                                        color: "#0B0C10",
+                                        border: "none",
+                                        borderRadius: "10px",
+                                        padding: "0.8rem 1.5rem",
+                                        fontSize: "0.9rem",
+                                        fontWeight: 700,
+                                        cursor: "pointer",
+                                    }}
+                                >
+                                    Unlock for $10 →
+                                </button>
+                            </div>
+                        )}
+
+                        {unlockStage === "verifying" && (
+                            <div style={{ textAlign: "center", padding: "2rem", color: "#9A9CA5" }}>
+                                Verifying your payment...
+                            </div>
+                        )}
+
+                        {unlockStage === "generating-scaffold" && (
+                            <div style={{ textAlign: "center", padding: "2rem", color: "#9A9CA5" }}>
+                                Payment confirmed. Generating your code scaffold...
+                            </div>
+                        )}
+
+                        {unlockStage === "unlock-error" && (
+                            <div style={sectionStyle}>
+                                <p style={{ color: "#F87171", fontSize: "0.9rem" }}>
+                                    Something went wrong verifying your payment or generating the scaffold. If you were
+                                    charged, please contact support — otherwise try unlocking again.
+                                </p>
+                                <button
+                                    onClick={handleUnlockClick}
+                                    style={{
+                                        marginTop: "1rem",
+                                        background: "#12131A",
+                                        color: "white",
+                                        border: "none",
+                                        borderRadius: "10px",
+                                        padding: "0.7rem 1.2rem",
+                                        fontSize: "0.85rem",
+                                        fontWeight: 600,
+                                        cursor: "pointer",
+                                    }}
+                                >
+                                    Try again
+                                </button>
+                            </div>
+                        )}
+
+                        {unlockStage === "unlocked" && scaffold && (
+                            <div style={sectionStyle}>
+                                <div style={sectionTitleStyle}>
+                                    <Code2 size={16} color="#22C55E" />
+                                    Code Scaffold
+                                </div>
+
+                                {scaffold.setupInstructions.length > 0 && (
+                                    <div style={{ marginBottom: "1.25rem" }}>
+                                        <div style={{ fontSize: "0.8rem", fontWeight: 600, color: "#9A9CA5", marginBottom: "0.4rem" }}>
+                                            Setup
+                                        </div>
+                                        <ol style={{ margin: 0, paddingLeft: "1.1rem", color: "#4A4C56", fontSize: "0.825rem", lineHeight: 1.8 }}>
+                                            {scaffold.setupInstructions.map((s, i) => (
+                                                <li key={i}>{s}</li>
+                                            ))}
+                                        </ol>
+                                    </div>
+                                )}
+
+                                <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+                                    {scaffold.files.map((f, i) => (
+                                        <div key={i} style={{ border: "1px solid #E8E9ED", borderRadius: "10px", overflow: "hidden" }}>
+                                            <div
+                                                style={{
+                                                    display: "flex",
+                                                    justifyContent: "space-between",
+                                                    alignItems: "center",
+                                                    padding: "0.6rem 0.85rem",
+                                                    background: "#F7F8FA",
+                                                    borderBottom: "1px solid #E8E9ED",
+                                                }}
+                                            >
+                                                <div>
+                                                    <div style={{ fontSize: "0.8rem", fontWeight: 600, color: "#12131A", fontFamily: "monospace" }}>
+                                                        {f.path}
+                                                    </div>
+                                                    <div style={{ fontSize: "0.72rem", color: "#9A9CA5" }}>{f.description}</div>
+                                                </div>
+                                                <button
+                                                    onClick={() => copyCode(f.code)}
+                                                    style={{
+                                                        display: "flex",
+                                                        alignItems: "center",
+                                                        gap: "0.3rem",
+                                                        background: "white",
+                                                        border: "1px solid #E8E9ED",
+                                                        borderRadius: "6px",
+                                                        padding: "0.3rem 0.6rem",
+                                                        fontSize: "0.7rem",
+                                                        color: "#4A4C56",
+                                                        cursor: "pointer",
+                                                    }}
+                                                >
+                                                    <Copy size={11} />
+                                                    Copy
+                                                </button>
+                                            </div>
+                                            <pre
+                                                style={{
+                                                    margin: 0,
+                                                    padding: "0.85rem",
+                                                    background: "#0B0C10",
+                                                    color: "#E8E9ED",
+                                                    fontSize: "0.75rem",
+                                                    lineHeight: 1.6,
+                                                    overflowX: "auto",
+                                                    fontFamily: "monospace",
+                                                }}
+                                            >
+                                                <code>{f.code}</code>
+                                            </pre>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {unlockStage === "locked" && (
+                            <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", color: "#22C55E", fontSize: "0.85rem", marginTop: "0.5rem" }}>
+                                <CheckCircle2 size={16} />
+                                PRD generated.
+                            </div>
+                        )}
                     </>
                 )}
             </div>

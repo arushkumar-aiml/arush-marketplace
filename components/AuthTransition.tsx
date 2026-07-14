@@ -1,14 +1,17 @@
 "use client";
 
 import Image from "next/image";
+import { useTheme } from "../lib/useTheme";
 
 export default function AuthTransition({ message }: { message: string }) {
+    const { colors } = useTheme();
+
     return (
         <div
             style={{
                 position: "fixed",
                 inset: 0,
-                background: "#0B0C10",
+                background: colors.codeBg,
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
@@ -43,9 +46,9 @@ export default function AuthTransition({ message }: { message: string }) {
       `}</style>
 
             <div style={{ position: "relative", width: "96px", height: "96px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <div className="auth-dot" style={{ background: "#4C6FFF", animationDelay: "0s" }} />
-                <div className="auth-dot" style={{ background: "#C9A227", animationDelay: "-0.8s" }} />
-                <div className="auth-dot" style={{ background: "#4C6FFF", animationDelay: "-1.6s", opacity: 0.6 }} />
+                <div className="auth-dot" style={{ background: colors.accentBlue, animationDelay: "0s" }} />
+                <div className="auth-dot" style={{ background: colors.accentGold, animationDelay: "-0.8s" }} />
+                <div className="auth-dot" style={{ background: colors.accentBlue, animationDelay: "-1.6s", opacity: 0.6 }} />
 
                 <div style={{ animation: "pulseGlow 1.6s ease-in-out infinite" }}>
                     <Image src="/logo.png" alt="Arush Labs" width={56} height={56} style={{ objectFit: "contain" }} />
@@ -54,7 +57,7 @@ export default function AuthTransition({ message }: { message: string }) {
 
             <p
                 style={{
-                    color: "#9A9CA5",
+                    color: colors.textMuted,
                     fontSize: "0.9rem",
                     marginTop: "2rem",
                     animation: "fadeInUp 0.5s ease-out",

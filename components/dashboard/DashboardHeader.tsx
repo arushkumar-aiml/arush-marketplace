@@ -2,6 +2,7 @@
 
 import { Bell, Plus, ChevronDown } from "lucide-react";
 import { useAuth } from "../../lib/useAuth";
+import { useTheme } from "../../lib/useTheme";
 
 export default function DashboardHeader({
     subtitle = "Find the best talent. Build amazing things.",
@@ -13,6 +14,7 @@ export default function DashboardHeader({
     onCtaClick?: () => void;
 }) {
     const { profile } = useAuth();
+    const { colors } = useTheme();
 
     return (
         <header
@@ -21,16 +23,16 @@ export default function DashboardHeader({
                 alignItems: "center",
                 justifyContent: "space-between",
                 padding: "1.5rem 2rem",
-                borderBottom: "1px solid #E8E9ED",
-                background: "white",
+                borderBottom: `1px solid ${colors.border}`,
+                background: colors.bgPrimary,
             }}
         >
             <div>
-                <h1 style={{ fontSize: "1.25rem", fontWeight: 600, color: "#12131A", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                <h1 style={{ fontSize: "1.25rem", fontWeight: 600, color: colors.textPrimary, display: "flex", alignItems: "center", gap: "0.5rem" }}>
                     Welcome back, {profile?.displayName?.split(" ")[0] || "there"}
                     <span>👋</span>
                 </h1>
-                <p style={{ fontSize: "0.875rem", color: "#7A7C87", marginTop: "0.15rem" }}>
+                <p style={{ fontSize: "0.875rem", color: colors.textMuted, marginTop: "0.15rem" }}>
                     {subtitle}
                 </p>
             </div>
@@ -43,8 +45,8 @@ export default function DashboardHeader({
                             display: "flex",
                             alignItems: "center",
                             gap: "0.5rem",
-                            background: "#2563EB",
-                            color: "white",
+                            background: colors.accentBlue,
+                            color: "#FFFFFF",
                             fontSize: "0.9rem",
                             fontWeight: 600,
                             borderRadius: "8px",
@@ -67,12 +69,12 @@ export default function DashboardHeader({
                         alignItems: "center",
                         justifyContent: "center",
                         borderRadius: "8px",
-                        border: "1px solid #E8E9ED",
-                        background: "white",
+                        border: `1px solid ${colors.border}`,
+                        background: colors.bgPrimary,
                         cursor: "pointer",
                     }}
                 >
-                    <Bell size={18} color="#4A4C56" />
+                    <Bell size={18} color={colors.textSecondary} />
                     <span
                         style={{
                             position: "absolute",
@@ -81,7 +83,7 @@ export default function DashboardHeader({
                             width: "8px",
                             height: "8px",
                             borderRadius: "50%",
-                            background: "#2563EB",
+                            background: colors.accentBlue,
                         }}
                     />
                 </button>
@@ -92,18 +94,18 @@ export default function DashboardHeader({
                             width: "36px",
                             height: "36px",
                             borderRadius: "50%",
-                            background: "#12131A",
+                            background: colors.textPrimary,
                             display: "flex",
                             alignItems: "center",
                             justifyContent: "center",
-                            color: "white",
+                            color: colors.bgPrimary,
                             fontSize: "0.9rem",
                             fontWeight: 600,
                         }}
                     >
                         {profile?.displayName?.[0] || "A"}
                     </div>
-                    <ChevronDown size={14} color="#7A7C87" />
+                    <ChevronDown size={14} color={colors.textMuted} />
                 </button>
             </div>
         </header>
