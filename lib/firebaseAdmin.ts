@@ -1,23 +1,21 @@
 import { initializeApp, getApps, cert } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
 
-const projectId = process.env.FIREBASE_ADMIN_PROJECT_ID;
-const clientEmail = process.env.FIREBASE_ADMIN_CLIENT_EMAIL;
-const privateKey = process.env.FIREBASE_ADMIN_PRIVATE_KEY?.replace(/\\n/g, "\n");
+const base64ServiceAccount = process.env.FIREBASE_ADMIN_SERVICE_ACCOUNT_BASE64;
 
-if (!projectId || !clientEmail || !privateKey) {
-    console.error("Missing Firebase Admin environment variables");
+if (!base64ServiceAccount) {
+    console.error("Missing FIREBASE_ADMIN_SERVICE_ACCOUNT_BASE64 environment variable");
 }
+
+const serviceAccount = base64ServiceAccount
+    ? JSON.parse(Buffer.from(base64ServiceAccount, "base64").toString("utf-8"))
+    : null;
 
 const adminApp =
     getApps().length > 0
         ? getApps()[0]
         : initializeApp({
-              credential: cert({
-                  projectId,
-                  clientEmail,
-                  privateKey,
-              }),
+              credential: cert(serviceAccount),
           });
 
 export const adminDb = getFirestore(adminApp);
