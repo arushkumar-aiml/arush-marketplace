@@ -1,6 +1,27 @@
 export type ThemeMode = "light" | "dark";
 
-export const themeColors = {
+export interface ThemeColors {
+    bgPrimary: string;
+    bgSecondary: string;
+    bgTertiary: string;
+    bgCanvas: string;
+    border: string;
+    textPrimary: string;
+    textSecondary: string;
+    textMuted: string;
+    accentBlue: string;
+    accentBlueSoft: string;
+    accentGold: string;
+    accentGoldSoft: string;
+    success: string;
+    successSoft: string;
+    danger: string;
+    dangerSoft: string;
+    codeBg: string;
+    codeText: string;
+}
+
+export const themeColors: Record<ThemeMode, ThemeColors> = {
     light: {
         bgPrimary: "#FFFFFF",
         bgSecondary: "#F7F8FA",
@@ -41,6 +62,4 @@ export const themeColors = {
         codeBg: "#05060A",
         codeText: "#E8E9ED",
     },
-} as const;
-
-export type ThemeColors = typeof themeColors.light;
+};
