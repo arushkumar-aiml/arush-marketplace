@@ -7,4 +7,5 @@ export interface Application {
     freelancerName: string;
     status: ApplicationStatus;
     createdAt: number;
+    proposalText?: string;
 }

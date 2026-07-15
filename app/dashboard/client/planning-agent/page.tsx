@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import RequireRole from "../../../../components/RequireRole";
 import { useAuth } from "../../../../lib/useAuth";
+import { useTheme } from "../../../../lib/useTheme";
 import type { ProjectBrief } from "../../../../types/brief";
 import type { ClarifyingQuestion, FullPRD, CodeScaffold } from "../../../../types/prd";
 
@@ -26,6 +27,7 @@ function PlanningAgentContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const { user } = useAuth();
+    const { colors } = useTheme();
 
     const [stage, setStage] = useState<Stage>("loading");
     const [originalMessage, setOriginalMessage] = useState("");
@@ -53,7 +55,6 @@ function PlanningAgentContent() {
         fetchClarifyingQuestions(storedMessage, parsedBrief);
     }, []);
 
-    // Handle redirect back from Stripe Checkout
     useEffect(() => {
         const unlockedParam = searchParams.get("unlocked");
         const sessionId = searchParams.get("session_id");
@@ -180,24 +181,29 @@ function PlanningAgentContent() {
     }
 
     const sectionStyle: React.CSSProperties = {
-        border: "1px solid #E8E9ED",
+        border: `1px solid ${colors.border}`,
         borderRadius: "14px",
         padding: "1.25rem",
         marginBottom: "1.25rem",
-        background: "white",
+        background: colors.bgPrimary,
     };
     const sectionTitleStyle: React.CSSProperties = {
         display: "flex",
         alignItems: "center",
         gap: "0.5rem",
         fontSize: "0.95rem",
-        fontWeight: 600,
-        color: "#12131A",
+        fontWeight: 700,
+        color: colors.textPrimary,
         marginBottom: "0.85rem",
+    };
+    const bodyTextStyle: React.CSSProperties = {
+        fontSize: "0.875rem",
+        color: colors.textSecondary,
+        lineHeight: 1.6,
     };
 
     return (
-        <main style={{ minHeight: "100vh", background: "#F7F8FA", padding: "2rem" }}>
+        <main style={{ minHeight: "100vh", background: colors.bgSecondary, padding: "2rem" }}>
             <div style={{ maxWidth: "760px", margin: "0 auto" }}>
                 <button
                     onClick={() => router.push("/dashboard/client")}
@@ -207,10 +213,11 @@ function PlanningAgentContent() {
                         gap: "0.4rem",
                         background: "none",
                         border: "none",
-                        color: "#4A4C56",
+                        color: colors.textSecondary,
                         fontSize: "0.85rem",
                         cursor: "pointer",
                         marginBottom: "1.5rem",
+                        fontWeight: 500,
                     }}
                 >
                     <ArrowLeft size={15} />
@@ -218,22 +225,22 @@ function PlanningAgentContent() {
                 </button>
 
                 <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", marginBottom: "0.35rem" }}>
-                    <Sparkles size={20} color="#2563EB" />
-                    <h1 style={{ fontSize: "1.4rem", fontWeight: 700, color: "#12131A" }}>Adeel AI Planning Agent</h1>
+                    <Sparkles size={20} color={colors.accentBlue} />
+                    <h1 style={{ fontSize: "1.4rem", fontWeight: 700, color: colors.textPrimary }}>Adeel AI Planning Agent</h1>
                 </div>
-                <p style={{ color: "#9A9CA5", fontSize: "0.9rem", marginBottom: "2rem" }}>
+                <p style={{ color: colors.textSecondary, fontSize: "0.9rem", marginBottom: "2rem" }}>
                     Turning your brief into a full PRD with milestones and tech stack recommendations.
                 </p>
 
                 {stage === "loading" && (
-                    <div style={{ textAlign: "center", padding: "3rem", color: "#9A9CA5" }}>
+                    <div style={{ textAlign: "center", padding: "3rem", color: colors.textSecondary, fontWeight: 500 }}>
                         Thinking through your project...
                     </div>
                 )}
 
                 {stage === "no-brief" && (
                     <div style={sectionStyle}>
-                        <p style={{ color: "#4A4C56", fontSize: "0.9rem", lineHeight: 1.6 }}>
+                        <p style={bodyTextStyle}>
                             No brief found. Please generate a project brief with Adeel AI in the chat first, then click
                             &quot;Upgrade to Full PRD&quot;.
                         </p>
@@ -241,8 +248,8 @@ function PlanningAgentContent() {
                             onClick={() => router.push("/dashboard/client")}
                             style={{
                                 marginTop: "1rem",
-                                background: "#2563EB",
-                                color: "white",
+                                background: colors.accentBlue,
+                                color: "#FFFFFF",
                                 border: "none",
                                 borderRadius: "10px",
                                 padding: "0.7rem 1.2rem",
@@ -258,13 +265,13 @@ function PlanningAgentContent() {
 
                 {stage === "error" && (
                     <div style={sectionStyle}>
-                        <p style={{ color: "#F87171", fontSize: "0.9rem" }}>{errorMsg}</p>
+                        <p style={{ color: colors.danger, fontSize: "0.9rem", fontWeight: 500 }}>{errorMsg}</p>
                         <button
                             onClick={() => brief && fetchClarifyingQuestions(originalMessage, brief)}
                             style={{
                                 marginTop: "1rem",
-                                background: "#12131A",
-                                color: "white",
+                                background: colors.textPrimary,
+                                color: colors.bgPrimary,
                                 border: "none",
                                 borderRadius: "10px",
                                 padding: "0.7rem 1.2rem",
@@ -281,13 +288,13 @@ function PlanningAgentContent() {
                 {stage === "clarifying" && (
                     <div style={sectionStyle}>
                         <div style={sectionTitleStyle}>
-                            <Target size={16} color="#2563EB" />
+                            <Target size={16} color={colors.accentBlue} />
                             A few quick questions before I write the PRD
                         </div>
                         <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
                             {questions.map((q) => (
                                 <div key={q.id}>
-                                    <label style={{ display: "block", fontSize: "0.85rem", color: "#12131A", marginBottom: "0.4rem" }}>
+                                    <label style={{ display: "block", fontSize: "0.85rem", color: colors.textPrimary, marginBottom: "0.4rem", fontWeight: 500 }}>
                                         {q.question}
                                     </label>
                                     <textarea
@@ -300,11 +307,13 @@ function PlanningAgentContent() {
                                             fontSize: "0.85rem",
                                             padding: "0.65rem",
                                             borderRadius: "8px",
-                                            border: "1px solid #E8E9ED",
+                                            border: `1px solid ${colors.border}`,
                                             resize: "vertical",
                                             boxSizing: "border-box",
                                             fontFamily: "inherit",
                                             outline: "none",
+                                            background: colors.bgPrimary,
+                                            color: colors.textPrimary,
                                         }}
                                     />
                                 </div>
@@ -315,8 +324,8 @@ function PlanningAgentContent() {
                             style={{
                                 marginTop: "1.25rem",
                                 width: "100%",
-                                background: "#2563EB",
-                                color: "white",
+                                background: colors.accentBlue,
+                                color: "#FFFFFF",
                                 border: "none",
                                 borderRadius: "10px",
                                 padding: "0.85rem",
@@ -336,7 +345,7 @@ function PlanningAgentContent() {
                 )}
 
                 {stage === "generating" && (
-                    <div style={{ textAlign: "center", padding: "3rem", color: "#9A9CA5" }}>
+                    <div style={{ textAlign: "center", padding: "3rem", color: colors.textSecondary, fontWeight: 500 }}>
                         Writing your PRD, milestones, and tech stack...
                     </div>
                 )}
@@ -344,18 +353,18 @@ function PlanningAgentContent() {
                 {stage === "result" && prd && (
                     <>
                         <div style={sectionStyle}>
-                            <h2 style={{ fontSize: "1.15rem", fontWeight: 700, color: "#12131A", marginBottom: "0.5rem" }}>
+                            <h2 style={{ fontSize: "1.15rem", fontWeight: 700, color: colors.textPrimary, marginBottom: "0.5rem" }}>
                                 {prd.title}
                             </h2>
-                            <p style={{ fontSize: "0.875rem", color: "#4A4C56", lineHeight: 1.6 }}>{prd.problemStatement}</p>
+                            <p style={bodyTextStyle}>{prd.problemStatement}</p>
                         </div>
 
                         <div style={sectionStyle}>
                             <div style={sectionTitleStyle}>
-                                <Target size={16} color="#2563EB" />
+                                <Target size={16} color={colors.accentBlue} />
                                 Goals
                             </div>
-                            <ul style={{ margin: 0, paddingLeft: "1.1rem", color: "#4A4C56", fontSize: "0.875rem", lineHeight: 1.8 }}>
+                            <ul style={{ margin: 0, paddingLeft: "1.1rem", color: colors.textSecondary, fontSize: "0.875rem", lineHeight: 1.8 }}>
                                 {prd.goals.map((g, i) => (
                                     <li key={i}>{g}</li>
                                 ))}
@@ -364,13 +373,13 @@ function PlanningAgentContent() {
 
                         <div style={sectionStyle}>
                             <div style={sectionTitleStyle}>Scope</div>
-                            <p style={{ fontSize: "0.875rem", color: "#4A4C56", lineHeight: 1.6, marginBottom: "0.75rem" }}>{prd.scope}</p>
+                            <p style={{ ...bodyTextStyle, marginBottom: "0.75rem" }}>{prd.scope}</p>
                             {prd.outOfScope.length > 0 && (
                                 <>
-                                    <div style={{ fontSize: "0.8rem", fontWeight: 600, color: "#9A9CA5", marginBottom: "0.4rem" }}>
+                                    <div style={{ fontSize: "0.8rem", fontWeight: 700, color: colors.textSecondary, marginBottom: "0.4rem" }}>
                                         Out of scope
                                     </div>
-                                    <ul style={{ margin: 0, paddingLeft: "1.1rem", color: "#9A9CA5", fontSize: "0.825rem", lineHeight: 1.7 }}>
+                                    <ul style={{ margin: 0, paddingLeft: "1.1rem", color: colors.textMuted, fontSize: "0.825rem", lineHeight: 1.7 }}>
                                         {prd.outOfScope.map((o, i) => (
                                             <li key={i}>{o}</li>
                                         ))}
@@ -381,17 +390,17 @@ function PlanningAgentContent() {
 
                         <div style={sectionStyle}>
                             <div style={sectionTitleStyle}>
-                                <Layers size={16} color="#2563EB" />
+                                <Layers size={16} color={colors.accentBlue} />
                                 Milestones
                             </div>
                             <div style={{ display: "flex", flexDirection: "column", gap: "0.85rem" }}>
                                 {prd.milestones.map((m, i) => (
-                                    <div key={i} style={{ borderLeft: "2px solid #2563EB", paddingLeft: "0.9rem" }}>
+                                    <div key={i} style={{ borderLeft: `2px solid ${colors.accentBlue}`, paddingLeft: "0.9rem" }}>
                                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
-                                            <span style={{ fontSize: "0.875rem", fontWeight: 600, color: "#12131A" }}>{m.title}</span>
-                                            <span style={{ fontSize: "0.75rem", color: "#9A9CA5" }}>{m.durationWeeks}w</span>
+                                            <span style={{ fontSize: "0.875rem", fontWeight: 700, color: colors.textPrimary }}>{m.title}</span>
+                                            <span style={{ fontSize: "0.75rem", color: colors.textSecondary, fontWeight: 500 }}>{m.durationWeeks}w</span>
                                         </div>
-                                        <p style={{ fontSize: "0.8rem", color: "#4A4C56", lineHeight: 1.5, margin: "0.3rem 0" }}>
+                                        <p style={{ fontSize: "0.8rem", color: colors.textSecondary, lineHeight: 1.5, margin: "0.3rem 0" }}>
                                             {m.description}
                                         </p>
                                         <div style={{ display: "flex", flexWrap: "wrap", gap: "0.4rem" }}>
@@ -400,11 +409,11 @@ function PlanningAgentContent() {
                                                     key={j}
                                                     style={{
                                                         fontSize: "0.7rem",
-                                                        background: "#F7F8FA",
-                                                        color: "#4A4C56",
+                                                        background: colors.bgSecondary,
+                                                        color: colors.textSecondary,
                                                         padding: "0.25rem 0.6rem",
                                                         borderRadius: "999px",
-                                                        border: "1px solid #E8E9ED",
+                                                        border: `1px solid ${colors.border}`,
                                                     }}
                                                 >
                                                     {d}
@@ -418,7 +427,7 @@ function PlanningAgentContent() {
 
                         <div style={sectionStyle}>
                             <div style={sectionTitleStyle}>
-                                <Wrench size={16} color="#2563EB" />
+                                <Wrench size={16} color={colors.accentBlue} />
                                 Tech Stack
                             </div>
                             <div style={{ display: "flex", flexDirection: "column", gap: "0.7rem" }}>
@@ -427,9 +436,9 @@ function PlanningAgentContent() {
                                         <span
                                             style={{
                                                 fontSize: "0.7rem",
-                                                fontWeight: 600,
-                                                color: "#2563EB",
-                                                background: "#EFF3FF",
+                                                fontWeight: 700,
+                                                color: colors.accentBlue,
+                                                background: colors.accentBlueSoft,
                                                 padding: "0.25rem 0.55rem",
                                                 borderRadius: "6px",
                                                 height: "fit-content",
@@ -439,8 +448,8 @@ function PlanningAgentContent() {
                                             {t.category}
                                         </span>
                                         <div>
-                                            <div style={{ fontSize: "0.85rem", fontWeight: 600, color: "#12131A" }}>{t.recommendation}</div>
-                                            <div style={{ fontSize: "0.78rem", color: "#9A9CA5" }}>{t.reason}</div>
+                                            <div style={{ fontSize: "0.85rem", fontWeight: 700, color: colors.textPrimary }}>{t.recommendation}</div>
+                                            <div style={{ fontSize: "0.78rem", color: colors.textSecondary }}>{t.reason}</div>
                                         </div>
                                     </div>
                                 ))}
@@ -450,10 +459,10 @@ function PlanningAgentContent() {
                         {prd.risks.length > 0 && (
                             <div style={sectionStyle}>
                                 <div style={sectionTitleStyle}>
-                                    <AlertTriangle size={16} color="#C9A227" />
+                                    <AlertTriangle size={16} color={colors.accentGold} />
                                     Risks to watch
                                 </div>
-                                <ul style={{ margin: 0, paddingLeft: "1.1rem", color: "#4A4C56", fontSize: "0.875rem", lineHeight: 1.8 }}>
+                                <ul style={{ margin: 0, paddingLeft: "1.1rem", color: colors.textSecondary, fontSize: "0.875rem", lineHeight: 1.8 }}>
                                     {prd.risks.map((r, i) => (
                                         <li key={i}>{r}</li>
                                     ))}
@@ -461,20 +470,19 @@ function PlanningAgentContent() {
                             </div>
                         )}
 
-                        {/* Unlock section */}
                         {unlockStage === "locked" && (
                             <div style={{ ...sectionStyle, textAlign: "center", padding: "2rem" }}>
-                                <Lock size={22} color="#C9A227" style={{ marginBottom: "0.75rem" }} />
-                                <h3 style={{ fontSize: "1rem", fontWeight: 700, color: "#12131A", marginBottom: "0.4rem" }}>
+                                <Lock size={22} color={colors.accentGold} style={{ marginBottom: "0.75rem" }} />
+                                <h3 style={{ fontSize: "1rem", fontWeight: 700, color: colors.textPrimary, marginBottom: "0.4rem" }}>
                                     Unlock AI-Generated Code Scaffold
                                 </h3>
-                                <p style={{ fontSize: "0.85rem", color: "#9A9CA5", marginBottom: "1.25rem" }}>
+                                <p style={{ fontSize: "0.85rem", color: colors.textSecondary, marginBottom: "1.25rem" }}>
                                     Get starter code files (components, API routes, README) based on this exact PRD — for $10.
                                 </p>
                                 <button
                                     onClick={handleUnlockClick}
                                     style={{
-                                        background: "linear-gradient(135deg, #C9A227, #E0C158)",
+                                        background: `linear-gradient(135deg, ${colors.accentGold}, #E0C158)`,
                                         color: "#0B0C10",
                                         border: "none",
                                         borderRadius: "10px",
@@ -490,20 +498,20 @@ function PlanningAgentContent() {
                         )}
 
                         {unlockStage === "verifying" && (
-                            <div style={{ textAlign: "center", padding: "2rem", color: "#9A9CA5" }}>
+                            <div style={{ textAlign: "center", padding: "2rem", color: colors.textSecondary, fontWeight: 500 }}>
                                 Verifying your payment...
                             </div>
                         )}
 
                         {unlockStage === "generating-scaffold" && (
-                            <div style={{ textAlign: "center", padding: "2rem", color: "#9A9CA5" }}>
+                            <div style={{ textAlign: "center", padding: "2rem", color: colors.textSecondary, fontWeight: 500 }}>
                                 Payment confirmed. Generating your code scaffold...
                             </div>
                         )}
 
                         {unlockStage === "unlock-error" && (
                             <div style={sectionStyle}>
-                                <p style={{ color: "#F87171", fontSize: "0.9rem" }}>
+                                <p style={{ color: colors.danger, fontSize: "0.9rem" }}>
                                     Something went wrong verifying your payment or generating the scaffold. If you were
                                     charged, please contact support — otherwise try unlocking again.
                                 </p>
@@ -511,8 +519,8 @@ function PlanningAgentContent() {
                                     onClick={handleUnlockClick}
                                     style={{
                                         marginTop: "1rem",
-                                        background: "#12131A",
-                                        color: "white",
+                                        background: colors.textPrimary,
+                                        color: colors.bgPrimary,
                                         border: "none",
                                         borderRadius: "10px",
                                         padding: "0.7rem 1.2rem",
@@ -529,16 +537,16 @@ function PlanningAgentContent() {
                         {unlockStage === "unlocked" && scaffold && (
                             <div style={sectionStyle}>
                                 <div style={sectionTitleStyle}>
-                                    <Code2 size={16} color="#22C55E" />
+                                    <Code2 size={16} color={colors.success} />
                                     Code Scaffold
                                 </div>
 
                                 {scaffold.setupInstructions.length > 0 && (
                                     <div style={{ marginBottom: "1.25rem" }}>
-                                        <div style={{ fontSize: "0.8rem", fontWeight: 600, color: "#9A9CA5", marginBottom: "0.4rem" }}>
+                                        <div style={{ fontSize: "0.8rem", fontWeight: 700, color: colors.textSecondary, marginBottom: "0.4rem" }}>
                                             Setup
                                         </div>
-                                        <ol style={{ margin: 0, paddingLeft: "1.1rem", color: "#4A4C56", fontSize: "0.825rem", lineHeight: 1.8 }}>
+                                        <ol style={{ margin: 0, paddingLeft: "1.1rem", color: colors.textSecondary, fontSize: "0.825rem", lineHeight: 1.8 }}>
                                             {scaffold.setupInstructions.map((s, i) => (
                                                 <li key={i}>{s}</li>
                                             ))}
@@ -548,22 +556,22 @@ function PlanningAgentContent() {
 
                                 <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
                                     {scaffold.files.map((f, i) => (
-                                        <div key={i} style={{ border: "1px solid #E8E9ED", borderRadius: "10px", overflow: "hidden" }}>
+                                        <div key={i} style={{ border: `1px solid ${colors.border}`, borderRadius: "10px", overflow: "hidden" }}>
                                             <div
                                                 style={{
                                                     display: "flex",
                                                     justifyContent: "space-between",
                                                     alignItems: "center",
                                                     padding: "0.6rem 0.85rem",
-                                                    background: "#F7F8FA",
-                                                    borderBottom: "1px solid #E8E9ED",
+                                                    background: colors.bgSecondary,
+                                                    borderBottom: `1px solid ${colors.border}`,
                                                 }}
                                             >
                                                 <div>
-                                                    <div style={{ fontSize: "0.8rem", fontWeight: 600, color: "#12131A", fontFamily: "monospace" }}>
+                                                    <div style={{ fontSize: "0.8rem", fontWeight: 700, color: colors.textPrimary, fontFamily: "monospace" }}>
                                                         {f.path}
                                                     </div>
-                                                    <div style={{ fontSize: "0.72rem", color: "#9A9CA5" }}>{f.description}</div>
+                                                    <div style={{ fontSize: "0.72rem", color: colors.textSecondary }}>{f.description}</div>
                                                 </div>
                                                 <button
                                                     onClick={() => copyCode(f.code)}
@@ -571,12 +579,12 @@ function PlanningAgentContent() {
                                                         display: "flex",
                                                         alignItems: "center",
                                                         gap: "0.3rem",
-                                                        background: "white",
-                                                        border: "1px solid #E8E9ED",
+                                                        background: colors.bgPrimary,
+                                                        border: `1px solid ${colors.border}`,
                                                         borderRadius: "6px",
                                                         padding: "0.3rem 0.6rem",
                                                         fontSize: "0.7rem",
-                                                        color: "#4A4C56",
+                                                        color: colors.textSecondary,
                                                         cursor: "pointer",
                                                     }}
                                                 >
@@ -588,8 +596,8 @@ function PlanningAgentContent() {
                                                 style={{
                                                     margin: 0,
                                                     padding: "0.85rem",
-                                                    background: "#0B0C10",
-                                                    color: "#E8E9ED",
+                                                    background: colors.codeBg,
+                                                    color: colors.codeText,
                                                     fontSize: "0.75rem",
                                                     lineHeight: 1.6,
                                                     overflowX: "auto",
@@ -605,7 +613,7 @@ function PlanningAgentContent() {
                         )}
 
                         {unlockStage === "locked" && (
-                            <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", color: "#22C55E", fontSize: "0.85rem", marginTop: "0.5rem" }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", color: colors.success, fontSize: "0.85rem", marginTop: "0.5rem", fontWeight: 500 }}>
                                 <CheckCircle2 size={16} />
                                 PRD generated.
                             </div>

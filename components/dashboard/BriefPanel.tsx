@@ -2,16 +2,24 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Sparkles, Wallet, Clock, ThumbsUp, ThumbsDown, Check, FileStack } from "lucide-react";
-import { doc, updateDoc } from "firebase/firestore";
+import { Sparkles, Wallet, Clock, ThumbsUp, ThumbsDown, Check, FileStack, Loader2 } from "lucide-react";
+import { doc, updateDoc, collection, addDoc } from "firebase/firestore";
 import { db } from "../../lib/firebase";
+import { useAuth } from "../../lib/useAuth";
 import { useTheme } from "../../lib/useTheme";
 import type { ProjectBrief } from "../../types/brief";
 
 type FeedbackState = "up" | "down" | null;
 
+function deriveTitle(overview: string): string {
+    const firstSentence = overview.split(/[.!?]/)[0].trim();
+    if (firstSentence.length <= 70) return firstSentence;
+    return firstSentence.slice(0, 67).trim() + "...";
+}
+
 export default function BriefPanel({ brief }: { brief: ProjectBrief | null }) {
     const router = useRouter();
+    const { user } = useAuth();
     const { colors } = useTheme();
     const [feedback, setFeedback] = useState<FeedbackState>(null);
     const [correctionNote, setCorrectionNote] = useState("");
@@ -19,11 +27,17 @@ export default function BriefPanel({ brief }: { brief: ProjectBrief | null }) {
     const [saving, setSaving] = useState(false);
     const [saved, setSaved] = useState(false);
 
+    const [creatingProject, setCreatingProject] = useState(false);
+    const [projectCreated, setProjectCreated] = useState(false);
+    const [createError, setCreateError] = useState("");
+
     useEffect(() => {
         setFeedback(null);
         setCorrectionNote("");
         setShowCorrectionBox(false);
         setSaved(false);
+        setProjectCreated(false);
+        setCreateError("");
     }, [brief?.logId]);
 
     async function submitFeedback(value: "up" | "down", note?: string) {
@@ -63,6 +77,34 @@ export default function BriefPanel({ brief }: { brief: ProjectBrief | null }) {
         sessionStorage.setItem("adeel-planning-brief", JSON.stringify(brief));
         sessionStorage.setItem("adeel-planning-message", brief.originalMessage || "");
         router.push("/dashboard/client/planning-agent");
+    }
+
+    async function handleCreateProject() {
+        if (!brief || !user) {
+            setCreateError("You must be logged in to create a project.");
+            return;
+        }
+        setCreatingProject(true);
+        setCreateError("");
+        try {
+            await addDoc(collection(db, "projects"), {
+                clientId: user.uid,
+                title: deriveTitle(brief.overview),
+                rawDescription: brief.overview,
+                budget: brief.budgetMax,
+                timelineDays: brief.timelineWeeksMax * 7,
+                status: "open",
+                createdAt: Date.now(),
+                aiScope: brief.overview,
+                aiSkillTags: brief.skills,
+            });
+            setProjectCreated(true);
+        } catch (err: unknown) {
+            console.error("Create project error:", err);
+            setCreateError("Couldn't create the project. Please try again.");
+        } finally {
+            setCreatingProject(false);
+        }
     }
 
     return (
@@ -233,26 +275,63 @@ export default function BriefPanel({ brief }: { brief: ProjectBrief | null }) {
                         Upgrade to Full PRD
                     </button>
 
-                    <button
-                        style={{
-                            width: "100%",
-                            background: colors.accentBlue,
-                            color: "#FFFFFF",
-                            fontSize: "0.9rem",
-                            fontWeight: 600,
-                            borderRadius: "12px",
-                            border: "none",
-                            padding: "0.85rem",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            gap: "0.5rem",
-                            cursor: "pointer",
-                        }}
-                    >
-                        <Sparkles size={15} />
-                        Create Project with This Brief
-                    </button>
+                    {projectCreated ? (
+                        <div
+                            style={{
+                                width: "100%",
+                                background: colors.successSoft,
+                                color: colors.success,
+                                fontSize: "0.85rem",
+                                fontWeight: 600,
+                                borderRadius: "12px",
+                                padding: "0.85rem",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                gap: "0.5rem",
+                            }}
+                        >
+                            <Check size={15} />
+                            Project posted! Freelancers can now apply.
+                        </div>
+                    ) : (
+                        <button
+                            onClick={handleCreateProject}
+                            disabled={creatingProject}
+                            style={{
+                                width: "100%",
+                                background: colors.accentBlue,
+                                color: "#FFFFFF",
+                                fontSize: "0.9rem",
+                                fontWeight: 600,
+                                borderRadius: "12px",
+                                border: "none",
+                                padding: "0.85rem",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                gap: "0.5rem",
+                                cursor: creatingProject ? "default" : "pointer",
+                                opacity: creatingProject ? 0.7 : 1,
+                            }}
+                        >
+                            {creatingProject ? (
+                                <>
+                                    <Loader2 size={15} className="animate-spin" />
+                                    Creating...
+                                </>
+                            ) : (
+                                <>
+                                    <Sparkles size={15} />
+                                    Create Project with This Brief
+                                </>
+                            )}
+                        </button>
+                    )}
+
+                    {createError && (
+                        <p style={{ color: colors.danger, fontSize: "0.8rem", marginTop: "0.6rem" }}>{createError}</p>
+                    )}
                 </>
             )}
         </aside>
