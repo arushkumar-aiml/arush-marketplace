@@ -1,0 +1,16 @@
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "projects": "Projects",
+    "messages": "Messages",
+    "settings": "Settings"
+  },
+  "signup": {
+    "title": "Create your account",
+    "email": "Email",
+    "password": "Password",
+    "country": "Country",
+    "language": "Preferred language",
+    "submit": "Sign up"
+  }
+}

@@ -1,58 +1,19 @@
-"use client";
+import { sendEmailVerification } from "firebase/auth";
 
-import {
-    createContext,
-    useContext,
-    useEffect,
-    useState,
-    ReactNode,
-} from "react";
-import { onAuthStateChanged, User } from "firebase/auth";
-import { doc, getDoc } from "firebase/firestore";
-import { auth, db } from "./firebase";
-import type { UserProfile } from "../types/user";
+const signup = async (email: string, password: string, role: string, name: string) => {
+  const cred = await createUserWithEmailAndPassword(auth, email, password);
 
-interface AuthContextValue {
-    user: User | null;
-    profile: UserProfile | null;
-    loading: boolean;
-}
+  await setDoc(doc(db, "users", cred.user.uid), {
+    email,
+    role,
+    name,
+    createdAt: serverTimestamp(),
+  });
 
-const AuthContext = createContext<AuthContextValue>({
-    user: null,
-    profile: null,
-    loading: true,
-});
+  // Send verification email
+  await sendEmailVerification(cred.user, {
+    url: `${window.location.origin}/verify-email`, // where they land after clicking the link
+  });
 
-export function AuthProvider({ children }: { children: ReactNode }) {
-    const [user, setUser] = useState<User | null>(null);
-    const [profile, setProfile] = useState<UserProfile | null>(null);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-            setUser(firebaseUser);
-
-            if (firebaseUser) {
-                const snap = await getDoc(doc(db, "users", firebaseUser.uid));
-                setProfile(snap.exists() ? (snap.data() as UserProfile) : null);
-            } else {
-                setProfile(null);
-            }
-
-            setLoading(false);
-        });
-
-        return () => unsubscribe();
-    }, []);
-
-    return (
-        <AuthContext.Provider value={{ user, profile, loading }}>
-            {children}
-        </AuthContext.Provider>
-    );
-}
-
-export function useAuth() {
-    return useContext(AuthContext);
-}
+  router.push("/verify-email");
+};
