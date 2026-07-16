@@ -15,7 +15,7 @@ const adminApp =
     getApps().length > 0
         ? getApps()[0]
         : initializeApp({
-              credential: cert(serviceAccount),
-          });
+            credential: cert(serviceAccount),
+        });
 
 export const adminDb = getFirestore(adminApp);
