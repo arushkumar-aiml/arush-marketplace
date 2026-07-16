@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { Globe, Check, ChevronDown } from "lucide-react";
 import { useLocale, type LocaleCode } from "../lib/useLocale";
 import { useTheme } from "../lib/useTheme";
-import { LANGUAGES } from "../lib/data/language";
+import { LANGUAGES } from "../lib/data/languages";
 
 export default function LanguageSwitcher() {
     const { locale, setLocale } = useLocale();
