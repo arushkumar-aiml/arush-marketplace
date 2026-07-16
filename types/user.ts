@@ -11,6 +11,12 @@ export interface UserProfile {
     skills?: string[];
     portfolioUrl?: string;
     bio?: string;
+    hourlyRate?: number;
+    profileEmbedding?: number[];
+    profileEmbeddingSource?: string;
+    profileEmbeddingUpdatedAt?: number;
+    trustScore?: number;
+    trustScoreUpdatedAt?: number;
 
     // Client-only fields
     companyName?: string;

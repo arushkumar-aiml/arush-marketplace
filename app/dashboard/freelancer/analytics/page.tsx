@@ -1,4 +1,5 @@
 "use client";
+
 import RequireRole from "../../../../components/RequireRole";
 import Sidebar from "../../../../components/dashboard/Sidebar";
 import DashboardHeader from "../../../../components/dashboard/DashboardHeader";
@@ -11,18 +12,18 @@ function AnalyticsContent() {
         <div style={{ display: "flex", minHeight: "100vh", background: colors.bgPrimary }}>
             <Sidebar />
             <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0 }}>
-                <DashboardHeader subtitle="Review hiring activity and marketplace spend." />
+                <DashboardHeader subtitle="Review proposal performance, earnings, and profile views." />
                 <div style={{ flex: 1, padding: "2rem", overflowY: "auto" }}>
-                    <AnalyticsView role="client" />
+                    <AnalyticsView role="freelancer" />
                 </div>
             </div>
         </div>
     );
 }
 
-export default function AnalyticsPage() {
+export default function FreelancerAnalyticsPage() {
     return (
-        <RequireRole role="client">
+        <RequireRole role="freelancer">
             <AnalyticsContent />
         </RequireRole>
     );

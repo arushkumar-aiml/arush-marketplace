@@ -53,6 +53,7 @@ export default function Sidebar() {
         { label: t("myProposals"), href: "/dashboard/freelancer/proposals", icon: Briefcase },
         { label: t("messages"), href: "/dashboard/freelancer/messages", icon: MessageCircle },
         { label: t("payments"), href: "/dashboard/freelancer/payments", icon: CreditCard },
+        { label: t("analytics"), href: "/dashboard/freelancer/analytics", icon: BarChart3 },
         { label: t("myProfile"), href: "/dashboard/freelancer/profile", icon: UserCircle },
         { label: t("settings"), href: "/dashboard/freelancer/settings", icon: Settings },
     ];

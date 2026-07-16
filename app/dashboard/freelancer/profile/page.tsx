@@ -16,6 +16,8 @@ function ProfileForm() {
     const [skills, setSkills] = useState("");
     const [bio, setBio] = useState("");
     const [portfolioUrl, setPortfolioUrl] = useState("");
+    const [hourlyRate, setHourlyRate] = useState("");
+    const [priceSuggestion, setPriceSuggestion] = useState("");
     const [error, setError] = useState("");
     const [saved, setSaved] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -25,8 +27,39 @@ function ProfileForm() {
             setSkills((profile.skills || []).join(", "));
             setBio(profile.bio || "");
             setPortfolioUrl(profile.portfolioUrl || "");
+            setHourlyRate(profile.hourlyRate ? String(profile.hourlyRate) : "");
         }
     }, [profile]);
+
+    useEffect(() => {
+        const skillsArray = skills.split(",").map((s) => s.trim()).filter(Boolean);
+        if (!skillsArray.length) {
+            setPriceSuggestion("");
+            return;
+        }
+
+        const timeout = window.setTimeout(async () => {
+            try {
+                const res = await fetch("/api/ml/pricing-suggestion", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ skills: skillsArray }),
+                });
+                if (!res.ok) throw new Error("Pricing suggestion failed");
+                const data = await res.json();
+                if (data.suggestion) {
+                    setPriceSuggestion(`Suggested range: $${data.suggestion.min}-$${data.suggestion.max}/hr based on ${data.suggestion.sampleSize} similar freelancers.`);
+                } else {
+                    setPriceSuggestion("");
+                }
+            } catch (err) {
+                console.error(err);
+                setPriceSuggestion("");
+            }
+        }, 600);
+
+        return () => window.clearTimeout(timeout);
+    }, [skills]);
 
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
@@ -42,7 +75,14 @@ function ProfileForm() {
                 skills: skillsArray,
                 bio,
                 portfolioUrl,
+                hourlyRate: hourlyRate ? Number(hourlyRate) : null,
             });
+
+            fetch("/api/ml/profile", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ uid: user.uid }),
+            }).catch((err) => console.error("Profile ML update error:", err));
 
             setSaved(true);
         } catch (err) {
@@ -106,6 +146,21 @@ function ProfileForm() {
                                 onChange={(e) => setPortfolioUrl(e.target.value)}
                                 style={{ width: "100%", padding: "0.75rem", borderRadius: "8px", border: "1px solid #E8E9ED", boxSizing: "border-box" }}
                             />
+                        </div>
+
+                        <div>
+                            <label style={{ display: "block", fontSize: "0.875rem", color: "#4A4C56", marginBottom: "0.5rem" }}>
+                                Hourly rate ($)
+                            </label>
+                            <input
+                                type="number"
+                                min={1}
+                                placeholder="35"
+                                value={hourlyRate}
+                                onChange={(e) => setHourlyRate(e.target.value)}
+                                style={{ width: "100%", padding: "0.75rem", borderRadius: "8px", border: "1px solid #E8E9ED", boxSizing: "border-box" }}
+                            />
+                            {priceSuggestion && <p style={{ color: "#2563EB", fontSize: "0.8rem", marginTop: "0.45rem" }}>{priceSuggestion}</p>}
                         </div>
 
                         {error && <p style={{ color: "red", fontSize: "0.875rem" }}>{error}</p>}

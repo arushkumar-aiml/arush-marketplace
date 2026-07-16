@@ -25,7 +25,7 @@ function PostProjectForm() {
         setLoading(true);
 
         try {
-            await addDoc(collection(db, "projects"), {
+            const projectRef = await addDoc(collection(db, "projects"), {
                 clientId: user.uid,
                 title,
                 rawDescription: description,
@@ -34,6 +34,16 @@ function PostProjectForm() {
                 status: "draft",
                 createdAt: Date.now(),
             });
+
+            fetch("/api/ml/recommend-freelancers", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    projectId: projectRef.id,
+                    title,
+                    description,
+                }),
+            }).catch((err) => console.error("Freelancer recommendation error:", err));
 
             router.push("/dashboard/client");
         } catch (err) {

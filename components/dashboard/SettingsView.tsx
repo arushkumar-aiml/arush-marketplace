@@ -57,6 +57,13 @@ export default function SettingsView() {
                 updates.companyName = companyName.trim();
             }
             await updateDoc(doc(db, "users", user.uid), updates);
+            if (isFreelancer) {
+                fetch("/api/ml/profile", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ uid: user.uid }),
+                }).catch((err) => console.error("Profile ML update error:", err));
+            }
             setProfileSaved(true);
         } catch (err: unknown) {
             console.error("Save profile error:", err);
