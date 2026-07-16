@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import {
     LayoutDashboard,
     FileText,
@@ -21,37 +22,40 @@ import { signOut } from "firebase/auth";
 import { auth } from "../../lib/firebase";
 import { useTheme } from "../../lib/useTheme";
 import ThemeToggle from "../ThemeToggle";
-
-const clientNavItems = [
-    { label: "Dashboard", href: "/dashboard/client", icon: LayoutDashboard },
-    { label: "Projects", href: "/dashboard/client/projects", icon: FileText },
-    { label: "Freelancers", href: "/dashboard/client/freelancers", icon: Users },
-    { label: "Messages", href: "/dashboard/client/messages", icon: MessageCircle },
-    { label: "Payments", href: "/dashboard/client/payments", icon: CreditCard },
-    { label: "Analytics", href: "/dashboard/client/analytics", icon: BarChart3 },
-    { label: "My Profile", href: "/dashboard/client/profile", icon: UserCircle },
-    { label: "Settings", href: "/dashboard/client/settings", icon: Settings },
-];
-
-const freelancerNavItems = [
-    { label: "Find Work", href: "/dashboard/freelancer", icon: LayoutDashboard },
-    { label: "My Proposals", href: "/dashboard/freelancer/proposals", icon: Briefcase },
-    { label: "Messages", href: "/dashboard/freelancer/messages", icon: MessageCircle },
-    { label: "Payments", href: "/dashboard/freelancer/payments", icon: CreditCard },
-    { label: "My Profile", href: "/dashboard/freelancer/profile", icon: UserCircle },
-    { label: "Settings", href: "/dashboard/freelancer/settings", icon: Settings },
-];
+import LanguageSwitcher from "../LanguageSwitcher";
 
 export default function Sidebar() {
     const pathname = usePathname();
     const { profile } = useAuth();
     const router = useRouter();
     const { colors } = useTheme();
+    const t = useTranslations("nav");
+    const tSidebar = useTranslations("sidebar");
 
     async function handleLogout() {
         await signOut(auth);
         router.push("/login");
     }
+
+    const clientNavItems = [
+        { label: t("dashboard"), href: "/dashboard/client", icon: LayoutDashboard },
+        { label: t("projects"), href: "/dashboard/client/projects", icon: FileText },
+        { label: t("freelancers"), href: "/dashboard/client/freelancers", icon: Users },
+        { label: t("messages"), href: "/dashboard/client/messages", icon: MessageCircle },
+        { label: t("payments"), href: "/dashboard/client/payments", icon: CreditCard },
+        { label: t("analytics"), href: "/dashboard/client/analytics", icon: BarChart3 },
+        { label: t("myProfile"), href: "/dashboard/client/profile", icon: UserCircle },
+        { label: t("settings"), href: "/dashboard/client/settings", icon: Settings },
+    ];
+
+    const freelancerNavItems = [
+        { label: t("findWork"), href: "/dashboard/freelancer", icon: LayoutDashboard },
+        { label: t("myProposals"), href: "/dashboard/freelancer/proposals", icon: Briefcase },
+        { label: t("messages"), href: "/dashboard/freelancer/messages", icon: MessageCircle },
+        { label: t("payments"), href: "/dashboard/freelancer/payments", icon: CreditCard },
+        { label: t("myProfile"), href: "/dashboard/freelancer/profile", icon: UserCircle },
+        { label: t("settings"), href: "/dashboard/freelancer/settings", icon: Settings },
+    ];
 
     const navItems = profile?.role === "freelancer" ? freelancerNavItems : clientNavItems;
 
@@ -70,9 +74,13 @@ export default function Sidebar() {
                 borderRight: `1px solid ${colors.border}`,
             }}
         >
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 0.5rem", marginBottom: "2rem" }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 0.5rem", marginBottom: "1.25rem" }}>
                 <Image src="/logo.png" alt="Arush" width={140} height={35} style={{ objectFit: "contain" }} />
                 <ThemeToggle />
+            </div>
+
+            <div style={{ padding: "0 0.5rem", marginBottom: "1rem" }}>
+                <LanguageSwitcher />
             </div>
 
             <nav style={{ flex: 1, display: "flex", flexDirection: "column", gap: "0.25rem" }}>
@@ -108,10 +116,10 @@ export default function Sidebar() {
             <div style={{ background: colors.bgSecondary, borderRadius: "12px", padding: "1rem", marginBottom: "1rem", border: `1px solid ${colors.border}` }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.5rem" }}>
                     <Sparkles size={16} color={colors.accentGold} />
-                    <span style={{ color: colors.textPrimary, fontSize: "0.9rem", fontWeight: 600 }}>Upgrade to Pro</span>
+                    <span style={{ color: colors.textPrimary, fontSize: "0.9rem", fontWeight: 600 }}>{tSidebar("upgradeToPro")}</span>
                 </div>
                 <p style={{ color: colors.textMuted, fontSize: "0.75rem", lineHeight: 1.5, marginBottom: "0.75rem" }}>
-                    Unlock advanced AI tools, priority matching and more.
+                    {tSidebar("upgradeDesc")}
                 </p>
                 <button
                     style={{
@@ -126,7 +134,7 @@ export default function Sidebar() {
                         cursor: "pointer",
                     }}
                 >
-                    Upgrade Now
+                    {tSidebar("upgradeNow")}
                 </button>
             </div>
 

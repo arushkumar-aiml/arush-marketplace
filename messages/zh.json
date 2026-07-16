@@ -1,0 +1,83 @@
+{
+  "nav": {
+    "dashboard": "桌面",
+    "projects": "项目",
+    "freelancers": "背景人",
+    "messages": "消息",
+    "payments": "付款",
+    "analytics": "数据分析",
+    "myProfile": "我的个人信息",
+    "settings": "设置",
+    "findWork": "找工作",
+    "myProposals": "我的提交"
+  },
+  "signup": {
+    "title": "创建个人账号",
+    "email": "邮箱",
+    "password": "密码",
+    "country": "国网",
+    "language": "性别語言",
+    "submit": "注册"
+  },
+  "common": {
+    "loading": "劻立加载...",
+    "save": "保存",
+    "cancel": "取消",
+    "tryAgain": "这个再试一下",
+    "backToDashboard": "返回桌面"
+  },
+  "login": {
+    "welcomeBack": "欢迎回来",
+    "subtitle": "登录访问 Arush 市场",
+    "emailLabel": "邮箱地址",
+    "passwordLabel": "密码",
+    "forgotPassword": "忘计密码?",
+    "loginButton": "登录",
+    "noAccount": "没有账号?",
+    "signUpLink": "注册",
+    "show": "显示",
+    "hide": "隐藏"
+  },
+  "sidebar": {
+    "upgradeToPro": "升级到 Pro",
+    "upgradeDesc": "解冻通过权很的 AI 工具,优先匹配和其他。",
+    "upgradeNow": "立即升级"
+  },
+  "clientDashboard": {
+    "newProject": "新项目"
+  },
+  "freelancerDashboard": {
+    "subtitle": "找到匹配与你的技能的项目。",
+    "editProfile": "编辑个人信息",
+    "completeProfile": "完成个人信息并不过开始匹配与项目。",
+    "completeNow": "立即完成",
+    "openProjects": "打开项目",
+    "responsesSent": "发送的回答",
+    "avgMatch": "平均 AI 匹配",
+    "noProjects": "现在没有打开项目。 请小程后再查看。",
+    "decline": "主中",
+    "applyWithAI": "以 AI 由于给一下",
+    "responseSent": "回答发送"
+  },
+  "briefPanel": {
+    "generatedBrief": "Adeel AI 生成的专业简介",
+    "emptyState": "说明你的项目在聊天中并生成一个简介。",
+    "overview": "项目找因",
+    "estimatedBudget": "作业产债",
+    "timeline": "时间行",
+    "requiredSkills": "要求技能",
+    "wasAccurate": "这个简介是起体的吗?",
+    "correctionPlaceholder": "中一些不起体？ (作业产债,时间行,技能,找因...)",
+    "submitFeedback": "提交反馈",
+    "feedbackSaved": "计世,反馈保存了。",
+    "upgradeToPRD": "升级到整一个 PRD",
+    "createProject": "代用简介创建项目",
+    "creating": "创建中...",
+    "projectPosted": "项目已发布！ 背景人已可以由于给一下。"
+  },
+  "comingSoon": {
+    "近个过突了！": "近个过突了！",
+    "heading": "近个过突了",
+    "body": "我们歡行中。 请小程后再查看。"
+  }
+}

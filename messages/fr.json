@@ -1,0 +1,83 @@
+{
+  "nav": {
+    "dashboard": "Tableau de bord",
+    "projects": "Projets",
+    "freelancers": "Freelances",
+    "messages": "Messages",
+    "payments": "Paiements",
+    "analytics": "Analytiques",
+    "myProfile": "Mon Profil",
+    "settings": "Paramètres",
+    "findWork": "Trouver du travail",
+    "myProposals": "Mes Propositions"
+  },
+  "signup": {
+    "title": "Créez votre compte",
+    "email": "Courriel",
+    "password": "Mot de passe",
+    "country": "Pays",
+    "language": "Langue préférée",
+    "submit": "Inscrivez-vous"
+  },
+  "common": {
+    "loading": "Chargement...",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "tryAgain": "Réessayer",
+    "backToDashboard": "Retour au tableau de bord"
+  },
+  "login": {
+    "welcomeBack": "Bienvenue",
+    "subtitle": "Connectez-vous pour accéder à Arush Marketplace",
+    "emailLabel": "Adresse courriel",
+    "passwordLabel": "Mot de passe",
+    "forgotPassword": "Mot de passe oublié ?",
+    "loginButton": "Se connecter",
+    "noAccount": "Vous n'avez pas de compte ?",
+    "signUpLink": "Inscrivez-vous",
+    "show": "Afficher",
+    "hide": "Cacher"
+  },
+  "sidebar": {
+    "upgradeToPro": "Passer à Pro",
+    "upgradeDesc": "Débloquez des outils AI avancés, un appariement prioritaire et plus.",
+    "upgradeNow": "Passer à Pro maintenant"
+  },
+  "clientDashboard": {
+    "newProject": "Nouveau Projet"
+  },
+  "freelancerDashboard": {
+    "subtitle": "Découvrez les projets correspondant à vos compétences.",
+    "editProfile": "Éditer le profil",
+    "completeProfile": "Complétez votre profil pour commencer à être apparié avec des projets.",
+    "completeNow": "Compléter maintenant",
+    "openProjects": "Projets ouverts",
+    "responsesSent": "Réponses envoyées",
+    "avgMatch": "Appariement AI moyen",
+    "noProjects": "Aucun projet ouvert en ce moment. Vérifiez plus tard.",
+    "decline": "Décliner",
+    "applyWithAI": "Postuler avec AI",
+    "responseSent": "Réponse envoyée"
+  },
+  "briefPanel": {
+    "generatedBrief": "Brief généré par Adeel AI",
+    "emptyState": "Décrivez votre projet dans le chat pour générer un brief avec un budget, un calendrier et des compétences requises.",
+    "overview": "Aperçu du projet",
+    "estimatedBudget": "Budget estimé",
+    "timeline": "Calendrier",
+    "requiredSkills": "Compétences requises",
+    "wasAccurate": "Ce brief était-il précis ?",
+    "correctionPlaceholder": "Qu'est-ce qui n'allait pas ? (budget, calendrier, compétences, aperçu...)",
+    "submitFeedback": "Soumettre des commentaires",
+    "feedbackSaved": "Merci, les commentaires ont été enregistrés.",
+    "upgradeToPRD": "Passer à un PRD complet",
+    "createProject": "Créer un projet avec ce brief",
+    "creating": "Création...",
+    "projectPosted": "Projet publié ! Les freelances peuvent maintenant postuler."
+  },
+  "comingSoon": {
+    "onItsWay": "est en route.",
+    "heading": "Bientôt disponible",
+    "body": "Nous construisons cela ensuite. Vérifiez plus tard !"
+  }
+}

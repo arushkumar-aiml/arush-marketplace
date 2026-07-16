@@ -1,0 +1,83 @@
+{
+  "nav": {
+    "dashboard": "डैशबोर्ड",
+    "projects": "परियोजनाएं",
+    "freelancers": "फ्रीलांसर",
+    "messages": "संदेश",
+    "payments": "भुगतान",
+    "analytics": "विश्लेषण",
+    "myProfile": "मेरा प्रोफ़ाइल",
+    "settings": "सेटिंग्स",
+    "findWork": "काम ढूंढें",
+    "myProposals": "मेरे प्रस्ताव"
+  },
+  "signup": {
+    "title": "अपना खाता बनाएं",
+    "email": "ईमेल",
+    "password": "पासवर्ड",
+    "country": "देश",
+    "language": "पसंदीदा भाषा",
+    "submit": "साइन अप करें"
+  },
+  "common": {
+    "loading": "लोड हो रहा है...",
+    "save": "सहेजें",
+    "cancel": "रद्द करें",
+    "tryAgain": "फिर से कोशिश करें",
+    "backToDashboard": "डैशबोर्ड पर वापस जाएं"
+  },
+  "login": {
+    "welcomeBack": "स्वागत है वापस",
+    "subtitle": "अरुश मार्केटप्लेस तक पहुंचने के लिए लॉगिन करें",
+    "emailLabel": "ईमेल पता",
+    "passwordLabel": "पासवर्ड",
+    "forgotPassword": "पासवर्ड भूल गए?",
+    "loginButton": "लॉगिन",
+    "noAccount": "कोई खाता नहीं है?",
+    "signUpLink": "साइन अप करें",
+    "show": "दिखाएं",
+    "hide": "छिपाएं"
+  },
+  "sidebar": {
+    "upgradeToPro": "प्रो में अपग्रेड करें",
+    "upgradeDesc": "उन्नत एआई टूल, प्राथमिकता मिलान और अधिक अनलॉक करें।",
+    "upgradeNow": "अब अपग्रेड करें"
+  },
+  "clientDashboard": {
+    "newProject": "नई परियोजना"
+  },
+  "freelancerDashboard": {
+    "subtitle": "आपके कौशल से मेल खाने वाली परियोजनाएं खोजें।",
+    "editProfile": "प्रोफ़ाइल संपादित करें",
+    "completeProfile": "परियोजनाओं के साथ मेल खाना शुरू करने के लिए अपना प्रोफ़ाइल पूरा करें।",
+    "completeNow": "अब पूरा करें",
+    "openProjects": "खुली परियोजनाएं",
+    "responsesSent": "प्रतिक्रियाएं भेजी गईं",
+    "avgMatch": "औसत एआई मिलान",
+    "noProjects": "वर्तमान में कोई खुली परियोजना नहीं है। जल्द ही वापस जांचें।",
+    "decline": "अस्वीकार करें",
+    "applyWithAI": "एआई के साथ आवेदन करें",
+    "responseSent": "प्रतिक्रिया भेजी गई"
+  },
+  "briefPanel": {
+    "generatedBrief": "अदील एआई द्वारा उत्पन्न ब्रीफ",
+    "emptyState": "बजट, समय सीमा और आवश्यक कौशल के साथ एक ब्रीफ उत्पन्न करने के लिए चैट में अपनी परियोजना का वर्णन करें।",
+    "overview": "परियोजना अवलोकन",
+    "estimatedBudget": "अनुमानित बजट",
+    "timeline": "समय सीमा",
+    "requiredSkills": "आवश्यक कौशल",
+    "wasAccurate": "क्या यह ब्रीफ सटीक था?",
+    "correctionPlaceholder": "क्या गलत था? (बजट, समय सीमा, कौशल, अवलोकन...)",
+    "submitFeedback": "प्रतिक्रिया भेजें",
+    "feedbackSaved": "धन्यवाद, प्रतिक्रिया सहेजी गई।",
+    "upgradeToPRD": "पूर्ण पीआरडी में अपग्रेड करें",
+    "createProject": "इस ब्रीफ के साथ परियोजना बनाएं",
+    "creating": "बना रहा है...",
+    "projectPosted": "परियोजना पोस्ट की गई! फ्रीलांसर अब आवेदन कर सकते हैं।"
+  },
+  "comingSoon": {
+    "onItsWay": "इसका रास्ता है।",
+    "heading": "जल्द आ रहा है",
+    "body": "हम इसका निर्माण कर रहे हैं। जल्द ही वापस जांचें।"
+  }
+}

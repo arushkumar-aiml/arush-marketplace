@@ -2,8 +2,14 @@
   "nav": {
     "dashboard": "Dashboard",
     "projects": "Projects",
+    "freelancers": "Freelancers",
     "messages": "Messages",
-    "settings": "Settings"
+    "payments": "Payments",
+    "analytics": "Analytics",
+    "myProfile": "My Profile",
+    "settings": "Settings",
+    "findWork": "Find Work",
+    "myProposals": "My Proposals"
   },
   "signup": {
     "title": "Create your account",
@@ -12,5 +18,66 @@
     "country": "Country",
     "language": "Preferred language",
     "submit": "Sign up"
+  },
+  "common": {
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "tryAgain": "Try again",
+    "backToDashboard": "Back to dashboard"
+  },
+  "login": {
+    "welcomeBack": "Welcome back",
+    "subtitle": "Login to access Arush Marketplace",
+    "emailLabel": "Email address",
+    "passwordLabel": "Password",
+    "forgotPassword": "Forgot password?",
+    "loginButton": "Login",
+    "noAccount": "Don't have an account?",
+    "signUpLink": "Sign up",
+    "show": "Show",
+    "hide": "Hide"
+  },
+  "sidebar": {
+    "upgradeToPro": "Upgrade to Pro",
+    "upgradeDesc": "Unlock advanced AI tools, priority matching and more.",
+    "upgradeNow": "Upgrade Now"
+  },
+  "clientDashboard": {
+    "newProject": "New Project"
+  },
+  "freelancerDashboard": {
+    "subtitle": "Discover projects matched to your skills.",
+    "editProfile": "Edit Profile",
+    "completeProfile": "Complete your profile to start getting matched with projects.",
+    "completeNow": "Complete now",
+    "openProjects": "Open Projects",
+    "responsesSent": "Responses Sent",
+    "avgMatch": "Avg. AI Match",
+    "noProjects": "No open projects right now. Check back soon.",
+    "decline": "Decline",
+    "applyWithAI": "Apply with AI",
+    "responseSent": "Response sent"
+  },
+  "briefPanel": {
+    "generatedBrief": "Adeel AI Generated Brief",
+    "emptyState": "Describe your project in the chat to generate a brief with budget, timeline, and required skills.",
+    "overview": "Project Overview",
+    "estimatedBudget": "Estimated Budget",
+    "timeline": "Timeline",
+    "requiredSkills": "Required Skills",
+    "wasAccurate": "Was this brief accurate?",
+    "correctionPlaceholder": "What was wrong? (budget, timeline, skills, overview...)",
+    "submitFeedback": "Submit feedback",
+    "feedbackSaved": "Thanks, feedback saved.",
+    "upgradeToPRD": "Upgrade to Full PRD",
+    "createProject": "Create Project with This Brief",
+    "creating": "Creating...",
+    "projectPosted": "Project posted! Freelancers can now apply."
+  },
+  "comingSoon": {
+    "onItsWay": "is on its way.",
+    "heading": "Coming Soon",
+    "body": "We're building this next. Check back soon!"
   }
 }

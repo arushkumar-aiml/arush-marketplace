@@ -1,0 +1,83 @@
+{
+  "nav": {
+    "dashboard": "Bảng điều khiển",
+    "projects": "Dự án",
+    "freelancers": "Người làm tự do",
+    "messages": "Tin nhắn",
+    "payments": "Thanh toán",
+    "analytics": "Phân tích",
+    "myProfile": "Hồ sơ của tôi",
+    "settings": "Cài đặt",
+    "findWork": "Tìm việc",
+    "myProposals": "Đề xuất của tôi"
+  },
+  "signup": {
+    "title": "Tạo tài khoản",
+    "email": "Địa chỉ email",
+    "password": "Mật khẩu",
+    "country": "Quốc gia",
+    "language": "Ngôn ngữ ưa thích",
+    "submit": "Đăng ký"
+  },
+  "common": {
+    "loading": "Đang tải...",
+    "save": "Lưu",
+    "cancel": "Hủy",
+    "tryAgain": "Thử lại",
+    "backToDashboard": "Trở lại bảng điều khiển"
+  },
+  "login": {
+    "welcomeBack": "Chào mừng trở lại",
+    "subtitle": "Đăng nhập để truy cập Arush Marketplace",
+    "emailLabel": "Địa chỉ email",
+    "passwordLabel": "Mật khẩu",
+    "forgotPassword": "Quên mật khẩu?",
+    "loginButton": "Đăng nhập",
+    "noAccount": "Chưa có tài khoản?",
+    "signUpLink": "Đăng ký",
+    "show": "Hiển thị",
+    "hide": "Ẩn"
+  },
+  "sidebar": {
+    "upgradeToPro": "Nâng cấp lên Pro",
+    "upgradeDesc": "Mở khóa các công cụ AI tiên tiến, ghép nối ưu tiên và nhiều hơn nữa.",
+    "upgradeNow": "Nâng cấp ngay"
+  },
+  "clientDashboard": {
+    "newProject": "Dự án mới"
+  },
+  "freelancerDashboard": {
+    "subtitle": "Khám phá các dự án phù hợp với kỹ năng của bạn.",
+    "editProfile": "Chỉnh sửa hồ sơ",
+    "completeProfile": "Hoàn thiện hồ sơ của bạn để bắt đầu được ghép nối với các dự án.",
+    "completeNow": "Hoàn thiện ngay",
+    "openProjects": "Dự án mở",
+    "responsesSent": "Phản hồi đã gửi",
+    "avgMatch": "Trung bình ghép nối AI",
+    "noProjects": "Không có dự án mở hiện tại. Kiểm tra lại sau.",
+    "decline": "Từ chối",
+    "applyWithAI": "Ứng tuyển với AI",
+    "responseSent": "Phản hồi đã gửi"
+  },
+  "briefPanel": {
+    "generatedBrief": "Tóm tắt dự án được tạo bởi Adeel AI",
+    "emptyState": "Mô tả dự án của bạn trong cuộc trò chuyện để tạo tóm tắt với ngân sách, thời gian và kỹ năng yêu cầu.",
+    "overview": "Tổng quan dự án",
+    "estimatedBudget": "Ngân sách ước tính",
+    "timeline": "Thời gian",
+    "requiredSkills": "Kỹ năng yêu cầu",
+    "wasAccurate": "Tóm tắt này có chính xác không?",
+    "correctionPlaceholder": "Có gì sai? (ngân sách, thời gian, kỹ năng, tổng quan...)",
+    "submitFeedback": "Gửi phản hồi",
+    "feedbackSaved": "Cảm ơn, phản hồi đã được lưu.",
+    "upgradeToPRD": "Nâng cấp lên PRD đầy đủ",
+    "createProject": "Tạo dự án với tóm tắt này",
+    "creating": "Đang tạo...",
+    "projectPosted": "Dự án đã được đăng! Người làm tự do có thể ứng tuyển ngay."
+  },
+  "comingSoon": {
+    "onItsWay": "đang trên đường đến.",
+    "heading": "Sắp ra mắt",
+    "body": "Chúng tôi đang xây dựng tính năng này. Kiểm tra lại sau!"
+  }
+}

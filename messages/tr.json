@@ -1,0 +1,83 @@
+{
+  "nav": {
+    "dashboard": "Gösterge Paneli",
+    "projects": "Projeler",
+    "freelancers": "Serbest Çalışanlar",
+    "messages": "Mesajlar",
+    "payments": "Ödemeler",
+    "analytics": "Analitik",
+    "myProfile": "Profilim",
+    "settings": "Ayarlar",
+    "findWork": "İş Bul",
+    "myProposals": "Tekliflerim"
+  },
+  "signup": {
+    "title": "Hesabınızı oluşturun",
+    "email": "E-posta",
+    "password": "Parola",
+    "country": "Ülke",
+    "language": "Tercih edilen dil",
+    "submit": "Kayıt ol"
+  },
+  "common": {
+    "loading": "Yükleniyor...",
+    "save": "Kaydet",
+    "cancel": "İptal",
+    "tryAgain": "Tekrar deneyin",
+    "backToDashboard": "Gösterge paneline geri dön"
+  },
+  "login": {
+    "welcomeBack": "Tekrar hoşgeldiniz",
+    "subtitle": "Arush Marketplace'e erişmek için giriş yapın",
+    "emailLabel": "E-posta adresi",
+    "passwordLabel": "Parola",
+    "forgotPassword": "Parolanızı mı unuttunuz?",
+    "loginButton": "Giriş yap",
+    "noAccount": "Hesabınız yok mu?",
+    "signUpLink": "Kayıt ol",
+    "show": "Göster",
+    "hide": "Gizle"
+  },
+  "sidebar": {
+    "upgradeToPro": "Profesyonelliğe yükselt",
+    "upgradeDesc": "Gelişmiş AI araçlarını, öncelikli eşleştirmeyi ve daha fazlasını kilidini açın.",
+    "upgradeNow": "Şimdi yükselt"
+  },
+  "clientDashboard": {
+    "newProject": "Yeni Proje"
+  },
+  "freelancerDashboard": {
+    "subtitle": "Beceriğinizle eşleşen projeleri keşfedin.",
+    "editProfile": "Profili düzenle",
+    "completeProfile": "Profili tamamlamak için projelerle eşleşmeye başlamak.",
+    "completeNow": "Şimdi tamamla",
+    "openProjects": "Açık Projeler",
+    "responsesSent": "Gönderilen Yanıtlar",
+    "avgMatch": "Ortalama AI Eşleşmesi",
+    "noProjects": "Şu anda açık proje yok. Yakında tekrar kontrol edin.",
+    "decline": "Reddet",
+    "applyWithAI": "AI ile başvur",
+    "responseSent": "Yanıt gönderildi"
+  },
+  "briefPanel": {
+    "generatedBrief": "Adeel AI tarafından oluşturulan brief",
+    "emptyState": "Sohbet bölümünde projenizi tanımlayın ve bütçe, zaman çizelgesi ve gerekli beceriler ile bir brief oluşturun.",
+    "overview": "Proje Özeti",
+    "estimatedBudget": "Tahmini Bütçe",
+    "timeline": "Zaman Çizelgesi",
+    "requiredSkills": "Gerekli Beceriler",
+    "wasAccurate": "Bu brief doğru muydu?",
+    "correctionPlaceholder": "Neydi yanlış? (bütçe, zaman çizelgesi, beceriler, özet...)",
+    "submitFeedback": "Geri bildirimi gönder",
+    "feedbackSaved": "Teşekkürler, geri bildirimi kaydedildi.",
+    "upgradeToPRD": "Tam PRD'ye yükselt",
+    "createProject": "Bu Brief ile Proje Oluştur",
+    "creating": "Oluşturuluyor...",
+    "projectPosted": "Proje yayınlandı! Serbest çalışanlar şimdi başvurabilir."
+  },
+  "comingSoon": {
+    "onItsWay": "yolda.",
+    "heading": "Yakında",
+    "body": "Bunu bir sonraki olarak inşa ediyoruz. Yakında tekrar kontrol edin!"
+  }
+}

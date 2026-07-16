@@ -1,0 +1,83 @@
+{
+  "nav": {
+    "dashboard": "ダッシュボード",
+    "projects": "プロジェクト",
+    "freelancers": "フリーランス",
+    "messages": "メッセージ",
+    "payments": "支払い",
+    "analytics": "分析",
+    "myProfile": "マイプロフィール",
+    "settings": "設定",
+    "findWork": "仕事を探す",
+    "myProposals": "私の提案"
+  },
+  "signup": {
+    "title": "アカウントを作成",
+    "email": "メールアドレス",
+    "password": "パスワード",
+    "country": "国",
+    "language": "言語",
+    "submit": "サインアップ"
+  },
+  "common": {
+    "loading": "読み込み中...",
+    "save": "保存",
+    "cancel": "キャンセル",
+    "tryAgain": "再試行",
+    "backToDashboard": "ダッシュボードに戻る"
+  },
+  "login": {
+    "welcomeBack": "ようこそ戻ってきました",
+    "subtitle": "Arush Marketplace にアクセスするためにログイン",
+    "emailLabel": "メールアドレス",
+    "passwordLabel": "パスワード",
+    "forgotPassword": "パスワードを忘れた場合",
+    "loginButton": "ログイン",
+    "noAccount": "アカウントを持っていない場合",
+    "signUpLink": "サインアップ",
+    "show": "表示",
+    "hide": "非表示"
+  },
+  "sidebar": {
+    "upgradeToPro": "プロにアップグレード",
+    "upgradeDesc": "高度な AI ツール、優先マッチングなどを解放します。",
+    "upgradeNow": "今すぐアップグレード"
+  },
+  "clientDashboard": {
+    "newProject": "新しいプロジェクト"
+  },
+  "freelancerDashboard": {
+    "subtitle": "あなたのスキルにマッチしたプロジェクトを発見します。",
+    "editProfile": "プロフィールを編集",
+    "completeProfile": "プロフィールを完成させてプロジェクトとマッチングを開始します。",
+    "completeNow": "今すぐ完成",
+    "openProjects": "オープンプロジェクト",
+    "responsesSent": "送信されたレスポンス",
+    "avgMatch": "平均マッチ",
+    "noProjects": "現在オープンプロジェクトはありません。後で確認してください。",
+    "decline": "拒否",
+    "applyWithAI": "AI で申し込む",
+    "responseSent": "レスポンスを送信しました"
+  },
+  "briefPanel": {
+    "generatedBrief": "Adeel AI 生成されたブリーフ",
+    "emptyState": "プロジェクトを説明して、予算、タイムライン、必要なスキルを持つブリーフを生成します。",
+    "overview": "プロジェクトの概要",
+    "estimatedBudget": "予算",
+    "timeline": "タイムライン",
+    "requiredSkills": "必要なスキル",
+    "wasAccurate": "このブリーフは正確でしたか?",
+    "correctionPlaceholder": "何が間違っていましたか? (予算、タイムライン、スキル、概要...)",
+    "submitFeedback": "フィードバックを送信",
+    "feedbackSaved": "ありがとうございます。フィードバックを保存しました。",
+    "upgradeToPRD": "完全な PRD にアップグレード",
+    "createProject": "このブリーフでプロジェクトを作成",
+    "creating": "作成中...",
+    "projectPosted": "プロジェクトが投稿されました。フリーランスが申し込むことができます。"
+  },
+  "comingSoon": {
+    "onItsWay": "進行中です。",
+    "heading": "近日公開",
+    "body": "これから開発します。後で確認してください。"
+  }
+}

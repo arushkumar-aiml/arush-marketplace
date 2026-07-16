@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { collection, query, where, orderBy, getDocs, addDoc } from "firebase/firestore";
+import { collection, query, where, orderBy, getDocs, addDoc, getDoc, doc } from "firebase/firestore";
 import { db } from "../../../lib/firebase";
 import { useAuth } from "../../../lib/useAuth";
 import { useTheme } from "../../../lib/useTheme";
@@ -99,17 +99,36 @@ function FreelancerDashboardContent() {
     }
 
     async function submitProposal() {
-        if (!modalProject || !user || !proposalText.trim()) return;
+        if (!modalProject || !user || !profile || !proposalText.trim()) return;
         setModalStage("submitting");
         try {
             await addDoc(collection(db, "applications"), {
                 projectId: modalProject.id,
                 freelancerId: user.uid,
-                freelancerName: profile?.displayName || "Freelancer",
+                freelancerName: profile.displayName,
                 status: "accepted",
                 createdAt: Date.now(),
                 proposalText: proposalText.trim(),
             });
+
+            // Auto-create a conversation so client and freelancer can start chatting
+            const clientSnap = await getDoc(doc(db, "users", modalProject.clientId));
+            const clientName = clientSnap.exists()
+                ? clientSnap.data().displayName || "Client"
+                : "Client";
+
+            await addDoc(collection(db, "conversations"), {
+                projectId: modalProject.id,
+                projectTitle: modalProject.title,
+                clientId: modalProject.clientId,
+                clientName,
+                freelancerId: user.uid,
+                freelancerName: profile.displayName,
+                lastMessage: proposalText.trim(),
+                lastMessageAt: Date.now(),
+                createdAt: Date.now(),
+            });
+
             setRespondedIds((prev) => new Set(prev).add(modalProject.id));
             closeModal();
         } catch (err: unknown) {

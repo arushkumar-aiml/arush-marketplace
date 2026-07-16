@@ -1,0 +1,83 @@
+{
+  "nav": {
+    "dashboard": "Dasbor",
+    "projects": "Proyek",
+    "freelancers": "Pekerja Lepas",
+    "messages": "Pesan",
+    "payments": "Pembayaran",
+    "analytics": "Analitik",
+    "myProfile": "Profil Saya",
+    "settings": "Pengaturan",
+    "findWork": "Cari Pekerjaan",
+    "myProposals": "Proposal Saya"
+  },
+  "signup": {
+    "title": "Buat akun Anda",
+    "email": "Email",
+    "password": "Kata Sandi",
+    "country": "Negara",
+    "language": "Bahasa yang dipilih",
+    "submit": "Daftar"
+  },
+  "common": {
+    "loading": "Sedang memuat...",
+    "save": "Simpan",
+    "cancel": "Batal",
+    "tryAgain": "Coba lagi",
+    "backToDashboard": "Kembali ke dasbor"
+  },
+  "login": {
+    "welcomeBack": "Selamat datang kembali",
+    "subtitle": "Masuk untuk mengakses Arush Marketplace",
+    "emailLabel": "Alamat email",
+    "passwordLabel": "Kata Sandi",
+    "forgotPassword": "Lupa kata sandi?",
+    "loginButton": "Masuk",
+    "noAccount": "Tidak memiliki akun?",
+    "signUpLink": "Daftar",
+    "show": "Tampilkan",
+    "hide": "Sembunyikan"
+  },
+  "sidebar": {
+    "upgradeToPro": "Upgrade ke Pro",
+    "upgradeDesc": "Buka kunci alat AI canggih, pencocokan prioritas, dan lainnya.",
+    "upgradeNow": "Upgrade Sekarang"
+  },
+  "clientDashboard": {
+    "newProject": "Proyek Baru"
+  },
+  "freelancerDashboard": {
+    "subtitle": "Temukan proyek yang cocok dengan keterampilan Anda.",
+    "editProfile": "Edit Profil",
+    "completeProfile": "Lengkapi profil Anda untuk mulai dicocokkan dengan proyek.",
+    "completeNow": "Lengkapi sekarang",
+    "openProjects": "Proyek Terbuka",
+    "responsesSent": "Tanggapan yang dikirim",
+    "avgMatch": "Rata-rata Pencocokan AI",
+    "noProjects": "Tidak ada proyek terbuka saat ini. Periksa kembali nanti.",
+    "decline": "Tolak",
+    "applyWithAI": "Ajukan dengan AI",
+    "responseSent": "Tanggapan dikirim"
+  },
+  "briefPanel": {
+    "generatedBrief": "Ringkasan yang Dihasilkan oleh AI Adeel",
+    "emptyState": "Deskripsikan proyek Anda di chat untuk menghasilkan ringkasan dengan anggaran, timeline, dan keterampilan yang diperlukan.",
+    "overview": "Ringkasan Proyek",
+    "estimatedBudget": "Anggaran yang Diperkirakan",
+    "timeline": "Timeline",
+    "requiredSkills": "Keterampilan yang Diperlukan",
+    "wasAccurate": "Apakah ringkasan ini akurat?",
+    "correctionPlaceholder": "Apa yang salah? (anggaran, timeline, keterampilan, ringkasan...)",
+    "submitFeedback": "Kirimkan umpan balik",
+    "feedbackSaved": "Terima kasih, umpan balik telah disimpan.",
+    "upgradeToPRD": "Upgrade ke PRD Lengkap",
+    "createProject": "Buat Proyek dengan Ringkasan Ini",
+    "creating": "Membuat...",
+    "projectPosted": "Proyek telah diposting! Pekerja lepas dapat sekarang mengajukan."
+  },
+  "comingSoon": {
+    "onItsWay": "sedang dalam perjalanan.",
+    "heading": "Segera Hadir",
+    "body": "Kami sedang membangun ini selanjutnya. Periksa kembali nanti!"
+  }
+}

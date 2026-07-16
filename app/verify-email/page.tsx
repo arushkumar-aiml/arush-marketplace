@@ -1,88 +1,135 @@
 "use client";
-import { useState, useEffect } from "react";
-import { useAuth } from "@/lib/useAuth";
-import { sendEmailVerification } from "firebase/auth";
+
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { sendEmailVerification } from "firebase/auth";
+import { auth } from "../../lib/firebase";
+import { useAuth } from "../../lib/useAuth";
+import { useTheme } from "../../lib/useTheme";
+import { MailCheck } from "lucide-react";
 
 export default function VerifyEmailPage() {
-  const { user } = useAuth();
   const router = useRouter();
-  const [sending, setSending] = useState(false);
-  const [cooldown, setCooldown] = useState(0);
-  const [checking, setChecking] = useState(false);
+  const { colors } = useTheme();
+  const { user, profile, loading } = useAuth();
+  const [resendCooldown, setResendCooldown] = useState(0);
+  const [resendMessage, setResendMessage] = useState("");
 
-  // Poll in the background every 3s to check if verified
+  // Redirect away if not logged in, or straight to dashboard if already verified
   useEffect(() => {
-    if (!user) return;
+    if (loading) return;
+    if (!user) {
+      router.replace("/login");
+      return;
+    }
+    if (user.emailVerified && profile) {
+      router.replace(`/dashboard/${profile.role}`);
+    }
+  }, [user, profile, loading, router]);
+
+  // Poll every 3 seconds to check if the user has clicked the verification link
+  useEffect(() => {
+    if (!user || user.emailVerified) return;
+
     const interval = setInterval(async () => {
-      await user.reload();
-      if (user.emailVerified) {
-        clearInterval(interval);
-        router.push("/dashboard");
+      await auth.currentUser?.reload();
+      if (auth.currentUser?.emailVerified && profile) {
+        router.replace(`/dashboard/${profile.role}`);
       }
     }, 3000);
+
     return () => clearInterval(interval);
-  }, [user, router]);
+  }, [user, profile, router]);
 
-  // Cooldown timer for the resend button (to prevent spam)
+  // Cooldown timer for resend button
   useEffect(() => {
-    if (cooldown <= 0) return;
-    const t = setTimeout(() => setCooldown(cooldown - 1), 1000);
-    return () => clearTimeout(t);
-  }, [cooldown]);
+    if (resendCooldown <= 0) return;
+    const timer = setTimeout(() => setResendCooldown((c) => c - 1), 1000);
+    return () => clearTimeout(timer);
+  }, [resendCooldown]);
 
-  const handleResend = async () => {
-    if (!user || cooldown > 0) return;
-    setSending(true);
+  async function handleResend() {
+    if (!auth.currentUser || resendCooldown > 0) return;
     try {
-      await sendEmailVerification(user, {
+      await sendEmailVerification(auth.currentUser, {
         url: `${window.location.origin}/verify-email`,
       });
-      setCooldown(60); // 60 second cooldown
-    } catch (err: any) {
-      if (err.code === "auth/too-many-requests") {
-        setCooldown(60);
-      }
-    } finally {
-      setSending(false);
+      setResendMessage("Verification email sent again. Check your inbox.");
+      setResendCooldown(30);
+    } catch {
+      setResendMessage("Couldn't resend right now. Try again in a moment.");
     }
-  };
-
-  const handleCheckNow = async () => {
-    if (!user) return;
-    setChecking(true);
-    await user.reload();
-    if (user.emailVerified) {
-      router.push("/dashboard");
-    }
-    setChecking(false);
-  };
-
-  if (!user) return null;
+  }
 
   return (
-    <div className="max-w-md mx-auto mt-20 text-center px-4">
-      <h1 className="text-2xl font-semibold mb-2">Verify your email</h1>
-      <p className="text-gray-600 mb-6">
-        We sent a verification link to <strong>{user.email}</strong>.
-        Click the link, and this page will automatically take you to the dashboard.
-      </p>
-
-      <button
-        onClick={handleCheckNow}
-        disabled={checking}
-        className="w-full mb-3 py-2 rounded bg-black text-white disabled:opacity-50"
+    <main
+      style={{
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: "1rem",
+        background: colors.bgCanvas,
+      }}
+    >
+      <div
+        style={{
+          width: "100%",
+          maxWidth: "440px",
+          background: colors.bgPrimary,
+          border: `1px solid ${colors.border}`,
+          borderRadius: "20px",
+          padding: "2.5rem",
+          textAlign: "center",
+        }}
       >
-        {checking ? "Checking..." : "I've verified, check now"}
-      </button>
+        <div
+          style={{
+            width: "56px",
+            height: "56px",
+            borderRadius: "14px",
+            background: colors.accentBlueSoft,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            margin: "0 auto 1.5rem",
+          }}
+        >
+          <MailCheck size={26} color={colors.accentBlue} />
+        </div>
 
-      <button
-        onClick={handleResend}
-        disabled={sending || cooldown > 0}
-        className="w-full py-2 rounded border disabled:opacity-50"
-      >
-        {cooldown > 0 ? `Resend (${cooldown}s)` : sending ? "Sending..." : "Resend email"}
-      </button>
-    </div>
+        <h1 style={{ fontSize: "1.3rem", fontWeight: 600, color: colors.textPrimary, marginBottom: "0.6rem" }}>
+          Verify your email
+        </h1>
+        <p style={{ color: colors.textMuted, fontSize: "0.9rem", lineHeight: 1.6, marginBottom: "1.75rem" }}>
+          We sent a verification link to <strong>{user?.email}</strong>. Click the
+          link to activate your account — this page will update automatically.
+        </p>
+
+        <button
+          onClick={handleResend}
+          disabled={resendCooldown > 0}
+          style={{
+            width: "100%",
+            padding: "0.85rem",
+            borderRadius: "10px",
+            border: `1px solid ${colors.border}`,
+            background: colors.bgSecondary,
+            color: colors.textPrimary,
+            fontWeight: 600,
+            cursor: resendCooldown > 0 ? "default" : "pointer",
+            opacity: resendCooldown > 0 ? 0.6 : 1,
+          }}
+        >
+          {resendCooldown > 0 ? `Resend in ${resendCooldown}s` : "Resend verification email"}
+        </button>
+
+        {resendMessage && (
+          <p style={{ fontSize: "0.8rem", color: colors.textMuted, marginTop: "1rem" }}>
+            {resendMessage}
+          </p>
+        )}
+      </div>
+    </main>
   );
 }

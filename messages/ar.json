@@ -1,0 +1,83 @@
+{
+  "nav": {
+    "dashboard": "لوحة القيادة",
+    "projects": "المشاريع",
+    "freelancers": "المستقلون",
+    "messages": "الرسائل",
+    "payments": "المدفوعات",
+    "analytics": "التحليلات",
+    "myProfile": "ملفي",
+    "settings": "الإعدادات",
+    "findWork": "ابحث عن عمل",
+    "myProposals": "عروضي"
+  },
+  "signup": {
+    "title": "انشئ حسابك",
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "country": "البلد",
+    "language": "اللغة المفضلة",
+    "submit": "سجل"
+  },
+  "common": {
+    "loading": "جاري التحميل...",
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "tryAgain": "حاول مرة أخرى",
+    "backToDashboard": "العودة إلى لوحة القيادة"
+  },
+  "login": {
+    "welcomeBack": "مرحباً بعودتك",
+    "subtitle": "سجل الدخول للوصول إلى سوق Arush",
+    "emailLabel": "عنوان البريد الإلكتروني",
+    "passwordLabel": "كلمة المرور",
+    "forgotPassword": "نسيت كلمة المرور؟",
+    "loginButton": "سجل الدخول",
+    "noAccount": "ليس لديك حساب؟",
+    "signUpLink": "سجل",
+    "show": "إظهار",
+    "hide": "إخفاء"
+  },
+  "sidebar": {
+    "upgradeToPro": "ترقية إلى برو",
+    "upgradeDesc": "فتح أدوات الذكاء الاصطناعي المتقدمة وترجيح التطابق وغيرها.",
+    "upgradeNow": "ترقية الآن"
+  },
+  "clientDashboard": {
+    "newProject": "مشروع جديد"
+  },
+  "freelancerDashboard": {
+    "subtitle": "اكتشف المشاريع المتوافقة مع مهاراتك.",
+    "editProfile": "تحرير الملف",
+    "completeProfile": "أكمل ملفك الشخصي لبدء الحصول على مطابقات مع المشاريع.",
+    "completeNow": "أكمل الآن",
+    "openProjects": "المشاريع المفتوحة",
+    "responsesSent": "الاستجابات المرسلة",
+    "avgMatch": "متوسط مطابقة الذكاء الاصطناعي",
+    "noProjects": "لا توجد مشاريع مفتوحة الآن. تحقق مرة أخرى قريبا.",
+    "decline": "رفض",
+    "applyWithAI": "تقديم الطلب مع الذكاء الاصطناعي",
+    "responseSent": "تم إرسال الاستجابة"
+  },
+  "briefPanel": {
+    "generatedBrief": "موجز Adeel AI المُنشأ",
+    "emptyState": "وصف مشروعك في الدردشة لإنشاء موجز مع ميزانية وجدول زمني ومهارات مطلوبة.",
+    "overview": "نظرة عامة على المشروع",
+    "estimatedBudget": "الميزانية المقدرة",
+    "timeline": "الجدول الزمني",
+    "requiredSkills": "المهارات المطلوبة",
+    "wasAccurate": "هل كان هذا الموجز دقيقاً؟",
+    "correctionPlaceholder": "ما كان خطأ؟ (الميزانية، الجدول الزمني، المهارات، نظرة عامة...)",
+    "submitFeedback": "إرسال ملاحظات",
+    "feedbackSaved": "شكراً، تم حفظ الملاحظات.",
+    "upgradeToPRD": "ترقية إلى PRD الكامل",
+    "createProject": "إنشاء مشروع باستخدام هذا الموجز",
+    "creating": "جاري إنشاء...",
+    "projectPosted": "تم نشر المشروع! يمكن للمستقلين التقدم الآن."
+  },
+  "comingSoon": {
+    "onItsWay": "قادم قريباً.",
+    "heading": "قريباً",
+    "body": "نحن نبني هذا التالي. تحقق مرة أخرى قريباً!"
+  }
+}

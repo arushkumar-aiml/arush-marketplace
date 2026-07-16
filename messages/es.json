@@ -1,0 +1,83 @@
+{
+  "nav": {
+    "dashboard": "Panel de control",
+    "projects": "Proyectos",
+    "freelancers": "Freelancers",
+    "messages": "Mensajes",
+    "payments": "Pagos",
+    "analytics": "Análisis",
+    "myProfile": "Mi Perfil",
+    "settings": "Configuraciones",
+    "findWork": "Encontrar trabajo",
+    "myProposals": "Mis Propuestas"
+  },
+  "signup": {
+    "title": "Crea tu cuenta",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "country": "País",
+    "language": "Idioma preferido",
+    "submit": "Regístrate"
+  },
+  "common": {
+    "loading": "Cargando...",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "tryAgain": "Intentar de nuevo",
+    "backToDashboard": "Volver al panel de control"
+  },
+  "login": {
+    "welcomeBack": "Bienvenido de vuelta",
+    "subtitle": "Inicia sesión para acceder a Arush Marketplace",
+    "emailLabel": "Dirección de correo electrónico",
+    "passwordLabel": "Contraseña",
+    "forgotPassword": "¿Olvidaste tu contraseña?",
+    "loginButton": "Iniciar sesión",
+    "noAccount": "¿No tienes una cuenta?",
+    "signUpLink": "Regístrate",
+    "show": "Mostrar",
+    "hide": "Ocultar"
+  },
+  "sidebar": {
+    "upgradeToPro": "Actualiza a Pro",
+    "upgradeDesc": "Desbloquea herramientas de IA avanzadas, coincidencia prioritaria y más.",
+    "upgradeNow": "Actualiza ahora"
+  },
+  "clientDashboard": {
+    "newProject": "Nuevo Proyecto"
+  },
+  "freelancerDashboard": {
+    "subtitle": "Descubre proyectos que coinciden con tus habilidades.",
+    "editProfile": "Editar Perfil",
+    "completeProfile": "Completa tu perfil para empezar a coincidir con proyectos.",
+    "completeNow": "Completa ahora",
+    "openProjects": "Proyectos Abiertos",
+    "responsesSent": "Respuestas Enviadas",
+    "avgMatch": "Coincidencia de IA Promedio",
+    "noProjects": "No hay proyectos abiertos en este momento. Revisa pronto.",
+    "decline": "Rechazar",
+    "applyWithAI": "Aplicar con IA",
+    "responseSent": "Respuesta enviada"
+  },
+  "briefPanel": {
+    "generatedBrief": "Resumen de proyecto generado por Adeel AI",
+    "emptyState": "Describe tu proyecto en el chat para generar un resumen con presupuesto, cronograma y habilidades requeridas.",
+    "overview": "Resumen del Proyecto",
+    "estimatedBudget": "Presupuesto Estimado",
+    "timeline": "Cronograma",
+    "requiredSkills": "Habilidades Requeridas",
+    "wasAccurate": "¿Fue este resumen preciso?",
+    "correctionPlaceholder": "¿Qué estaba mal? (presupuesto, cronograma, habilidades, resumen...)",
+    "submitFeedback": "Enviar comentarios",
+    "feedbackSaved": "Gracias, comentarios guardados.",
+    "upgradeToPRD": "Actualiza a PRD Completo",
+    "createProject": "Crear Proyecto con este Resumen",
+    "creating": "Creando...",
+    "projectPosted": "Proyecto publicado. Los freelancers pueden aplicar ahora."
+  },
+  "comingSoon": {
+    "onItsWay": "está en camino.",
+    "heading": "Próximamente",
+    "body": "Estamos construyendo esto a continuación. Revisa pronto."
+  }
+}

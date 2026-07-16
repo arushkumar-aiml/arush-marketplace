@@ -1,0 +1,83 @@
+{
+  "nav": {
+    "dashboard": "Dasibodi",
+    "projects": "Miradi",
+    "freelancers": "Wafanyikazi wa Kujitegemea",
+    "messages": "Meseji",
+    "payments": "Malipo",
+    "analytics": "Uchambuzi",
+    "myProfile": "Wasifu Wangu",
+    "settings": "Mipangilio",
+    "findWork": "Pata Kazi",
+    "myProposals": "Mapendekezo Yangu"
+  },
+  "signup": {
+    "title": "Unda Akaunti Yako",
+    "email": "Barua Pepe",
+    "password": "Nenosiri",
+    "country": "Nchi",
+    "language": "Lugha Inayopendelea",
+    "submit": "Sajili"
+  },
+  "common": {
+    "loading": "Inachukua...",
+    "save": "Hifadhi",
+    "cancel": "Goma",
+    "tryAgain": "Jaribu Tena",
+    "backToDashboard": "Rudi Kwenye Dasibodi"
+  },
+  "login": {
+    "welcomeBack": "Karibu Tena",
+    "subtitle": "Ingia ili Kuweza Kufikia Soko la Arush",
+    "emailLabel": "Anwani ya Barua Pepe",
+    "passwordLabel": "Nenosiri",
+    "forgotPassword": "Umesahau Nenosiri?",
+    "loginButton": "Ingia",
+    "noAccount": "Hauna Akaunti?",
+    "signUpLink": "Sajili",
+    "show": "Onyesha",
+    "hide": "Ficha"
+  },
+  "sidebar": {
+    "upgradeToPro": "Songesha hadi Pro",
+    "upgradeDesc": "Fungua zana za AI za hali ya juu, upangaji wa kwanza na zaidi.",
+    "upgradeNow": "Songesha Sasa"
+  },
+  "clientDashboard": {
+    "newProject": "Mradi Mpya"
+  },
+  "freelancerDashboard": {
+    "subtitle": "Gundua miradi inayolingana na ujuzi wako.",
+    "editProfile": "Hariri Wasifu",
+    "completeProfile": "Kamilisha wasifu wako ili kuanza kupata michanganyiko na miradi.",
+    "completeNow": "Kamilisha Sasa",
+    "openProjects": "Miradi Iliyo Wazi",
+    "responsesSent": "Majibu Yaliyotumwa",
+    "avgMatch": "Mchanganyiko wa AI wa wastani",
+    "noProjects": "Hakuna miradi wazi kwa sasa. Angalia tena baadaye.",
+    "decline": "Kataa",
+    "applyWithAI": "Tumia AI",
+    "responseSent": "Jibu Limetumwa"
+  },
+  "briefPanel": {
+    "generatedBrief": "Adeel AI Imetengeneza Maelezo",
+    "emptyState": "Eleza mradi wako kwenye mazungumzo ili kutengeneza maelezo yenye bajeti, ratiba, na ujuzi unaohitajika.",
+    "overview": "Maelezo ya Mradi",
+    "estimatedBudget": "Bajeti Inayokadiriwa",
+    "timeline": "Ratiba",
+    "requiredSkills": "Ujuzi Unaohitajika",
+    "wasAccurate": "Je, maelezo haya yalikuwa sahihi?",
+    "correctionPlaceholder": "Nini kilikuwa sio sahihi? (bajeti, ratiba, ujuzi, maelezo...)",
+    "submitFeedback": "Tuma Maoni",
+    "feedbackSaved": "Asante, maoni yamehifadhiwa.",
+    "upgradeToPRD": "Songesha hadi PRD Kamili",
+    "createProject": "Unda Mradi Kwa Maelezo Haya",
+    "creating": "Inatengeneza...",
+    "projectPosted": "Mradi Umepostwa! Wafanyikazi wa Kujitegemea wanaweza kutuma maombi sasa."
+  },
+  "comingSoon": {
+    "onItsWay": "Inakuja.",
+    "heading": "Inakuja Hivi Karibuni",
+    "body": "Tunajenga hii inayofuata. Angalia tena baadaye!"
+  }
+}

@@ -1,35 +1,44 @@
 "use client";
-import { useAuth } from "@/lib/useAuth";
+
+import { ReactNode, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useAuth } from "../lib/useAuth";
+import type { UserRole } from "../types/user";
 
 export default function RequireRole({
   role,
   children,
 }: {
-  role: string;
-  children: React.ReactNode;
+  role: UserRole;
+  children: ReactNode;
 }) {
-  const { user, userData, loading } = useAuth();
+  const { user, profile, loading } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
     if (loading) return;
-    if (!user) {
-      router.push("/login");
-      return;
-    }
-    if (!user.emailVerified) {
-      router.push("/verify-email");
-      return;
-    }
-    if (userData?.role !== role) {
-      router.push("/dashboard");
-    }
-  }, [user, userData, loading, role, router]);
 
-  if (loading || !user || !user.emailVerified || userData?.role !== role) {
-    return <div className="text-center mt-20">Loading...</div>;
+    if (!user) {
+      router.replace("/login");
+      return;
+    }
+
+    if (!user.emailVerified) {
+      router.replace("/verify-email");
+      return;
+    }
+
+    if (profile && profile.role !== role) {
+      router.replace(`/dashboard/${profile.role}`);
+    }
+  }, [user, profile, loading, role, router]);
+
+  if (loading || !user || !user.emailVerified || !profile || profile.role !== role) {
+    return (
+      <main style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <p style={{ color: "#666" }}>Loading...</p>
+      </main>
+    );
   }
 
   return <>{children}</>;

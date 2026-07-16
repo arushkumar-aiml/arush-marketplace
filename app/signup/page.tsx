@@ -3,13 +3,11 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { FirebaseError } from "firebase/app";
-import { doc, setDoc } from "firebase/firestore";
-import { auth, db } from "../../lib/firebase";
+import { useAuth } from "../../lib/useAuth";
+import { useTheme } from "../../lib/useTheme";
 import type { UserRole } from "../../types/user";
 import AuthTransition from "../../components/AuthTransition";
-import { useTheme } from "../../lib/useTheme";
 import { Bot, ShieldCheck, Zap } from "lucide-react";
 
 function getErrorMessage(err: unknown): string {
@@ -31,6 +29,7 @@ function getErrorMessage(err: unknown): string {
 export default function SignupPage() {
     const router = useRouter();
     const { colors } = useTheme();
+    const { signup } = useAuth();
     const [role, setRole] = useState<UserRole>("client");
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
@@ -43,16 +42,8 @@ export default function SignupPage() {
         setError("");
         setLoading(true);
         try {
-            const cred = await createUserWithEmailAndPassword(auth, email, password);
-            await updateProfile(cred.user, { displayName: name });
-            await setDoc(doc(db, "users", cred.user.uid), {
-                uid: cred.user.uid,
-                email,
-                displayName: name,
-                role,
-                createdAt: Date.now(),
-            });
-            router.push(`/dashboard/${role}`);
+            await signup(email, password, role, name);
+            router.push("/verify-email");
         } catch (err: unknown) {
             setError(getErrorMessage(err));
             setLoading(false);
@@ -65,7 +56,6 @@ export default function SignupPage() {
 
     return (
         <main style={{ minHeight: "100vh", display: "flex", background: colors.codeBg }}>
-            {/* Left panel */}
             <div style={{ flex: 1, padding: "3rem", display: "flex", flexDirection: "column", justifyContent: "space-between", position: "relative", overflow: "hidden" }}>
                 <div style={{ position: "absolute", bottom: "-20%", left: "-10%", width: "500px", height: "500px", background: `radial-gradient(circle, ${colors.accentBlue}22 0%, transparent 70%)`, filter: "blur(40px)" }} />
                 <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", position: "relative", zIndex: 1 }}>
@@ -119,7 +109,6 @@ export default function SignupPage() {
                 </p>
             </div>
 
-            {/* Right panel — form */}
             <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", padding: "2rem" }}>
                 <div
                     style={{

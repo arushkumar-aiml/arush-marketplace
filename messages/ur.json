@@ -1,0 +1,83 @@
+{
+  "nav": {
+    "dashboard": "ڈیش بورڈ",
+    "projects": "منصوبے",
+    "freelancers": "فری لانسز",
+    "messages": "پیغامات",
+    "payments": "ادائیگیاں",
+    "analytics": "تحلیلیات",
+    "myProfile": "میرا پروفائل",
+    "settings": "سیٹنگز",
+    "findWork": "کام تلاش کریں",
+    "myProposals": "میری تجاویز"
+  },
+  "signup": {
+    "title": "اپنا اکاؤنٹ بنائیں",
+    "email": "ای میل",
+    "password": "پاس ورڈ",
+    "country": "ملک",
+    "language": "ترجیحی زبان",
+    "submit": "سائن اپ کریں"
+  },
+  "common": {
+    "loading": "لوڈ ہو رہا ہے...",
+    "save": "سیو کریں",
+    "cancel": "منسوخ کریں",
+    "tryAgain": "دوبارہ کوشش کریں",
+    "backToDashboard": "ڈیش بورڈ پر واپس جائیں"
+  },
+  "login": {
+    "welcomeBack": "خوش آمدید",
+    "subtitle": "اروش مارکیٹ پلیس تک رسائی کے لیے لاگ ان کریں",
+    "emailLabel": "ای میل پتہ",
+    "passwordLabel": "پاس ورڈ",
+    "forgotPassword": "پاس ورڈ بھول گئے؟",
+    "loginButton": "لاگ ان",
+    "noAccount": "اکاؤنٹ نہیں ہے؟",
+    "signUpLink": "سائن اپ کریں",
+    "show": "دکھائیں",
+    "hide": "چھپائیں"
+  },
+  "sidebar": {
+    "upgradeToPro": "پرو میں اپ گریڈ کریں",
+    "upgradeDesc": "ایڈوانسڈ اے آئی ٹولز، پریوریٹی میچنگ اور مزید کو 언لاک کریں۔",
+    "upgradeNow": "ابھی اپ گریڈ کریں"
+  },
+  "clientDashboard": {
+    "newProject": "نئی منصوبہ"
+  },
+  "freelancerDashboard": {
+    "subtitle": "اپنی مہارت کے مطابق منصوبوں کی تلاش کریں۔",
+    "editProfile": "پروفائل ایڈٹ کریں",
+    "completeProfile": "منصوبوں کے ساتھ میچ ہونے کا آغاز کرنے کے لیے اپنا پروفائل مکمل کریں۔",
+    "completeNow": "ابھی مکمل کریں",
+    "openProjects": "کھلی منصوبے",
+    "responsesSent": "جوابات بھیجے گئے",
+    "avgMatch": "اوسط اے آئی میچ",
+    "noProjects": "فی الحال کوئی کھلی منصوبے نہیں ہیں۔ جلدی واپس آئیں۔",
+    "decline": "decline",
+    "applyWithAI": "اے آئی کے ساتھ درخواست دیں",
+    "responseSent": "جواب بھیجا گیا"
+  },
+  "briefPanel": {
+    "generatedBrief": "عدیل اے آئی جنریٹڈ بریف",
+    "emptyState": "چیٹ میں اپنے منصوبے کا بیان کریں تاکہ بجٹ، ٹائم لائن اور درکار مہارتوں کے ساتھ بریف جنریٹ کیا جا سکے۔",
+    "overview": "منصوبے کا جائزہ",
+    "estimatedBudget": "تخمینہ بجٹ",
+    "timeline": "ٹائم لائن",
+    "requiredSkills": "درکار مہارت",
+    "wasAccurate": "کیا یہ بریف درست تھا؟",
+    "correctionPlaceholder": "کیا غلط تھا؟ (بجٹ، ٹائم لائن، مہارت، جائزہ...)",
+    "submitFeedback": "피ڈ بیک جمع کریں",
+    "feedbackSaved": "شکریہ، فیڈ بیک محفوظ ہو گیا ہے۔",
+    "upgradeToPRD": "فول پی آر ڈی میں اپ گریڈ کریں",
+    "createProject": "اس بریف کے ساتھ منصوبہ بنائیں",
+    "creating": "بنایا جا رہا ہے...",
+    "projectPosted": "منصوبہ پوسٹ ہو گیا ہے! فری لانسز ابھی درخواست دیں۔"
+  },
+  "comingSoon": {
+    "onItsWay": "راستے میں ہے۔",
+    "heading": "جلد آنے والا",
+    "body": "ہم اسے اگلا بنا رہے ہیں۔ جلدی واپس آئیں!"
+  }
+}

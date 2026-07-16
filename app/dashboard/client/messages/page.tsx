@@ -1,23 +1,19 @@
 "use client";
-import { useAuth } from "../../../../lib/useAuth";
-import { useTheme } from "../../../../lib/useTheme";
-import RequireRole from "../../../../components/RequireRole";
+
+export const dynamic = "force-dynamic";
+
 import Sidebar from "../../../../components/dashboard/Sidebar";
 import DashboardHeader from "../../../../components/dashboard/DashboardHeader";
 import MessagesView from "../../../../components/dashboard/MessagesView";
+import RequireRole from "../../../../components/RequireRole";
 
 function ClientMessagesContent() {
-  const { user } = useAuth();
-  const { colors } = useTheme();
-
   return (
-    <div style={{ display: "flex", minHeight: "100vh", background: colors.bgPrimary }}>
+    <div style={{ display: "flex", minHeight: "100vh", background: "white" }}>
       <Sidebar />
       <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0 }}>
         <DashboardHeader subtitle="Chat with freelancers on your projects." />
-        <div style={{ flex: 1, padding: "2rem" }}>
-          {user && <MessagesView currentUserId={user.uid} />}
-        </div>
+        <MessagesView />
       </div>
     </div>
   );
