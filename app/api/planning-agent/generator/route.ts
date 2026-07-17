@@ -2,21 +2,51 @@ import { NextRequest, NextResponse } from "next/server";
 import { callAI } from "../../../../lib/aiClient";
 import { getPromptMemory } from "../../../../lib/adeelMemory";
 
+function extractJson(rawText: string): string {
+    const trimmed = rawText.trim();
+
+    if (!trimmed.startsWith("```")) {
+        return trimmed;
+    }
+
+    return trimmed
+        .replace(/^```(?:json)?\s*/i, "")
+        .replace(/\s*```$/, "")
+        .trim();
+}
+
 export async function POST(req: NextRequest) {
+    let originalMessage: string;
+    let brief: unknown;
+    let answers: unknown;
+
     try {
-        const { originalMessage, brief, answers } = await req.json();
+        ({ originalMessage, brief, answers } = await req.json());
+    } catch (err: unknown) {
+        console.error("Generate PRD route: invalid request JSON", err);
+        return NextResponse.json(
+            { error: "Invalid request body" },
+            { status: 400 }
+        );
+    }
 
-        if (!originalMessage || !brief || !Array.isArray(answers)) {
-            return NextResponse.json(
-                { error: "originalMessage, brief, and answers are required" },
-                { status: 400 }
-            );
-        }
+    if (!originalMessage || !brief || !Array.isArray(answers)) {
+        return NextResponse.json(
+            { error: "originalMessage, brief, and answers are required" },
+            { status: 400 }
+        );
+    }
 
-        const answersText = answers
-            .map((a: { question: string; answer: string }, i: number) => `${i + 1}. Q: ${a.question}\n   A: ${a.answer}`)
-            .join("\n");
+    const answersText = answers
+        .map(
+            (
+                a: { question: string; answer: string },
+                i: number
+            ) => `${i + 1}. Q: ${a.question}\n   A: ${a.answer}`
+        )
+        .join("\n");
 
+    try {
         const promptMemory = await getPromptMemory("PRD");
 
         const prompt = `You are Adeel AI, a senior technical product planner for a freelance marketplace platform.
@@ -48,12 +78,26 @@ Respond ONLY with valid JSON, no markdown, no preamble, in exactly this shape:
   "risks": ["...", "..."]
 }${promptMemory}`;
 
-        const rawText = await callAI({ prompt, temperature: 0.4, jsonMode: true });
+        const rawText = await callAI({
+            prompt,
+            temperature: 0.4,
+            jsonMode: true,
+        });
 
-        const parsed = JSON.parse(rawText);
-        return NextResponse.json(parsed);
+        try {
+            return NextResponse.json(JSON.parse(extractJson(rawText)));
+        } catch (err: unknown) {
+            console.error("Generate PRD route: AI returned invalid JSON", {
+                error: err,
+                rawText,
+            });
+            return NextResponse.json(
+                { error: "Adeel AI returned an invalid PRD response" },
+                { status: 502 }
+            );
+        }
     } catch (err: unknown) {
-        console.error("Generate PRD route error:", err);
+        console.error("Generate PRD route: AI generation failed", err);
         return NextResponse.json(
             { error: "Something went wrong generating the PRD" },
             { status: 500 }

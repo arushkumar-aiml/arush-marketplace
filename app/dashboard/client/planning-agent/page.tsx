@@ -39,6 +39,9 @@ function PlanningAgentContent() {
 
     const [unlockStage, setUnlockStage] = useState<UnlockStage>("locked");
     const [scaffold, setScaffold] = useState<CodeScaffold | null>(null);
+    const [designSample, setDesignSample] = useState("");
+    const [isGeneratingDesignSample, setIsGeneratingDesignSample] = useState(false);
+    const [designSampleError, setDesignSampleError] = useState("");
 
     useEffect(() => {
         const storedBrief = sessionStorage.getItem("adeel-planning-brief");
@@ -93,7 +96,7 @@ function PlanningAgentContent() {
                 answer: answers[q.id] || "No specific preference.",
             }));
 
-            const res = await fetch("/api/planning-agent/generate", {
+            const res = await fetch("/api/planning-agent/generator", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ originalMessage, brief, answers: answerList }),
@@ -129,6 +132,33 @@ function PlanningAgentContent() {
         } catch (err: unknown) {
             console.error(err);
             setUnlockStage("unlock-error");
+        }
+    }
+
+    async function handleGenerateDesignSample() {
+        if (!prd) return;
+
+        setIsGeneratingDesignSample(true);
+        setDesignSampleError("");
+
+        try {
+            const res = await fetch("/api/planning-agent/design-sample", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ prd }),
+            });
+            const data = await res.json();
+
+            if (!res.ok || !data.imageDataUrl) {
+                throw new Error(data.error || "Failed to generate design sample");
+            }
+
+            setDesignSample(data.imageDataUrl);
+        } catch (err: unknown) {
+            console.error("Generate design sample error:", err);
+            setDesignSampleError("Couldn't generate a design sample. Please try again.");
+        } finally {
+            setIsGeneratingDesignSample(false);
         }
     }
 
@@ -357,6 +387,52 @@ function PlanningAgentContent() {
                                 {prd.title}
                             </h2>
                             <p style={bodyTextStyle}>{prd.problemStatement}</p>
+                        </div>
+
+                        <div style={sectionStyle}>
+                            <div style={sectionTitleStyle}>
+                                <Sparkles size={16} color={colors.accentBlue} />
+                                AI Design Sample
+                            </div>
+                            <p style={{ ...bodyTextStyle, marginBottom: "1rem" }}>
+                                Generate a visual concept based on this PRD's product scope and technology choices.
+                            </p>
+                            <button
+                                onClick={handleGenerateDesignSample}
+                                disabled={isGeneratingDesignSample}
+                                style={{
+                                    background: colors.accentBlue,
+                                    color: "#FFFFFF",
+                                    border: "none",
+                                    borderRadius: "10px",
+                                    padding: "0.7rem 1.1rem",
+                                    fontSize: "0.85rem",
+                                    fontWeight: 600,
+                                    cursor: isGeneratingDesignSample ? "wait" : "pointer",
+                                    opacity: isGeneratingDesignSample ? 0.7 : 1,
+                                }}
+                            >
+                                {isGeneratingDesignSample ? "Generating design sample..." : "Generate Design Sample"}
+                            </button>
+                            {designSampleError && (
+                                <p style={{ color: colors.danger, fontSize: "0.85rem", marginTop: "0.85rem" }}>
+                                    {designSampleError}
+                                </p>
+                            )}
+                            {designSample && (
+                                <img
+                                    src={designSample}
+                                    alt={`AI-generated design sample for ${prd.title}`}
+                                    style={{
+                                        display: "block",
+                                        width: "100%",
+                                        height: "auto",
+                                        marginTop: "1rem",
+                                        borderRadius: "10px",
+                                        border: `1px solid ${colors.border}`,
+                                    }}
+                                />
+                            )}
                         </div>
 
                         <div style={sectionStyle}>

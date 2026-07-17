@@ -1,5 +1,17 @@
 export type UserRole = "client" | "freelancer" | "admin";
 
+export type SubscriptionStatus =
+    | "active"
+    | "canceled"
+    | "incomplete"
+    | "incomplete_expired"
+    | "past_due"
+    | "paused"
+    | "trialing"
+    | "unpaid";
+
+export type SubscriptionPlan = "client_pro" | "freelancer_pro";
+
 export type Occupation = "Student" | "Working Professional" | "Business Owner" | "Other";
 
 export type FreelanceWorkType =
@@ -22,6 +34,10 @@ export interface UserProfile {
     communityClicks?: string[];
     aiCredits?: number;
     foundingMember?: boolean;
+    subscriptionStatus?: SubscriptionStatus;
+    subscriptionPlan?: SubscriptionPlan;
+    stripeSubscriptionId?: string;
+    subscriptionRenewsAt?: number;
 
     // Freelancer-only fields
     skills?: string[];

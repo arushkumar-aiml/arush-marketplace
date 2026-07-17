@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -26,15 +27,46 @@ import LanguageSwitcher from "../LanguageSwitcher";
 
 export default function Sidebar() {
     const pathname = usePathname();
-    const { profile } = useAuth();
+    const { user, profile } = useAuth();
     const router = useRouter();
     const { colors } = useTheme();
     const t = useTranslations("nav");
     const tSidebar = useTranslations("sidebar");
+    const [isStartingSubscription, setIsStartingSubscription] = useState(false);
 
     async function handleLogout() {
         await signOut(auth);
         router.push("/login");
+    }
+
+    async function handleUpgrade() {
+        if (!user) {
+            router.push("/login");
+            return;
+        }
+
+        setIsStartingSubscription(true);
+
+        try {
+            const idToken = await user.getIdToken();
+            const res = await fetch("/api/create-subscription-session", {
+                method: "POST",
+                headers: {
+                    Authorization: `Bearer ${idToken}`,
+                },
+            });
+            const data = await res.json();
+
+            if (!res.ok || !data.url) {
+                throw new Error(data.error || "Failed to start subscription checkout");
+            }
+
+            window.location.href = data.url;
+        } catch (err: unknown) {
+            console.error("Start subscription checkout error:", err);
+            window.alert("Couldn't start subscription checkout. Please try again.");
+            setIsStartingSubscription(false);
+        }
     }
 
     const clientNavItems = [
@@ -123,6 +155,8 @@ export default function Sidebar() {
                     {tSidebar("upgradeDesc")}
                 </p>
                 <button
+                    onClick={handleUpgrade}
+                    disabled={isStartingSubscription}
                     style={{
                         width: "100%",
                         background: colors.accentBlue,
@@ -132,10 +166,11 @@ export default function Sidebar() {
                         borderRadius: "8px",
                         border: "none",
                         padding: "0.5rem",
-                        cursor: "pointer",
+                        cursor: isStartingSubscription ? "wait" : "pointer",
+                        opacity: isStartingSubscription ? 0.7 : 1,
                     }}
                 >
-                    {tSidebar("upgradeNow")}
+                    {isStartingSubscription ? "Starting checkout..." : tSidebar("upgradeNow")}
                 </button>
             </div>
 
