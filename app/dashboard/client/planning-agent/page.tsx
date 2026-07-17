@@ -117,7 +117,10 @@ function PlanningAgentContent() {
         try {
             const res = await fetch("/api/create-checkout-session", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${await user.getIdToken()}`,
+                },
                 body: JSON.stringify({
                     logId: prd.logId,
                     clientId: user.uid,
@@ -163,11 +166,19 @@ function PlanningAgentContent() {
     }
 
     async function verifyPayment(sessionId: string) {
+        if (!user) {
+            setUnlockStage("unlock-error");
+            return;
+        }
+
         setUnlockStage("verifying");
         try {
             const res = await fetch("/api/verify-payment", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${await user.getIdToken()}`,
+                },
                 body: JSON.stringify({ sessionId }),
             });
             if (!res.ok) throw new Error("Verification failed");

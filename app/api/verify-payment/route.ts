@@ -1,9 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
-import { adminDb } from "../../../lib/firebaseAdmin";
+import { adminDb } from "../../../lib/firebase-admin";
+import { getAuthenticatedUserId } from "../../../lib/apiAuth";
 
 export async function POST(req: NextRequest) {
     try {
+        const uid = await getAuthenticatedUserId(req);
+        if (!uid) {
+            return NextResponse.json({ error: "Authentication is required" }, { status: 401 });
+        }
+
         const secretKey = process.env.STRIPE_SECRET_KEY;
         if (!secretKey) {
             return NextResponse.json(
@@ -33,6 +39,10 @@ export async function POST(req: NextRequest) {
                 { error: "Missing metadata on payment session" },
                 { status: 400 }
             );
+        }
+
+        if (clientId !== uid) {
+            return NextResponse.json({ error: "This payment does not belong to the current user" }, { status: 403 });
         }
 
         // Record the unlock in Firestore using Admin SDK (bypasses client security

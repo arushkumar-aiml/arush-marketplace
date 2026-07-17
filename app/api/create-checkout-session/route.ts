@@ -1,8 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
+import { getAuthenticatedUserId } from "../../../lib/apiAuth";
 
 export async function POST(req: NextRequest) {
     try {
+        const uid = await getAuthenticatedUserId(req);
+        if (!uid) {
+            return NextResponse.json({ error: "Authentication is required" }, { status: 401 });
+        }
+
         const secretKey = process.env.STRIPE_SECRET_KEY;
         if (!secretKey) {
             return NextResponse.json(
@@ -20,6 +26,10 @@ export async function POST(req: NextRequest) {
                 { error: "logId and clientId are required" },
                 { status: 400 }
             );
+        }
+
+        if (clientId !== uid) {
+            return NextResponse.json({ error: "You cannot create a checkout for another user" }, { status: 403 });
         }
 
         const origin = req.headers.get("origin") || "http://localhost:3000";
