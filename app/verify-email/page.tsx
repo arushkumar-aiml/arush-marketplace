@@ -23,7 +23,7 @@ export default function VerifyEmailPage() {
       return;
     }
     if (user.emailVerified && profile) {
-      router.replace(`/dashboard/${profile.role}`);
+      router.replace("/community");
     }
   }, [user, profile, loading, router]);
 
@@ -34,7 +34,7 @@ export default function VerifyEmailPage() {
     const interval = setInterval(async () => {
       await auth.currentUser?.reload();
       if (auth.currentUser?.emailVerified && profile) {
-        router.replace(`/dashboard/${profile.role}`);
+        router.replace("/community");
       }
     }, 3000);
 

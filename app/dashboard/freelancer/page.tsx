@@ -106,7 +106,7 @@ function FreelancerDashboardContent() {
                 projectId: modalProject.id,
                 freelancerId: user.uid,
                 freelancerName: profile.displayName,
-                status: "accepted",
+                status: "interested",
                 createdAt: Date.now(),
                 proposalText: proposalText.trim(),
             });
@@ -127,6 +127,15 @@ function FreelancerDashboardContent() {
                 lastMessage: proposalText.trim(),
                 lastMessageAt: Date.now(),
                 createdAt: Date.now(),
+            });
+
+            await addDoc(collection(db, "notifications"), {
+                recipientId: modalProject.clientId,
+                type: "application",
+                message: `${profile.displayName} sent a proposal for ${modalProject.title}.`,
+                read: false,
+                createdAt: Date.now(),
+                link: "/dashboard/client/projects",
             });
 
             setRespondedIds((prev) => new Set(prev).add(modalProject.id));

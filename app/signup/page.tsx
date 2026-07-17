@@ -6,7 +6,7 @@ import Image from "next/image";
 import { FirebaseError } from "firebase/app";
 import { useAuth } from "../../lib/useAuth";
 import { useTheme } from "../../lib/useTheme";
-import type { UserRole } from "../../types/user";
+import type { FreelanceWorkType, Occupation, UserRole } from "../../types/user";
 import AuthTransition from "../../components/AuthTransition";
 import { Bot, ShieldCheck, Zap } from "lucide-react";
 
@@ -34,6 +34,8 @@ export default function SignupPage() {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [occupation, setOccupation] = useState<Occupation>("Student");
+    const [freelanceWorkType, setFreelanceWorkType] = useState<FreelanceWorkType>("Web Development");
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
 
@@ -42,7 +44,7 @@ export default function SignupPage() {
         setError("");
         setLoading(true);
         try {
-            await signup(email, password, role, name);
+            await signup(email, password, role, name, occupation, role === "freelancer" ? freelanceWorkType : undefined);
             router.push("/verify-email");
         } catch (err: unknown) {
             setError(getErrorMessage(err));
@@ -157,6 +159,33 @@ export default function SignupPage() {
                             onChange={(e) => setName(e.target.value)}
                             style={{ width: "100%", padding: "0.85rem 1rem", borderRadius: "10px", border: "1px solid #2A2D38", background: "#14161F", color: "white", boxSizing: "border-box", outline: "none" }}
                         />
+                        <select
+                            required
+                            value={occupation}
+                            onChange={(e) => setOccupation(e.target.value as Occupation)}
+                            style={{ width: "100%", padding: "0.85rem 1rem", borderRadius: "10px", border: `1px solid ${colors.border}`, background: colors.bgSecondary, color: colors.textPrimary, boxSizing: "border-box", outline: "none" }}
+                        >
+                            <option value="Student">Student</option>
+                            <option value="Working Professional">Working Professional</option>
+                            <option value="Business Owner">Business Owner</option>
+                            <option value="Other">Other</option>
+                        </select>
+                        {role === "freelancer" && (
+                            <select
+                                required
+                                value={freelanceWorkType}
+                                onChange={(e) => setFreelanceWorkType(e.target.value as FreelanceWorkType)}
+                                style={{ width: "100%", padding: "0.85rem 1rem", borderRadius: "10px", border: `1px solid ${colors.border}`, background: colors.bgSecondary, color: colors.textPrimary, boxSizing: "border-box", outline: "none" }}
+                            >
+                                <option value="Web Development">Web Development</option>
+                                <option value="Design">Design</option>
+                                <option value="Writing">Writing</option>
+                                <option value="Video Editing">Video Editing</option>
+                                <option value="Marketing">Marketing</option>
+                                <option value="Data/AI">Data/AI</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        )}
                         <input
                             type="email"
                             placeholder="Email Address"

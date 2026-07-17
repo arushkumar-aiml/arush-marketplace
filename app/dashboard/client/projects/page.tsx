@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { collection, query, where, orderBy, getDocs, doc, updateDoc } from "firebase/firestore";
+import { addDoc, collection, query, where, orderBy, getDocs, doc, updateDoc } from "firebase/firestore";
 import { db } from "../../../../lib/firebase";
 import { useAuth } from "../../../../lib/useAuth";
 import { useTheme } from "../../../../lib/useTheme";
@@ -64,6 +64,17 @@ function ProjectsContent() {
 
     async function respondToApplication(projectId: string, applicationId: string, status: "accepted" | "declined") {
         await updateDoc(doc(db, "applications", applicationId), { status });
+        const application = applications[projectId]?.find((item) => item.id === applicationId);
+        if (application) {
+            await addDoc(collection(db, "notifications"), {
+                recipientId: application.freelancerId,
+                type: "application_response",
+                message: `Your proposal was ${status} by the client.`,
+                read: false,
+                createdAt: Date.now(),
+                link: "/dashboard/freelancer/proposals",
+            });
+        }
         setApplications((prev) => ({
             ...prev,
             [projectId]: prev[projectId].map((a) => (a.id === applicationId ? { ...a, status } : a)),

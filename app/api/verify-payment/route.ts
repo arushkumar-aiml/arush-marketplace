@@ -47,6 +47,15 @@ export async function POST(req: NextRequest) {
             paidAt: Date.now(),
         });
 
+        await adminDb.collection("notifications").doc(`payment-${logId}`).set({
+            recipientId: clientId,
+            type: "payment",
+            message: "Payment received — your PRD and code scaffold are unlocked.",
+            read: false,
+            createdAt: Date.now(),
+            link: "/dashboard/client/planning-agent",
+        });
+
         return NextResponse.json({ paid: true, logId });
     } catch (err: unknown) {
         console.error("Verify payment error:", err);

@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { collection, getDocs, query, where } from "firebase/firestore";
-import { Search, SlidersHorizontal, Star, UserRound } from "lucide-react";
+import { ExternalLink, Search, SlidersHorizontal, Star, UserRound } from "lucide-react";
 import { db } from "../../lib/firebase";
 import { useTheme } from "../../lib/useTheme";
 import type { UserProfile } from "../../types/user";
@@ -14,12 +14,28 @@ type FreelancerProfile = UserProfile & {
     matchScore?: number;
 };
 
+const CATEGORIES = ["Web Development", "Design", "Writing", "Video Editing", "Marketing", "Data/AI", "Other"] as const;
+
+function getFreelancerCategory(freelancer: FreelancerProfile) {
+    if (freelancer.freelanceWorkType) return freelancer.freelanceWorkType;
+
+    const skills = (freelancer.skills || []).join(" ").toLowerCase();
+    if (/figma|ui|ux|graphic|illustrat|photoshop|brand/.test(skills)) return "Design";
+    if (/writer|writing|copy|content|seo|blog/.test(skills)) return "Writing";
+    if (/video|premiere|after effects|motion|editor/.test(skills)) return "Video Editing";
+    if (/market|growth|ads|social media|campaign/.test(skills)) return "Marketing";
+    if (/ai|ml|machine learning|data |python|analytics/.test(skills)) return "Data/AI";
+    if (/react|next|web|frontend|backend|node|mobile|android|ios|flutter/.test(skills)) return "Web Development";
+    return "Other";
+}
+
 export default function FreelancersDirectoryView() {
     const { colors } = useTheme();
     const [freelancers, setFreelancers] = useState<FreelancerProfile[]>([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState("");
     const [skill, setSkill] = useState("all");
+    const [category, setCategory] = useState("all");
     const [smartResults, setSmartResults] = useState<FreelancerProfile[] | null>(null);
     const [smartLoading, setSmartLoading] = useState(false);
 
@@ -74,13 +90,14 @@ export default function FreelancersDirectoryView() {
             const haystack = `${f.displayName} ${f.bio || ""} ${(f.skills || []).join(" ")}`.toLowerCase();
             const matchesSearch = !needle || haystack.includes(needle);
             const matchesSkill = skill === "all" || (f.skills || []).some((s) => s.toLowerCase() === skill.toLowerCase());
-            return matchesSearch && matchesSkill;
+            const matchesCategory = category === "all" || getFreelancerCategory(f) === category;
+            return matchesSearch && matchesSkill && matchesCategory;
         });
-    }, [freelancers, search, skill, smartResults]);
+    }, [category, freelancers, search, skill, smartResults]);
 
     return (
         <div style={{ maxWidth: "980px" }}>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 220px", gap: "0.75rem", marginBottom: "1.25rem" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "minmax(220px, 1fr) 180px 180px", gap: "0.75rem", marginBottom: "1.25rem" }}>
                 <label style={{ position: "relative" }}>
                     <Search size={16} color={colors.textMuted} style={{ position: "absolute", left: "0.85rem", top: "50%", transform: "translateY(-50%)" }} />
                     <input
@@ -94,6 +111,17 @@ export default function FreelancersDirectoryView() {
                             Ranking...
                         </span>
                     )}
+                </label>
+                <label style={{ position: "relative" }}>
+                    <SlidersHorizontal size={16} color={colors.textMuted} style={{ position: "absolute", left: "0.85rem", top: "50%", transform: "translateY(-50%)" }} />
+                    <select
+                        value={category}
+                        onChange={(e) => setCategory(e.target.value)}
+                        style={{ width: "100%", padding: "0.75rem 0.9rem 0.75rem 2.4rem", borderRadius: "9px", border: `1px solid ${colors.border}`, background: colors.bgPrimary, color: colors.textPrimary, boxSizing: "border-box", outline: "none" }}
+                    >
+                        <option value="all">All categories</option>
+                        {CATEGORIES.map((item) => <option key={item} value={item}>{item}</option>)}
+                    </select>
                 </label>
                 <label style={{ position: "relative" }}>
                     <SlidersHorizontal size={16} color={colors.textMuted} style={{ position: "absolute", left: "0.85rem", top: "50%", transform: "translateY(-50%)" }} />
@@ -129,6 +157,7 @@ export default function FreelancersDirectoryView() {
                                     <div style={{ display: "flex", alignItems: "center", gap: "0.3rem", color: colors.textMuted, fontSize: "0.76rem" }}>
                                         <Star size={12} color={colors.accentGold} /> Trust {f.trustScore ?? 80}/100
                                     </div>
+                                    <div style={{ color: colors.accentBlue, fontSize: "0.72rem", fontWeight: 700, marginTop: "0.2rem" }}>{getFreelancerCategory(f)}</div>
                                 </div>
                             </div>
                             <p style={{ color: colors.textSecondary, fontSize: "0.84rem", lineHeight: 1.5, minHeight: "3.8rem" }}>
@@ -140,6 +169,7 @@ export default function FreelancersDirectoryView() {
                                 ))}
                             </div>
                             {f.hourlyRate ? <div style={{ marginTop: "0.85rem", color: colors.textPrimary, fontWeight: 700 }}>${f.hourlyRate}/hr</div> : null}
+                            {f.portfolioUrl ? <a href={f.portfolioUrl} target="_blank" rel="noreferrer" style={{ display: "inline-flex", alignItems: "center", gap: "0.35rem", marginTop: "0.85rem", color: colors.accentBlue, fontSize: "0.78rem", fontWeight: 700, textDecoration: "none" }}>View portfolio <ExternalLink size={13} /></a> : null}
                             {typeof f.matchScore === "number" ? (
                                 <div style={{ marginTop: "0.5rem", color: colors.accentBlue, fontSize: "0.78rem", fontWeight: 700 }}>
                                     {f.matchScore}% smart match

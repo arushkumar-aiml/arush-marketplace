@@ -16,17 +16,19 @@ import {
 } from "firebase/auth";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { auth, db } from "./firebase";
-import type { UserProfile, UserRole } from "../types/user";
+import type { FreelanceWorkType, Occupation, UserProfile, UserRole } from "../types/user";
 
 interface AuthContextValue {
   user: User | null;
   profile: UserProfile | null;
   loading: boolean;
-  signup: (
-    email: string,
-    password: string,
-    role: UserRole,
-    displayName: string
+    signup: (
+        email: string,
+        password: string,
+        role: UserRole,
+        displayName: string,
+        occupation: Occupation,
+        freelanceWorkType?: FreelanceWorkType
   ) => Promise<void>;
 }
 
@@ -59,11 +61,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => unsubscribe();
   }, []);
 
-  async function signup(
-    email: string,
-    password: string,
-    role: UserRole,
-    displayName: string
+    async function signup(
+        email: string,
+        password: string,
+        role: UserRole,
+        displayName: string,
+        occupation: Occupation,
+        freelanceWorkType?: FreelanceWorkType
   ) {
     const cred = await createUserWithEmailAndPassword(auth, email, password);
     await updateProfile(cred.user, { displayName });
@@ -72,8 +76,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       uid: cred.user.uid,
       email,
       displayName,
-      role,
-      createdAt: Date.now(),
+            role,
+            createdAt: Date.now(),
+            occupation,
+            ...(role === "freelancer" && freelanceWorkType ? { freelanceWorkType } : {}),
+            communityClicks: [],
+            aiCredits: 0,
     };
     await setDoc(doc(db, "users", cred.user.uid), newProfile);
 
