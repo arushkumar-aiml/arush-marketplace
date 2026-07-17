@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { callAI } from "../../../lib/aiClient";
 
 export async function POST(req: NextRequest) {
     try {
@@ -6,14 +7,6 @@ export async function POST(req: NextRequest) {
 
         if (!project) {
             return NextResponse.json({ error: "project is required" }, { status: 400 });
-        }
-
-        const apiKey = process.env.GROQ_API_KEY;
-        if (!apiKey) {
-            return NextResponse.json(
-                { error: "Server misconfiguration: missing Groq API key" },
-                { status: 500 }
-            );
         }
 
         const skillsText = freelancerProfile?.skills?.length
@@ -47,35 +40,7 @@ Respond ONLY with valid JSON, no markdown, no preamble, in exactly this shape:
   "proposal": "the full proposal text here"
 }`;
 
-        const groqRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${apiKey}`,
-            },
-            body: JSON.stringify({
-                model: "llama-3.3-70b-versatile",
-                messages: [{ role: "user", content: prompt }],
-                response_format: { type: "json_object" },
-                temperature: 0.6,
-            }),
-        });
-
-        if (!groqRes.ok) {
-            const errText = await groqRes.text();
-            console.error("Groq API error:", errText);
-            return NextResponse.json(
-                { error: "Failed to generate proposal" },
-                { status: 502 }
-            );
-        }
-
-        const groqData = await groqRes.json();
-        const rawText: string | undefined = groqData?.choices?.[0]?.message?.content;
-
-        if (!rawText) {
-            return NextResponse.json({ error: "Empty response from Groq" }, { status: 502 });
-        }
+        const rawText = await callAI({ prompt, temperature: 0.6, jsonMode: true });
 
         const parsed = JSON.parse(rawText);
         return NextResponse.json(parsed);

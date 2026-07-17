@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { callAI } from "../../../../lib/aiClient";
+import { getPromptMemory } from "../../../../lib/adeelMemory";
 
 export async function POST(req: NextRequest) {
     try {
@@ -11,17 +13,11 @@ export async function POST(req: NextRequest) {
             );
         }
 
-        const apiKey = process.env.GROQ_API_KEY;
-        if (!apiKey) {
-            return NextResponse.json(
-                { error: "Server misconfiguration: missing Groq API key" },
-                { status: 500 }
-            );
-        }
-
         const answersText = answers
             .map((a: { question: string; answer: string }, i: number) => `${i + 1}. Q: ${a.question}\n   A: ${a.answer}`)
             .join("\n");
+
+        const promptMemory = await getPromptMemory("PRD");
 
         const prompt = `You are Adeel AI, a senior technical product planner for a freelance marketplace platform.
 
@@ -50,37 +46,9 @@ Respond ONLY with valid JSON, no markdown, no preamble, in exactly this shape:
     { "category": "Frontend", "recommendation": "...", "reason": "..." }
   ],
   "risks": ["...", "..."]
-}`;
+}${promptMemory}`;
 
-        const groqRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${apiKey}`,
-            },
-            body: JSON.stringify({
-                model: "llama-3.3-70b-versatile",
-                messages: [{ role: "user", content: prompt }],
-                response_format: { type: "json_object" },
-                temperature: 0.4,
-            }),
-        });
-
-        if (!groqRes.ok) {
-            const errText = await groqRes.text();
-            console.error("Groq API error:", errText);
-            return NextResponse.json(
-                { error: "Failed to generate PRD" },
-                { status: 502 }
-            );
-        }
-
-        const groqData = await groqRes.json();
-        const rawText: string | undefined = groqData?.choices?.[0]?.message?.content;
-
-        if (!rawText) {
-            return NextResponse.json({ error: "Empty response from Groq" }, { status: 502 });
-        }
+        const rawText = await callAI({ prompt, temperature: 0.4, jsonMode: true });
 
         const parsed = JSON.parse(rawText);
         return NextResponse.json(parsed);

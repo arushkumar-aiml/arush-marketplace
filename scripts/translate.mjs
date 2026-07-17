@@ -13,10 +13,10 @@ const LANG_NAMES = {
 };
 
 const englishContent = JSON.parse(fs.readFileSync(SOURCE, "utf-8"));
-const apiKey = process.env.GROQ_API_KEY;
+const apiKey = process.env.OPENROUTER_API_KEY;
 
 if (!apiKey) {
-  console.error("Missing GROQ_API_KEY in .env.local");
+  console.error("Missing OPENROUTER_API_KEY in .env.local");
   process.exit(1);
 }
 
@@ -27,14 +27,14 @@ function sleep(ms) {
 async function translateJSON(targetLangName, json) {
   const prompt = `Translate the string values in this JSON object into ${targetLangName}. Keep all keys exactly the same. Keep the same nested structure. Return ONLY valid JSON, no markdown fences, no explanation.\n\n${JSON.stringify(json, null, 2)}`;
 
-  const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+  const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${apiKey}`,
     },
     body: JSON.stringify({
-      model: "llama-3.3-70b-versatile",
+      model: "meta-llama/llama-3.3-70b-instruct",
       messages: [{ role: "user", content: prompt }],
       response_format: { type: "json_object" },
       temperature: 0.3,
@@ -48,7 +48,7 @@ async function translateJSON(targetLangName, json) {
 
   const data = await res.json();
   const text = data?.choices?.[0]?.message?.content;
-  if (!text) throw new Error("Empty response from Groq");
+  if (!text) throw new Error("Empty response from OpenRouter");
   return JSON.parse(text);
 }
 
