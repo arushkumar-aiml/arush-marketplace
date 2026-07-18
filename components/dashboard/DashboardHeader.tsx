@@ -24,6 +24,7 @@ export default function DashboardHeader({
     const router = useRouter();
     const [notifications, setNotifications] = useState<MarketplaceNotification[]>([]);
     const [notificationsOpen, setNotificationsOpen] = useState(false);
+    const [aiCredits, setAiCredits] = useState<number | null>(null);
 
     useEffect(() => {
         if (!user) return;
@@ -32,6 +33,18 @@ export default function DashboardHeader({
                 .map((item) => ({ id: item.id, ...item.data() }) as MarketplaceNotification)
                 .sort((a, b) => b.createdAt - a.createdAt)
                 .slice(0, 8));
+        });
+    }, [user]);
+
+    useEffect(() => {
+        if (!user) {
+            setAiCredits(null);
+            return;
+        }
+
+        return onSnapshot(doc(db, "users", user.uid), (snapshot) => {
+            const credits = snapshot.data()?.aiCredits;
+            setAiCredits(typeof credits === "number" ? credits : 0);
         });
     }, [user]);
 
@@ -66,6 +79,25 @@ export default function DashboardHeader({
 
             <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
                 <CommunityProgress />
+                <div
+                    aria-label="AI credits remaining"
+                    style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "0.35rem",
+                        color: colors.accentGold,
+                        background: colors.accentGoldSoft,
+                        border: `1px solid ${colors.accentGold}55`,
+                        borderRadius: "999px",
+                        padding: "0.45rem 0.7rem",
+                        fontSize: "0.78rem",
+                        fontWeight: 700,
+                        whiteSpace: "nowrap",
+                    }}
+                >
+                    <span aria-hidden="true">✦</span>
+                    {aiCredits ?? profile?.aiCredits ?? 0} AI Credits
+                </div>
                 {ctaLabel && (
                     <button
                         onClick={onCtaClick}

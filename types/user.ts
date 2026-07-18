@@ -1,5 +1,7 @@
 export type UserRole = "client" | "freelancer" | "admin";
 
+export type UserPlan = "free" | "pro" | "premium";
+
 export type SubscriptionStatus =
     | "active"
     | "canceled"
@@ -32,7 +34,8 @@ export interface UserProfile {
     occupation?: Occupation;
     freelanceWorkType?: FreelanceWorkType;
     communityClicks?: string[];
-    aiCredits?: number;
+    aiCredits: number;
+    plan: UserPlan;
     foundingMember?: boolean;
     subscriptionStatus?: SubscriptionStatus;
     subscriptionPlan?: SubscriptionPlan;

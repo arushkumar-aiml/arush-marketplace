@@ -81,7 +81,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             occupation,
             ...(role === "freelancer" && freelanceWorkType ? { freelanceWorkType } : {}),
             communityClicks: [],
-            aiCredits: 0,
+            aiCredits: 20,
+            plan: "free",
     };
     await setDoc(doc(db, "users", cred.user.uid), newProfile);
 

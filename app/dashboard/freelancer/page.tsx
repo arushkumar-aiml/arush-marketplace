@@ -68,9 +68,14 @@ function FreelancerDashboardContent() {
         setProposalText("");
 
         try {
+            if (!user) throw new Error("Authentication is required");
+
             const res = await fetch("/api/generate-proposal", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${await user.getIdToken()}`,
+                },
                 body: JSON.stringify({
                     project,
                     freelancerProfile: {
@@ -80,13 +85,16 @@ function FreelancerDashboardContent() {
                     },
                 }),
             });
-            if (!res.ok) throw new Error("Failed to generate proposal");
+            if (!res.ok) {
+                const data = await res.json().catch(() => ({}));
+                throw new Error(data.error || "Failed to generate proposal");
+            }
             const data = await res.json();
             setProposalText(data.proposal || "");
             setModalStage("editing");
         } catch (err: unknown) {
             console.error(err);
-            setModalError("Couldn't generate a proposal. You can still write one manually below.");
+            setModalError(err instanceof Error ? err.message : "Couldn't generate a proposal. You can still write one manually below.");
             setModalStage("editing");
         }
     }

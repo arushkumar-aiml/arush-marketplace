@@ -1,12 +1,26 @@
 import { NextRequest, NextResponse } from "next/server";
 import { callAI } from "../../../lib/aiClient";
+import { getAuthenticatedUserId } from "../../../lib/apiAuth";
+import { deductCredits } from "../../../lib/creditSystem";
+
+const INSUFFICIENT_CREDITS_MESSAGE = "You've reached your monthly AI limit. Upgrade to Premium to unlock unlimited premium tools.";
 
 export async function POST(req: NextRequest) {
     try {
+        const userId = await getAuthenticatedUserId(req);
+        if (!userId) {
+            return NextResponse.json({ error: "Authentication is required" }, { status: 401 });
+        }
+
         const { project, freelancerProfile } = await req.json();
 
         if (!project) {
             return NextResponse.json({ error: "project is required" }, { status: 400 });
+        }
+
+        const creditsDeducted = await deductCredits(userId, 2);
+        if (!creditsDeducted) {
+            return NextResponse.json({ error: INSUFFICIENT_CREDITS_MESSAGE }, { status: 402 });
         }
 
         const skillsText = freelancerProfile?.skills?.length
