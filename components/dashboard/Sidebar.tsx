@@ -107,8 +107,13 @@ export default function Sidebar() {
                 borderRight: `1px solid ${colors.border}`,
             }}
         >
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 0.5rem", marginBottom: "1.25rem" }}>
-                <Image src="/logo.png" alt="Arush" width={140} height={35} style={{ objectFit: "contain" }} />
+            <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", padding: "0 0.5rem", marginBottom: "1.25rem" }}>
+                <div>
+                    <Image src="/logo.png" alt="Arush Marketplace" width={140} height={35} style={{ objectFit: "contain" }} />
+                    <p style={{ fontSize: "0.62rem", color: colors.textMuted, marginTop: "0.2rem" }}>
+                        Powered by Arush Labs
+                    </p>
+                </div>
                 <ThemeToggle />
             </div>
 

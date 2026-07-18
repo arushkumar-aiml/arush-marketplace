@@ -60,8 +60,13 @@ export default function SignupPage() {
         <main style={{ minHeight: "100vh", display: "flex", background: colors.codeBg }}>
             <div style={{ flex: 1, padding: "3rem", display: "flex", flexDirection: "column", justifyContent: "space-between", position: "relative", overflow: "hidden" }}>
                 <div style={{ position: "absolute", bottom: "-20%", left: "-10%", width: "500px", height: "500px", background: `radial-gradient(circle, ${colors.accentBlue}22 0%, transparent 70%)`, filter: "blur(40px)" }} />
-                <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", position: "relative", zIndex: 1 }}>
-                    <Image src="/logo.png" alt="Arush Labs" width={140} height={36} style={{ objectFit: "contain" }} />
+                <div style={{ position: "relative", zIndex: 1 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+                        <Image src="/logo.png" alt="Arush Marketplace" width={140} height={36} style={{ objectFit: "contain" }} />
+                    </div>
+                    <p style={{ fontSize: "0.7rem", color: "#5B5D67", marginTop: "0.4rem" }}>
+                        Powered by Arush Labs
+                    </p>
                 </div>
 
                 <div style={{ position: "relative", zIndex: 1, maxWidth: "460px" }}>

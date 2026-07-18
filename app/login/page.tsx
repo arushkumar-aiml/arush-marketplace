@@ -142,8 +142,11 @@ export default function LoginPage() {
                     boxShadow: `0 0 60px ${colors.accentBlue}15`,
                 }}
             >
-                <div style={{ display: "flex", justifyContent: "center", marginBottom: "2rem" }}>
-                    <Image src="/logo.png" alt="Arush Labs" width={170} height={44} style={{ objectFit: "contain" }} priority />
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: "2rem" }}>
+                    <Image src="/logo.png" alt="Arush Marketplace" width={170} height={44} style={{ objectFit: "contain" }} priority />
+                    <p style={{ fontSize: "0.7rem", color: "#5B5D67", marginTop: "0.4rem" }}>
+                        Powered by Arush Labs
+                    </p>
                 </div>
 
                 <h1 style={{ fontSize: "1.6rem", fontWeight: 600, color: "white", textAlign: "center", marginBottom: "0.4rem" }}>
