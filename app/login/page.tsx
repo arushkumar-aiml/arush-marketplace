@@ -19,9 +19,8 @@ function getErrorMessage(err: unknown): string {
         switch (err.code) {
             case "auth/invalid-credential":
             case "auth/wrong-password":
-                return "Incorrect email or password.";
             case "auth/user-not-found":
-                return "No account found with this email.";
+                return "Incorrect email or password.";
             case "auth/too-many-requests":
                 return "Too many attempts. Please wait a bit and try again.";
             case "auth/network-request-failed":
@@ -79,7 +78,7 @@ export default function LoginPage() {
 
         try {
             await sendPasswordResetEmail(auth, email);
-            setResetMessage("Password reset email sent. Check your inbox.");
+            setResetMessage("If an account exists for this email, a password reset link will be sent. Check your inbox.");
         } catch (err: unknown) {
             console.error("Reset error:", err);
             setError(getErrorMessage(err));
