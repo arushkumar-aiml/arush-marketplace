@@ -1,413 +1,127 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { collection, query, where, orderBy, getDocs, addDoc, getDoc, doc } from "firebase/firestore";
-import { db } from "../../../lib/firebase";
-import { useAuth } from "../../../lib/useAuth";
-import { useTheme } from "../../../lib/useTheme";
-import RequireRole from "../../../components/RequireRole";
 import Sidebar from "../../../components/dashboard/Sidebar";
-import DashboardHeader from "../../../components/dashboard/DashboardHeader";
-import type { Project } from "../../../types/project";
-import { Wallet, Clock, Briefcase, CheckCircle2, TrendingUp, Sparkles, X, Send } from "lucide-react";
-
-function calculateMatch(projectText: string, skills: string[]): number {
-    if (!skills.length) return 70;
-    const lowerText = projectText.toLowerCase();
-    const matched = skills.filter((s) => lowerText.includes(s.toLowerCase())).length;
-    const ratio = matched / skills.length;
-    return Math.min(99, Math.max(65, Math.round(65 + ratio * 34)));
-}
-
-type ModalStage = "generating" | "editing" | "submitting" | "error";
-
-function FreelancerDashboardContent() {
-    const { user, profile } = useAuth();
-    const router = useRouter();
-    const { colors } = useTheme();
-    const [projects, setProjects] = useState<Project[]>([]);
-    const [loadingProjects, setLoadingProjects] = useState(true);
-    const [respondedIds, setRespondedIds] = useState<Set<string>>(new Set());
-
-    const [modalProject, setModalProject] = useState<Project | null>(null);
-    const [modalStage, setModalStage] = useState<ModalStage>("generating");
-    const [proposalText, setProposalText] = useState("");
-    const [modalError, setModalError] = useState("");
-
-    useEffect(() => {
-        async function fetchOpenProjects() {
-            const q = query(
-                collection(db, "projects"),
-                where("status", "==", "open"),
-                orderBy("createdAt", "desc")
-            );
-            const snap = await getDocs(q);
-            setProjects(snap.docs.map((d) => ({ id: d.id, ...d.data() }) as Project));
-            setLoadingProjects(false);
-        }
-        fetchOpenProjects();
-    }, []);
-
-    async function handleRespond(projectId: string, status: "accepted" | "declined") {
-        if (!user) return;
-        await addDoc(collection(db, "applications"), {
-            projectId,
-            freelancerId: user.uid,
-            freelancerName: profile?.displayName || "Freelancer",
-            status,
-            createdAt: Date.now(),
-        });
-        setRespondedIds((prev) => new Set(prev).add(projectId));
-    }
-
-    async function openApplyModal(project: Project) {
-        setModalProject(project);
-        setModalStage("generating");
-        setModalError("");
-        setProposalText("");
-
-        try {
-            if (!user) throw new Error("Authentication is required");
-
-            const res = await fetch("/api/generate-proposal", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${await user.getIdToken()}`,
-                },
-                body: JSON.stringify({
-                    project,
-                    freelancerProfile: {
-                        displayName: profile?.displayName,
-                        skills: profile?.skills,
-                        bio: profile?.bio,
-                    },
-                }),
-            });
-            if (!res.ok) {
-                const data = await res.json().catch(() => ({}));
-                throw new Error(data.error || "Failed to generate proposal");
-            }
-            const data = await res.json();
-            setProposalText(data.proposal || "");
-            setModalStage("editing");
-        } catch (err: unknown) {
-            console.error(err);
-            setModalError(err instanceof Error ? err.message : "Couldn't generate a proposal. You can still write one manually below.");
-            setModalStage("editing");
-        }
-    }
-
-    function closeModal() {
-        setModalProject(null);
-        setModalStage("generating");
-        setProposalText("");
-        setModalError("");
-    }
-
-    async function submitProposal() {
-        if (!modalProject || !user || !profile || !proposalText.trim()) return;
-        setModalStage("submitting");
-        try {
-            await addDoc(collection(db, "applications"), {
-                projectId: modalProject.id,
-                freelancerId: user.uid,
-                freelancerName: profile.displayName,
-                status: "interested",
-                createdAt: Date.now(),
-                proposalText: proposalText.trim(),
-            });
-
-            // Auto-create a conversation so client and freelancer can start chatting
-            const clientSnap = await getDoc(doc(db, "users", modalProject.clientId));
-            const clientName = clientSnap.exists()
-                ? clientSnap.data().displayName || "Client"
-                : "Client";
-
-            await addDoc(collection(db, "conversations"), {
-                projectId: modalProject.id,
-                projectTitle: modalProject.title,
-                clientId: modalProject.clientId,
-                clientName,
-                freelancerId: user.uid,
-                freelancerName: profile.displayName,
-                lastMessage: proposalText.trim(),
-                lastMessageAt: Date.now(),
-                createdAt: Date.now(),
-            });
-
-            await addDoc(collection(db, "notifications"), {
-                recipientId: modalProject.clientId,
-                type: "application",
-                message: `${profile.displayName} sent a proposal for ${modalProject.title}.`,
-                read: false,
-                createdAt: Date.now(),
-                link: "/dashboard/client/projects",
-            });
-
-            setRespondedIds((prev) => new Set(prev).add(modalProject.id));
-            closeModal();
-        } catch (err: unknown) {
-            console.error(err);
-            setModalError("Couldn't submit your proposal. Please try again.");
-            setModalStage("editing");
-        }
-    }
-
-    const hasProfile = profile?.skills && profile.skills.length > 0;
-    const acceptedCount = Array.from(respondedIds).length;
-
-    const avgMatch =
-        projects.length > 0
-            ? Math.round(
-                projects.reduce(
-                    (sum, p) =>
-                        sum + calculateMatch(`${p.title} ${p.rawDescription}`, profile?.skills || []),
-                    0
-                ) / projects.length
-            )
-            : 0;
-
-    return (
-        <div style={{ display: "flex", minHeight: "100vh", background: colors.bgPrimary }}>
-            <Sidebar />
-            <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0 }}>
-                <DashboardHeader
-                    subtitle="Discover projects matched to your skills."
-                    ctaLabel="Edit Profile"
-                    onCtaClick={() => router.push("/dashboard/freelancer/profile")}
-                />
-
-                <div style={{ flex: 1, padding: "2rem", maxWidth: "820px", overflowY: "auto" }}>
-                    {!hasProfile && (
-                        <div
-                            style={{
-                                background: colors.accentGoldSoft,
-                                border: `1px solid ${colors.accentGold}80`,
-                                borderRadius: "12px",
-                                padding: "1rem",
-                                marginBottom: "2rem",
-                                display: "flex",
-                                justifyContent: "space-between",
-                                alignItems: "center",
-                            }}
-                        >
-                            <p style={{ fontSize: "0.9rem", color: colors.textPrimary }}>
-                                Complete your profile to start getting matched with projects.
-                            </p>
-                            <button
-                                onClick={() => router.push("/dashboard/freelancer/profile")}
-                                style={{ fontSize: "0.9rem", fontWeight: 600, color: colors.accentGold, background: "none", border: "none", cursor: "pointer", whiteSpace: "nowrap", marginLeft: "1rem" }}
-                            >
-                                Complete now →
-                            </button>
-                        </div>
-                    )}
-
-                    <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "0.9rem", marginBottom: "2rem" }}>
-                        <div style={{ border: `1px solid ${colors.border}`, borderRadius: "12px", padding: "1rem" }}>
-                            <Briefcase size={16} color={colors.accentBlue} style={{ marginBottom: "0.5rem" }} />
-                            <div style={{ fontSize: "1.3rem", fontWeight: 700, color: colors.textPrimary }}>{projects.length}</div>
-                            <div style={{ fontSize: "0.78rem", color: colors.textMuted }}>Open Projects</div>
-                        </div>
-                        <div style={{ border: `1px solid ${colors.border}`, borderRadius: "12px", padding: "1rem" }}>
-                            <CheckCircle2 size={16} color={colors.success} style={{ marginBottom: "0.5rem" }} />
-                            <div style={{ fontSize: "1.3rem", fontWeight: 700, color: colors.textPrimary }}>{acceptedCount}</div>
-                            <div style={{ fontSize: "0.78rem", color: colors.textMuted }}>Responses Sent</div>
-                        </div>
-                        <div style={{ border: `1px solid ${colors.border}`, borderRadius: "12px", padding: "1rem" }}>
-                            <TrendingUp size={16} color={colors.accentGold} style={{ marginBottom: "0.5rem" }} />
-                            <div style={{ fontSize: "1.3rem", fontWeight: 700, color: colors.textPrimary }}>
-                                {hasProfile ? `${avgMatch}%` : "—"}
-                            </div>
-                            <div style={{ fontSize: "0.78rem", color: colors.textMuted }}>Avg. AI Match</div>
-                        </div>
-                    </div>
-
-                    <h2 style={{ fontSize: "1.1rem", fontWeight: 600, color: colors.textPrimary, marginBottom: "1.5rem" }}>
-                        Open Projects
-                    </h2>
-
-                    {loadingProjects ? (
-                        <p style={{ color: colors.textMuted }}>Loading projects...</p>
-                    ) : projects.length === 0 ? (
-                        <div style={{ background: colors.bgSecondary, border: `1px solid ${colors.border}`, borderRadius: "16px", padding: "2rem", textAlign: "center" }}>
-                            <p style={{ color: colors.textMuted }}>No open projects right now. Check back soon.</p>
-                        </div>
-                    ) : (
-                        <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-                            {projects.map((p) => {
-                                const responded = respondedIds.has(p.id);
-                                const match = calculateMatch(`${p.title} ${p.rawDescription}`, profile?.skills || []);
-                                return (
-                                    <div key={p.id} style={{ border: `1px solid ${colors.border}`, borderRadius: "12px", padding: "1.25rem" }}>
-                                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "0.5rem" }}>
-                                            <h3 style={{ fontWeight: 600, color: colors.textPrimary }}>{p.title}</h3>
-                                            <span
-                                                style={{
-                                                    fontSize: "0.75rem",
-                                                    fontWeight: 700,
-                                                    color: match >= 85 ? colors.success : colors.accentBlue,
-                                                    background: match >= 85 ? colors.successSoft : colors.accentBlueSoft,
-                                                    borderRadius: "999px",
-                                                    padding: "0.25rem 0.7rem",
-                                                    whiteSpace: "nowrap",
-                                                }}
-                                            >
-                                                {match}% Match
-                                            </span>
-                                        </div>
-                                        <p style={{ fontSize: "0.9rem", color: colors.textSecondary, marginBottom: "1rem", lineHeight: 1.5 }}>
-                                            {p.rawDescription}
-                                        </p>
-                                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                                            <div style={{ display: "flex", gap: "1.25rem", fontSize: "0.8rem", color: colors.textMuted }}>
-                                                <span style={{ display: "flex", alignItems: "center", gap: "0.35rem" }}>
-                                                    <Wallet size={14} /> ₹{p.budget.toLocaleString()}
-                                                </span>
-                                                <span style={{ display: "flex", alignItems: "center", gap: "0.35rem" }}>
-                                                    <Clock size={14} /> {p.timelineDays} days
-                                                </span>
-                                            </div>
-
-                                            {responded ? (
-                                                <span style={{ fontSize: "0.8rem", color: colors.textMuted }}>Response sent ✓</span>
-                                            ) : (
-                                                <div style={{ display: "flex", gap: "0.5rem" }}>
-                                                    <button
-                                                        onClick={() => handleRespond(p.id, "declined")}
-                                                        style={{ fontSize: "0.8rem", border: `1px solid ${colors.border}`, background: colors.bgPrimary, color: colors.textPrimary, borderRadius: "999px", padding: "0.4rem 1rem", cursor: "pointer" }}
-                                                    >
-                                                        Decline
-                                                    </button>
-                                                    <button
-                                                        onClick={() => openApplyModal(p)}
-                                                        style={{ display: "flex", alignItems: "center", gap: "0.35rem", fontSize: "0.8rem", background: colors.accentBlue, color: "#FFFFFF", border: "none", borderRadius: "999px", padding: "0.4rem 1rem", cursor: "pointer" }}
-                                                    >
-                                                        <Sparkles size={13} />
-                                                        Apply with AI
-                                                    </button>
-                                                </div>
-                                            )}
-                                        </div>
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    )}
-                </div>
-            </div>
-
-            {modalProject && (
-                <div
-                    style={{
-                        position: "fixed",
-                        inset: 0,
-                        background: "rgba(0,0,0,0.5)",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        zIndex: 1000,
-                        padding: "1rem",
-                    }}
-                    onClick={closeModal}
-                >
-                    <div
-                        onClick={(e) => e.stopPropagation()}
-                        style={{
-                            background: colors.bgPrimary,
-                            borderRadius: "16px",
-                            padding: "1.75rem",
-                            width: "100%",
-                            maxWidth: "560px",
-                            maxHeight: "85vh",
-                            overflowY: "auto",
-                            border: `1px solid ${colors.border}`,
-                        }}
-                    >
-                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
-                            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                                <Sparkles size={17} color={colors.accentBlue} />
-                                <h2 style={{ fontSize: "1.05rem", fontWeight: 700, color: colors.textPrimary }}>
-                                    Apply to &quot;{modalProject.title}&quot;
-                                </h2>
-                            </div>
-                            <button onClick={closeModal} style={{ background: "none", border: "none", cursor: "pointer", color: colors.textMuted }}>
-                                <X size={20} />
-                            </button>
-                        </div>
-
-                        {modalStage === "generating" && (
-                            <div style={{ textAlign: "center", padding: "2.5rem 0", color: colors.textSecondary }}>
-                                Adeel AI is drafting your proposal...
-                            </div>
-                        )}
-
-                        {(modalStage === "editing" || modalStage === "submitting") && (
-                            <>
-                                <p style={{ fontSize: "0.8rem", color: colors.textMuted, marginBottom: "0.6rem" }}>
-                                    AI-generated draft — feel free to edit before sending.
-                                </p>
-                                <textarea
-                                    value={proposalText}
-                                    onChange={(e) => setProposalText(e.target.value)}
-                                    rows={9}
-                                    style={{
-                                        width: "100%",
-                                        fontSize: "0.875rem",
-                                        padding: "0.85rem",
-                                        borderRadius: "10px",
-                                        border: `1px solid ${colors.border}`,
-                                        resize: "vertical",
-                                        boxSizing: "border-box",
-                                        fontFamily: "inherit",
-                                        outline: "none",
-                                        background: colors.bgSecondary,
-                                        color: colors.textPrimary,
-                                        lineHeight: 1.6,
-                                    }}
-                                />
-                                {modalError && (
-                                    <p style={{ color: colors.danger, fontSize: "0.8rem", marginTop: "0.5rem" }}>{modalError}</p>
-                                )}
-                                <button
-                                    onClick={submitProposal}
-                                    disabled={modalStage === "submitting" || !proposalText.trim()}
-                                    style={{
-                                        marginTop: "1rem",
-                                        width: "100%",
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "center",
-                                        gap: "0.5rem",
-                                        background: colors.accentBlue,
-                                        color: "#FFFFFF",
-                                        border: "none",
-                                        borderRadius: "10px",
-                                        padding: "0.8rem",
-                                        fontSize: "0.9rem",
-                                        fontWeight: 600,
-                                        cursor: modalStage === "submitting" ? "default" : "pointer",
-                                        opacity: modalStage === "submitting" || !proposalText.trim() ? 0.6 : 1,
-                                    }}
-                                >
-                                    <Send size={15} />
-                                    {modalStage === "submitting" ? "Sending..." : "Send Proposal"}
-                                </button>
-                            </>
-                        )}
-                    </div>
-                </div>
-            )}
-        </div>
-    );
-}
+import { useTheme } from "../../../lib/useTheme";
+import { 
+  Briefcase, 
+  Sparkles, 
+  TrendingUp, 
+  CheckCircle2, 
+  Wallet, 
+  Clock, 
+  Star,
+  Search,
+  Filter,
+  ArrowRight,
+  Bot,
+  Zap
+} from "lucide-react";
 
 export default function FreelancerDashboardPage() {
+    const { colors } = useTheme();
+
+    const StatCard = ({ icon: Icon, label, value, color }: any) => (
+        <div style={{ background: "#111827", padding: "1.25rem", borderRadius: "16px", border: "1px solid rgba(255,255,255,0.05)" }}>
+            <div style={{ width: "32px", height: "32px", background: `${color}11`, borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "0.75rem" }}>
+                <Icon size={16} color={color} />
+            </div>
+            <div style={{ fontSize: "1.25rem", fontWeight: 800, color: "white", marginBottom: "0.25rem" }}>{value}</div>
+            <div style={{ fontSize: "0.75rem", color: "#6B7280", fontWeight: 500 }}>{label}</div>
+        </div>
+    );
+
     return (
-        <RequireRole role="freelancer">
-            <FreelancerDashboardContent />
-        </RequireRole>
+        <div style={{ display: "flex", minHeight: "100vh", background: "#030712" }}>
+            <Sidebar />
+            <main style={{ flex: 1, padding: "2.5rem", maxWidth: "1200px", margin: "0 auto" }}>
+                <header style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "3rem" }}>
+                    <div>
+                        <h1 style={{ fontSize: "1.75rem", fontWeight: 800, color: "white", marginBottom: "0.5rem" }}>Work Explorer</h1>
+                        <p style={{ color: "#4B5563", fontSize: "0.9rem" }}>AI has matched 12 new projects to your profile today.</p>
+                    </div>
+                    <div style={{ display: "flex", gap: "0.75rem" }}>
+                         <div style={{ position: "relative" }}>
+                            <Search size={16} color="#4B5563" style={{ position: "absolute", left: "1rem", top: "50%", transform: "translateY(-50%)" }} />
+                            <input 
+                                type="text" 
+                                placeholder="Search projects..." 
+                                style={{ background: "#111827", border: "1px solid rgba(255,255,255,0.05)", borderRadius: "10px", padding: "0.75rem 1rem 0.75rem 2.75rem", color: "white", fontSize: "0.85rem", width: "240px", outline: "none" }}
+                            />
+                         </div>
+                         <button style={{ background: "#111827", border: "1px solid rgba(255,255,255,0.05)", borderRadius: "10px", padding: "0.75rem", color: "white", cursor: "pointer" }}>
+                            <Filter size={18} />
+                         </button>
+                    </div>
+                </header>
+
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "1.25rem", marginBottom: "3rem" }}>
+                    <StatCard icon={Briefcase} label="Matched Projects" value="12" color="#3B82F6" />
+                    <StatCard icon={Sparkles} label="AI Proposal Score" value="98%" color="#8B5CF6" />
+                    <StatCard icon={TrendingUp} label="Profile Strength" value="Top 5%" color="#10B981" />
+                    <StatCard icon={Wallet} label="Earnings" value="$2,450" color="#F59E0B" />
+                </div>
+
+                <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: "2.5rem" }}>
+                    <section>
+                         <h2 style={{ fontSize: "1.1rem", fontWeight: 700, color: "white", marginBottom: "1.5rem" }}>Recommended for You</h2>
+                         <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+                            {[
+                                { title: "AI SaaS Platform", budget: "$5,000", match: 99, type: "Web Dev", time: "2h ago" },
+                                { title: "Fintech Mobile App", budget: "$8,500", match: 94, type: "Mobile", time: "5h ago" },
+                                { title: "Crypto Dashboard", budget: "$3,200", match: 88, type: "Design", time: "1d ago" }
+                            ].map((p, i) => (
+                                <div key={i} style={{ background: "#111827", padding: "1.5rem", borderRadius: "16px", border: "1px solid rgba(255,255,255,0.05)", position: "relative", overflow: "hidden" }}>
+                                    <div style={{ position: "absolute", top: 0, right: 0, background: p.match >= 95 ? "#3B82F6" : "rgba(255,255,255,0.05)", color: "white", fontSize: "0.7rem", fontWeight: 800, padding: "0.4rem 0.8rem", borderBottomLeftRadius: "12px" }}>
+                                        {p.match}% MATCH
+                                    </div>
+                                    <div style={{ marginBottom: "1rem" }}>
+                                        <div style={{ color: "#3B82F6", fontSize: "0.7rem", fontWeight: 700, letterSpacing: "0.05em", marginBottom: "0.5rem", textTransform: "uppercase" }}>{p.type}</div>
+                                        <h3 style={{ fontSize: "1.1rem", fontWeight: 700, color: "white", marginBottom: "0.5rem" }}>{p.title}</h3>
+                                        <p style={{ fontSize: "0.85rem", color: "#6B7280", lineHeight: 1.5 }}>Building a high-performance {p.title} with modern tech stack. Requires experience in AI integration...</p>
+                                    </div>
+                                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingTop: "1rem", borderTop: "1px solid rgba(255,255,255,0.03)" }}>
+                                        <div style={{ display: "flex", gap: "1.5rem", fontSize: "0.8rem", color: "#4B5563" }}>
+                                            <span style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}><Wallet size={14} /> {p.budget}</span>
+                                            <span style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}><Clock size={14} /> {p.time}</span>
+                                        </div>
+                                        <button style={{ background: "#3B82F6", color: "white", border: "none", borderRadius: "8px", padding: "0.5rem 1rem", fontSize: "0.8rem", fontWeight: 600, display: "flex", alignItems: "center", gap: "0.4rem", cursor: "pointer" }}>
+                                            <Sparkles size={14} /> Apply with AI
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
+                         </div>
+                    </section>
+
+                    <aside>
+                         <div style={{ background: "linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%)", padding: "1.5rem", borderRadius: "16px", marginBottom: "2rem", color: "white" }}>
+                            <Bot size={24} style={{ marginBottom: "1rem" }} />
+                            <h3 style={{ fontSize: "1rem", fontWeight: 700, marginBottom: "0.5rem" }}>AI Proposal Lab</h3>
+                            <p style={{ fontSize: "0.8rem", opacity: 0.8, lineHeight: 1.5, marginBottom: "1.25rem" }}>Let Adeel AI analyze your profile and the project requirements to draft the perfect proposal.</p>
+                            <button style={{ width: "100%", background: "white", color: "#3B82F6", border: "none", borderRadius: "10px", padding: "0.75rem", fontSize: "0.85rem", fontWeight: 700, cursor: "pointer" }}>Try Now</button>
+                         </div>
+
+                         <h2 style={{ fontSize: "1.1rem", fontWeight: 700, color: "white", marginBottom: "1.5rem" }}>Career Growth</h2>
+                         <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+                             {[
+                                { title: "Complete Profile", progress: 90, icon: Star, color: "#F59E0B" },
+                                { title: "Skill Verification", progress: 45, icon: CheckCircle2, color: "#10B981" }
+                             ].map((c, i) => (
+                                <div key={i}>
+                                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.8rem", marginBottom: "0.5rem" }}>
+                                        <span style={{ color: "#D1D5DB", fontWeight: 500 }}>{c.title}</span>
+                                        <span style={{ color: "white", fontWeight: 700 }}>{c.progress}%</span>
+                                    </div>
+                                    <div style={{ width: "100%", height: "4px", background: "rgba(255,255,255,0.05)", borderRadius: "2px", overflow: "hidden" }}>
+                                        <div style={{ width: `${c.progress}%`, height: "100%", background: c.color }} />
+                                    </div>
+                                </div>
+                             ))}
+                         </div>
+                    </aside>
+                </div>
+            </main>
+        </div>
     );
 }

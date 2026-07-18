@@ -22,13 +22,10 @@ interface AuthContextValue {
   user: User | null;
   profile: UserProfile | null;
   loading: boolean;
-    signup: (
-        email: string,
-        password: string,
-        role: UserRole,
-        displayName: string,
-        occupation: Occupation,
-        freelanceWorkType?: FreelanceWorkType
+  signup: (
+    email: string,
+    password: string,
+    displayName: string
   ) => Promise<void>;
 }
 
@@ -61,13 +58,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => unsubscribe();
   }, []);
 
-    async function signup(
-        email: string,
-        password: string,
-        role: UserRole,
-        displayName: string,
-        occupation: Occupation,
-        freelanceWorkType?: FreelanceWorkType
+  async function signup(
+    email: string,
+    password: string,
+    displayName: string
   ) {
     const cred = await createUserWithEmailAndPassword(auth, email, password);
     await updateProfile(cred.user, { displayName });
@@ -76,21 +70,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       uid: cred.user.uid,
       email,
       displayName,
-            role,
-            createdAt: Date.now(),
-            occupation,
-            ...(role === "freelancer" && freelanceWorkType ? { freelanceWorkType } : {}),
-            communityClicks: [],
-            aiCredits: 20,
-            plan: "free",
+      role: "client", // Default role, will be updated in onboarding
+      createdAt: Date.now(),
+      aiCredits: 20,
+      plan: "free",
+      onboardingCompleted: false,
+      onboardingStep: 0,
     };
     await setDoc(doc(db, "users", cred.user.uid), newProfile);
 
     await sendEmailVerification(cred.user, {
       url: `${window.location.origin}/verify-email`,
     });
-
-    // onAuthStateChanged listener above will pick up the new user/profile automatically
   }
 
   return (

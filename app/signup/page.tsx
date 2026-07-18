@@ -6,9 +6,8 @@ import Image from "next/image";
 import { FirebaseError } from "firebase/app";
 import { useAuth } from "../../lib/useAuth";
 import { useTheme } from "../../lib/useTheme";
-import type { FreelanceWorkType, Occupation, UserRole } from "../../types/user";
 import AuthTransition from "../../components/AuthTransition";
-import { Bot, ShieldCheck, Zap } from "lucide-react";
+import { Bot, ShieldCheck, Zap, ArrowRight } from "lucide-react";
 
 function getErrorMessage(err: unknown): string {
     if (err instanceof FirebaseError) {
@@ -30,12 +29,9 @@ export default function SignupPage() {
     const router = useRouter();
     const { colors } = useTheme();
     const { signup } = useAuth();
-    const [role, setRole] = useState<UserRole>("client");
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [occupation, setOccupation] = useState<Occupation>("Student");
-    const [freelanceWorkType, setFreelanceWorkType] = useState<FreelanceWorkType>("Web Development");
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
 
@@ -44,8 +40,8 @@ export default function SignupPage() {
         setError("");
         setLoading(true);
         try {
-            await signup(email, password, role, name, occupation, role === "freelancer" ? freelanceWorkType : undefined);
-            router.push("/verify-email");
+            await signup(email, password, name);
+            router.push("/onboarding");
         } catch (err: unknown) {
             setError(getErrorMessage(err));
             setLoading(false);
@@ -57,173 +53,89 @@ export default function SignupPage() {
     }
 
     return (
-        <main style={{ minHeight: "100vh", display: "flex", background: colors.codeBg }}>
+        <main style={{ minHeight: "100vh", display: "flex", background: "#0B0C10" }}>
             <div style={{ flex: 1, padding: "3rem", display: "flex", flexDirection: "column", justifyContent: "space-between", position: "relative", overflow: "hidden" }}>
-                <div style={{ position: "absolute", bottom: "-20%", left: "-10%", width: "500px", height: "500px", background: `radial-gradient(circle, ${colors.accentBlue}22 0%, transparent 70%)`, filter: "blur(40px)" }} />
+                <div style={{ position: "absolute", bottom: "-20%", left: "-10%", width: "500px", height: "500px", background: "radial-gradient(circle, #3B82F622 0%, transparent 70%)", filter: "blur(40px)" }} />
                 <div style={{ position: "relative", zIndex: 1 }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-                        <Image src="/logo.png" alt="Arush Marketplace" width={140} height={36} style={{ objectFit: "contain" }} />
-                    </div>
-                    <p style={{ fontSize: "0.7rem", color: "#5B5D67", marginTop: "0.4rem" }}>
-                        Powered by Arush Labs
-                    </p>
+                    <Image src="/logo.png" alt="Arush" width={110} height={28} style={{ objectFit: "contain" }} />
                 </div>
 
                 <div style={{ position: "relative", zIndex: 1, maxWidth: "460px" }}>
-                    <h1 style={{ fontSize: "2.2rem", fontWeight: 700, color: "white", lineHeight: 1.2, marginBottom: "1rem" }}>
-                        Join the Future of Freelancing.{" "}
-                        <span style={{ background: `linear-gradient(135deg, ${colors.accentBlue}, ${colors.accentGold})`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
-                            Powered by AI.
-                        </span>
+                    <h1 style={{ fontSize: "2.5rem", fontWeight: 800, color: "white", lineHeight: 1.1, marginBottom: "1.5rem" }}>
+                        Join the Future of <span style={{ color: "#3B82F6" }}>Product Development.</span>
                     </h1>
-                    <p style={{ color: "#9A9CA5", fontSize: "1rem", marginBottom: "2.5rem" }}>
-                        Create your account and unlock a world of opportunities with Arush Marketplace.
+                    <p style={{ color: "#9CA3AF", fontSize: "1.1rem", marginBottom: "3rem", lineHeight: 1.6 }}>
+                        One account. Unlimited potential. Experience AI-guided building and working.
                     </p>
 
-                    <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
-                        <div style={{ display: "flex", gap: "0.9rem", alignItems: "flex-start" }}>
-                            <div style={{ width: "40px", height: "40px", borderRadius: "10px", background: `${colors.accentBlue}22`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                                <Bot size={18} color={colors.accentBlue} />
+                    <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+                        {[
+                            { icon: Bot, title: "AI-Native Workflow", desc: "AI guides you from idea to launch." },
+                            { icon: ShieldCheck, title: "Secure & Trusted", desc: "Enterprise-grade security for your data." },
+                            { icon: Zap, title: "Lightning Fast", desc: "Build and scale at the speed of thought." }
+                        ].map((f, i) => (
+                            <div key={i} style={{ display: "flex", gap: "1rem", alignItems: "flex-start" }}>
+                                <div style={{ width: "40px", height: "40px", borderRadius: "10px", background: "rgba(59, 130, 246, 0.1)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                                    <f.icon size={20} color="#3B82F6" />
+                                </div>
+                                <div>
+                                    <div style={{ color: "white", fontWeight: 600 }}>{f.title}</div>
+                                    <div style={{ color: "#6B7280", fontSize: "0.9rem" }}>{f.desc}</div>
+                                </div>
                             </div>
-                            <div>
-                                <div style={{ color: "white", fontWeight: 600, fontSize: "0.95rem" }}>AI-Powered Matching</div>
-                                <div style={{ color: "#7A7C87", fontSize: "0.85rem" }}>Get matched with the perfect opportunities.</div>
-                            </div>
-                        </div>
-                        <div style={{ display: "flex", gap: "0.9rem", alignItems: "flex-start" }}>
-                            <div style={{ width: "40px", height: "40px", borderRadius: "10px", background: `${colors.accentGold}22`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                                <ShieldCheck size={18} color={colors.accentGold} />
-                            </div>
-                            <div>
-                                <div style={{ color: "white", fontWeight: 600, fontSize: "0.95rem" }}>Secure &amp; Trusted</div>
-                                <div style={{ color: "#7A7C87", fontSize: "0.85rem" }}>Your data and payments are 100% secure.</div>
-                            </div>
-                        </div>
-                        <div style={{ display: "flex", gap: "0.9rem", alignItems: "flex-start" }}>
-                            <div style={{ width: "40px", height: "40px", borderRadius: "10px", background: `${colors.accentBlue}22`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                                <Zap size={18} color={colors.accentBlue} />
-                            </div>
-                            <div>
-                                <div style={{ color: "white", fontWeight: 600, fontSize: "0.95rem" }}>Lightning Fast</div>
-                                <div style={{ color: "#7A7C87", fontSize: "0.85rem" }}>Built for speed, designed for growth.</div>
-                            </div>
-                        </div>
+                        ))}
                     </div>
                 </div>
 
-                <p style={{ color: "#5B5D67", fontSize: "0.8rem", position: "relative", zIndex: 1 }}>
+                <p style={{ color: "#374151", fontSize: "0.85rem", position: "relative", zIndex: 1 }}>
                     © 2026 Arush Labs. All rights reserved.
                 </p>
             </div>
 
             <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", padding: "2rem" }}>
-                <div
-                    style={{
-                        width: "100%",
-                        maxWidth: "440px",
-                        background: "rgba(15, 16, 22, 0.85)",
-                        backdropFilter: "blur(12px)",
-                        border: `1px solid ${colors.accentGold}40`,
-                        borderRadius: "20px",
-                        padding: "2.5rem",
-                    }}
-                >
-                    <h2 style={{ fontSize: "1.4rem", fontWeight: 600, color: "white", textAlign: "center", marginBottom: "1.75rem" }}>
-                        Create your account
-                    </h2>
+                <div style={{ width: "100%", maxWidth: "400px", background: "#111827", border: "1px solid rgba(255,255,255,0.05)", borderRadius: "24px", padding: "2.5rem" }}>
+                    <h2 style={{ fontSize: "1.5rem", fontWeight: 700, color: "white", textAlign: "center", marginBottom: "2rem" }}>Create Account</h2>
 
-                    <div style={{ display: "flex", gap: "0.4rem", marginBottom: "1.5rem", padding: "0.3rem", background: "#14161F", border: "1px solid #2A2D38", borderRadius: "10px" }}>
-                        {(["client", "freelancer"] as UserRole[]).map((r) => (
-                            <button
-                                key={r}
-                                type="button"
-                                onClick={() => setRole(r)}
-                                style={{
-                                    flex: 1,
-                                    padding: "0.55rem",
-                                    borderRadius: "8px",
-                                    border: "none",
-                                    textTransform: "capitalize",
-                                    cursor: "pointer",
-                                    background: role === r ? `linear-gradient(135deg, ${colors.accentBlue}, #4C6FFF)` : "transparent",
-                                    color: role === r ? "white" : "#9A9CA5",
-                                    fontWeight: 500,
-                                }}
-                            >
-                                {r}
-                            </button>
-                        ))}
-                    </div>
-
-                    <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1.1rem" }}>
+                    <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
                         <input
                             type="text"
                             placeholder="Full Name"
                             required
                             value={name}
                             onChange={(e) => setName(e.target.value)}
-                            style={{ width: "100%", padding: "0.85rem 1rem", borderRadius: "10px", border: "1px solid #2A2D38", background: "#14161F", color: "white", boxSizing: "border-box", outline: "none" }}
+                            style={{ width: "100%", padding: "1rem", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.1)", background: "rgba(255,255,255,0.03)", color: "white", boxSizing: "border-box", outline: "none" }}
                         />
-                        <select
-                            required
-                            value={occupation}
-                            onChange={(e) => setOccupation(e.target.value as Occupation)}
-                            style={{ width: "100%", padding: "0.85rem 1rem", borderRadius: "10px", border: `1px solid ${colors.border}`, background: colors.bgSecondary, color: colors.textPrimary, boxSizing: "border-box", outline: "none" }}
-                        >
-                            <option value="Student">Student</option>
-                            <option value="Working Professional">Working Professional</option>
-                            <option value="Business Owner">Business Owner</option>
-                            <option value="Other">Other</option>
-                        </select>
-                        {role === "freelancer" && (
-                            <select
-                                required
-                                value={freelanceWorkType}
-                                onChange={(e) => setFreelanceWorkType(e.target.value as FreelanceWorkType)}
-                                style={{ width: "100%", padding: "0.85rem 1rem", borderRadius: "10px", border: `1px solid ${colors.border}`, background: colors.bgSecondary, color: colors.textPrimary, boxSizing: "border-box", outline: "none" }}
-                            >
-                                <option value="Web Development">Web Development</option>
-                                <option value="Design">Design</option>
-                                <option value="Writing">Writing</option>
-                                <option value="Video Editing">Video Editing</option>
-                                <option value="Marketing">Marketing</option>
-                                <option value="Data/AI">Data/AI</option>
-                                <option value="Other">Other</option>
-                            </select>
-                        )}
                         <input
                             type="email"
                             placeholder="Email Address"
                             required
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            style={{ width: "100%", padding: "0.85rem 1rem", borderRadius: "10px", border: "1px solid #2A2D38", background: "#14161F", color: "white", boxSizing: "border-box", outline: "none" }}
+                            style={{ width: "100%", padding: "1rem", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.1)", background: "rgba(255,255,255,0.03)", color: "white", boxSizing: "border-box", outline: "none" }}
                         />
                         <input
                             type="password"
-                            placeholder="Password (min 6 characters)"
+                            placeholder="Password"
                             required
                             minLength={6}
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            style={{ width: "100%", padding: "0.85rem 1rem", borderRadius: "10px", border: "1px solid #2A2D38", background: "#14161F", color: "white", boxSizing: "border-box", outline: "none" }}
+                            style={{ width: "100%", padding: "1rem", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.1)", background: "rgba(255,255,255,0.03)", color: "white", boxSizing: "border-box", outline: "none" }}
                         />
 
-                        {error && <p style={{ color: "#F87171", fontSize: "0.85rem" }}>{error}</p>}
+                        {error && <p style={{ color: "#EF4444", fontSize: "0.85rem", textAlign: "center" }}>{error}</p>}
 
                         <button
                             type="submit"
-                            style={{ padding: "0.9rem", borderRadius: "10px", border: "none", background: `linear-gradient(135deg, ${colors.accentGold}, #E0C158)`, color: "#0B0C10", fontWeight: 700, cursor: "pointer", marginTop: "0.5rem" }}
+                            style={{ padding: "1rem", borderRadius: "12px", border: "none", background: "#3B82F6", color: "white", fontWeight: 700, cursor: "pointer", marginTop: "0.5rem", display: "flex", alignItems: "center", justifyContent: "center", gap: "0.5rem" }}
                         >
-                            Create Account →
+                            Get Started <ArrowRight size={18} />
                         </button>
                     </form>
 
-                    <p style={{ fontSize: "0.85rem", color: "#9A9CA5", marginTop: "1.5rem", textAlign: "center" }}>
+                    <p style={{ fontSize: "0.9rem", color: "#6B7280", marginTop: "2rem", textAlign: "center" }}>
                         Already have an account?{" "}
-                        <a href="/login" style={{ color: colors.accentBlue, fontWeight: 600, textDecoration: "none" }}>
-                            Login
-                        </a>
+                        <a href="/login" style={{ color: "#3B82F6", fontWeight: 600, textDecoration: "none" }}>Login</a>
                     </p>
                 </div>
             </div>

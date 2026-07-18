@@ -42,6 +42,10 @@ export interface UserProfile {
     stripeSubscriptionId?: string;
     subscriptionRenewsAt?: number;
 
+    // Onboarding fields
+    onboardingCompleted?: boolean;
+    onboardingStep?: number;
+
     // Freelancer-only fields
     skills?: string[];
     portfolioUrl?: string;
