@@ -5,35 +5,24 @@ import { useRouter } from "next/navigation";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../../lib/firebase";
 import { useAuth } from "../../lib/useAuth";
-import { useTheme } from "../../lib/useTheme";
 import { 
   ArrowRight, 
+  Bot,
   CheckCircle2, 
   Sparkles, 
   Briefcase, 
-  User, 
   Rocket, 
-  Laptop, 
-  Smartphone, 
-  Globe, 
-  Layout, 
-  Database, 
-  Palette,
-  ArrowLeft,
-  Loader2
 } from "lucide-react";
-import type { UserRole, Occupation, FreelanceWorkType } from "../../types/user";
+import type { UserProfile, UserRole } from "../../types/user";
 
 type Step = "welcome" | "role" | "client-details" | "freelancer-details" | "ai-processing" | "complete";
 
 export default function OnboardingPage() {
   const { user, profile, loading: authLoading } = useAuth();
-  const { colors } = useTheme();
   const router = useRouter();
 
   const [step, setStep] = useState<Step>("welcome");
   const [role, setRole] = useState<UserRole>("client");
-  const [loading, setLoading] = useState(false);
 
   // Client State
   const [productType, setProductType] = useState("");
@@ -47,21 +36,21 @@ export default function OnboardingPage() {
   useEffect(() => {
     if (!authLoading && !user) {
       router.replace("/login");
+      return;
+    }
+    if (!authLoading && user && !user.emailVerified) {
+      router.replace("/verify-email");
+      return;
     }
     if (!authLoading && profile?.onboardingCompleted) {
        router.replace(`/dashboard/${profile.role}`);
     }
   }, [user, profile, authLoading, router]);
 
-  if (authLoading || !user) return null;
+  if (authLoading || !user || !user.emailVerified) return null;
 
-  const updateProfile = async (data: any) => {
-    try {
-      await updateDoc(doc(db, "users", user.uid), data);
-    } catch (err) {
-      console.error("Failed to update profile:", err);
-    }
-  };
+  const updateProfile = (data: Partial<UserProfile>) =>
+    updateDoc(doc(db, "users", user.uid), data);
 
   const nextStep = () => {
     if (step === "welcome") setStep("role");
@@ -69,7 +58,10 @@ export default function OnboardingPage() {
       if (role === "client") setStep("client-details");
       else setStep("freelancer-details");
     }
-    else if (step === "client-details" || step === "freelancer-details") setStep("ai-processing");
+    else if (step === "client-details" || step === "freelancer-details") {
+      setStep("ai-processing");
+      void finishOnboarding();
+    }
   };
 
   const prevStep = () => {
@@ -78,35 +70,30 @@ export default function OnboardingPage() {
   };
 
   const finishOnboarding = async () => {
-    setLoading(true);
-    // Simulate AI Processing
-    await new Promise(r => setTimeout(r, 3000));
-    
-    await updateProfile({
-      role,
-      onboardingCompleted: true,
-      ...(role === "client" ? { productType, budget, timeline } : { skills: skills.split(","), experience }),
-      aiCredits: 20
-    });
-    
-    setStep("complete");
-    setLoading(false);
+    try {
+      await updateProfile({
+        role,
+        onboardingCompleted: true,
+        ...(role === "client"
+          ? { productType, budget, timeline }
+          : { skills: skills.split(",").map((skill) => skill.trim()).filter(Boolean), experience }),
+        aiCredits: 20,
+      });
+      setStep("complete");
+    } catch (error) {
+      console.error("Failed to complete onboarding:", error);
+      setStep(role === "client" ? "client-details" : "freelancer-details");
+    }
   };
 
-  useEffect(() => {
-    if (step === "ai-processing") {
-      finishOnboarding();
-    }
-  }, [step]);
-
-  const WelcomeStep = () => (
+  const renderWelcomeStep = () => (
     <div style={{ textAlign: "center", maxWidth: "500px", margin: "0 auto" }}>
       <div style={{ width: "80px", height: "80px", background: "#3B82F622", borderRadius: "24px", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 2rem" }}>
         <Sparkles size={40} color="#3B82F6" />
       </div>
       <h1 style={{ fontSize: "2rem", fontWeight: 800, color: "white", marginBottom: "1rem" }}>Welcome to Arush</h1>
       <p style={{ color: "#9CA3AF", lineHeight: 1.6, marginBottom: "2.5rem" }}>
-        We're excited to help you build or work on incredible products. Let's personalize your experience in just a few steps.
+        We&apos;re excited to help you build or work on incredible products. Let&apos;s personalize your experience in just a few steps.
       </p>
       <button 
         onClick={nextStep}
@@ -117,7 +104,7 @@ export default function OnboardingPage() {
     </div>
   );
 
-  const RoleStep = () => (
+  const renderRoleStep = () => (
     <div style={{ maxWidth: "600px", margin: "0 auto" }}>
       <h2 style={{ fontSize: "1.75rem", fontWeight: 800, color: "white", textAlign: "center", marginBottom: "2.5rem" }}>How will you use Arush?</h2>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem" }}>
@@ -153,7 +140,7 @@ export default function OnboardingPage() {
     </div>
   );
 
-  const ClientDetailsStep = () => (
+  const renderClientDetailsStep = () => (
     <div style={{ maxWidth: "500px", margin: "0 auto" }}>
        <h2 style={{ fontSize: "1.75rem", fontWeight: 800, color: "white", textAlign: "center", marginBottom: "2rem" }}>Project Vision</h2>
        <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
@@ -200,7 +187,7 @@ export default function OnboardingPage() {
     </div>
   );
 
-  const FreelancerDetailsStep = () => (
+  const renderFreelancerDetailsStep = () => (
     <div style={{ maxWidth: "500px", margin: "0 auto" }}>
        <h2 style={{ fontSize: "1.75rem", fontWeight: 800, color: "white", textAlign: "center", marginBottom: "2rem" }}>Profile Setup</h2>
        <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
@@ -236,7 +223,7 @@ export default function OnboardingPage() {
     </div>
   );
 
-  const AIProcessingStep = () => (
+  const renderAIProcessingStep = () => (
     <div style={{ textAlign: "center", maxWidth: "500px", margin: "0 auto" }}>
       <div style={{ position: "relative", width: "120px", height: "120px", margin: "0 auto 3rem" }}>
         <div style={{ position: "absolute", inset: 0, border: "4px solid #1F2937", borderRadius: "50%" }} />
@@ -257,12 +244,12 @@ export default function OnboardingPage() {
     </div>
   );
 
-  const CompleteStep = () => (
+  const renderCompleteStep = () => (
     <div style={{ textAlign: "center", maxWidth: "500px", margin: "0 auto" }}>
       <div style={{ width: "80px", height: "80px", background: "#10B98122", borderRadius: "24px", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 2rem" }}>
         <CheckCircle2 size={40} color="#10B981" />
       </div>
-      <h1 style={{ fontSize: "2rem", fontWeight: 800, color: "white", marginBottom: "1rem" }}>You're all set!</h1>
+      <h1 style={{ fontSize: "2rem", fontWeight: 800, color: "white", marginBottom: "1rem" }}>You&apos;re all set!</h1>
       <p style={{ color: "#9CA3AF", lineHeight: 1.6, marginBottom: "2.5rem" }}>
         Your personalized AI environment is ready. Welcome to the future of product development.
       </p>
@@ -278,12 +265,12 @@ export default function OnboardingPage() {
   return (
     <main style={{ minHeight: "100vh", background: "#0B0C10", display: "flex", alignItems: "center", justifyContent: "center", padding: "2rem" }}>
       <div style={{ width: "100%", maxWidth: "800px" }}>
-        {step === "welcome" && <WelcomeStep />}
-        {step === "role" && <RoleStep />}
-        {step === "client-details" && <ClientDetailsStep />}
-        {step === "freelancer-details" && <FreelancerDetailsStep />}
-        {step === "ai-processing" && <AIProcessingStep />}
-        {step === "complete" && <CompleteStep />}
+        {step === "welcome" && renderWelcomeStep()}
+        {step === "role" && renderRoleStep()}
+        {step === "client-details" && renderClientDetailsStep()}
+        {step === "freelancer-details" && renderFreelancerDetailsStep()}
+        {step === "ai-processing" && renderAIProcessingStep()}
+        {step === "complete" && renderCompleteStep()}
       </div>
     </main>
   );

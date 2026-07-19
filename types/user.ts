@@ -45,9 +45,13 @@ export interface UserProfile {
     // Onboarding fields
     onboardingCompleted?: boolean;
     onboardingStep?: number;
+    productType?: string;
+    budget?: string;
+    timeline?: string;
 
     // Freelancer-only fields
     skills?: string[];
+    experience?: string;
     portfolioUrl?: string;
     bio?: string;
     hourlyRate?: number;

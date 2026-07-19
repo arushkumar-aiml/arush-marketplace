@@ -41,7 +41,7 @@ export default function SignupPage() {
         setLoading(true);
         try {
             await signup(email, password, name);
-            router.push("/onboarding");
+            router.replace("/verify-email");
         } catch (err: unknown) {
             setError(getErrorMessage(err));
             setLoading(false);

@@ -15,7 +15,11 @@ export default function VerifyEmailPage() {
   const [resendCooldown, setResendCooldown] = useState(0);
   const [resendMessage, setResendMessage] = useState("");
 
-  // Redirect away if not logged in, or straight to dashboard if already verified
+  function nextRoute() {
+    return profile?.onboardingCompleted ? `/dashboard/${profile.role}` : "/onboarding";
+  }
+
+  // Redirect away if not logged in, otherwise resume the required setup flow.
   useEffect(() => {
     if (loading) return;
     if (!user) {
@@ -23,7 +27,7 @@ export default function VerifyEmailPage() {
       return;
     }
     if (user.emailVerified && profile) {
-      router.replace("/community");
+      router.replace(nextRoute());
     }
   }, [user, profile, loading, router]);
 
@@ -34,7 +38,7 @@ export default function VerifyEmailPage() {
     const interval = setInterval(async () => {
       await auth.currentUser?.reload();
       if (auth.currentUser?.emailVerified && profile) {
-        router.replace("/community");
+        router.replace(nextRoute());
       }
     }, 3000);
 

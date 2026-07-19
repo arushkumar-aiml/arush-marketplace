@@ -1,8 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Sidebar from "../../../components/dashboard/Sidebar";
-import { useTheme } from "../../../lib/useTheme";
 import { 
   Briefcase, 
   Sparkles, 
@@ -13,15 +11,12 @@ import {
   Star,
   Search,
   Filter,
-  ArrowRight,
   Bot,
-  Zap
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
-export default function FreelancerDashboardPage() {
-    const { colors } = useTheme();
-
-    const StatCard = ({ icon: Icon, label, value, color }: any) => (
+function StatCard({ icon: Icon, label, value, color }: { icon: LucideIcon; label: string; value: string; color: string }) {
+    return (
         <div style={{ background: "#111827", padding: "1.25rem", borderRadius: "16px", border: "1px solid rgba(255,255,255,0.05)" }}>
             <div style={{ width: "32px", height: "32px", background: `${color}11`, borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "0.75rem" }}>
                 <Icon size={16} color={color} />
@@ -30,7 +25,9 @@ export default function FreelancerDashboardPage() {
             <div style={{ fontSize: "0.75rem", color: "#6B7280", fontWeight: 500 }}>{label}</div>
         </div>
     );
+}
 
+export default function FreelancerDashboardPage() {
     return (
         <div style={{ display: "flex", minHeight: "100vh", background: "#030712" }}>
             <Sidebar />

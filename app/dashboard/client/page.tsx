@@ -1,34 +1,41 @@
 "use client";
 
-import { useState } from "react";
 import Sidebar from "../../../components/dashboard/Sidebar";
-import { useTheme } from "../../../lib/useTheme";
 import { 
   Plus, 
   Bot, 
   Layout, 
   FileText, 
-  TrendingUp, 
   Sparkles, 
   Zap,
-  ArrowRight,
   Clock,
-  CheckCircle2
+  Users,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
-export default function ClientDashboardPage() {
-    const { colors } = useTheme();
-
-    const ActionCard = ({ icon: Icon, title, desc, color, onClick }: any) => (
-        <div 
+function ActionCard({
+    icon: Icon,
+    title,
+    desc,
+    color,
+    onClick,
+}: {
+    icon: LucideIcon;
+    title: string;
+    desc: string;
+    color: string;
+    onClick?: () => void;
+}) {
+    return (
+        <div
             onClick={onClick}
-            style={{ 
-                background: "#111827", 
-                padding: "1.5rem", 
-                borderRadius: "16px", 
+            style={{
+                background: "#111827",
+                padding: "1.5rem",
+                borderRadius: "16px",
                 border: "1px solid rgba(255,255,255,0.05)",
-                cursor: "pointer",
-                transition: "all 0.2s ease"
+                cursor: onClick ? "pointer" : "default",
+                transition: "all 0.2s ease",
             }}
         >
             <div style={{ width: "40px", height: "40px", background: `${color}11`, borderRadius: "10px", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "1.25rem" }}>
@@ -38,7 +45,9 @@ export default function ClientDashboardPage() {
             <p style={{ fontSize: "0.8rem", color: "#6B7280", lineHeight: 1.5 }}>{desc}</p>
         </div>
     );
+}
 
+export default function ClientDashboardPage() {
     return (
         <div style={{ display: "flex", minHeight: "100vh", background: "#030712" }}>
             <Sidebar />

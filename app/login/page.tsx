@@ -59,7 +59,13 @@ export default function LoginPage() {
             }
 
             const profile = snap.data() as UserProfile;
-            router.push(`/dashboard/${profile.role}`);
+            if (!cred.user.emailVerified) {
+                router.replace("/verify-email");
+            } else if (!profile.onboardingCompleted) {
+                router.replace("/onboarding");
+            } else {
+                router.replace(`/dashboard/${profile.role}`);
+            }
         } catch (err: unknown) {
             console.error("Login error:", err);
             setError(getErrorMessage(err));
