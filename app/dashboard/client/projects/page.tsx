@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { addDoc, collection, query, where, orderBy, getDocs, doc, updateDoc } from "firebase/firestore";
+import { addDoc, collection, query, where, orderBy, getDocs, doc, setDoc, updateDoc } from "firebase/firestore";
 import { db } from "../../../../lib/firebase";
 import { useAuth } from "../../../../lib/useAuth";
 import { useTheme } from "../../../../lib/useTheme";
@@ -21,7 +21,7 @@ const STATUS_COLORS: Record<ProjectStatus, { bg: string; text: string }> = {
 };
 
 function ProjectsContent() {
-    const { user } = useAuth();
+    const { user, profile } = useAuth();
     const { colors } = useTheme();
     const [projects, setProjects] = useState<Project[]>([]);
     const [loading, setLoading] = useState(true);
@@ -63,18 +63,37 @@ function ProjectsContent() {
     }
 
     async function respondToApplication(projectId: string, applicationId: string, status: "accepted" | "declined") {
-        await updateDoc(doc(db, "applications", applicationId), { status });
         const application = applications[projectId]?.find((item) => item.id === applicationId);
-        if (application) {
-            await addDoc(collection(db, "notifications"), {
-                recipientId: application.freelancerId,
-                type: "application_response",
-                message: `Your proposal was ${status} by the client.`,
-                read: false,
-                createdAt: Date.now(),
-                link: "/dashboard/freelancer/proposals",
-            });
+        const project = projects.find((item) => item.id === projectId);
+        if (!application || !project || !user || !profile) return;
+
+        await updateDoc(doc(db, "applications", applicationId), { status });
+        const now = Date.now();
+
+        if (status === "accepted") {
+            await setDoc(doc(db, "conversations", `${projectId}_${application.freelancerId}`), {
+                projectId,
+                projectTitle: project.title,
+                clientId: user.uid,
+                clientName: profile.displayName,
+                freelancerId: application.freelancerId,
+                freelancerName: application.freelancerName,
+                lastMessage: "",
+                lastMessageAt: now,
+                createdAt: now,
+            }, { merge: true });
+            await updateDoc(doc(db, "projects", projectId), { status: "in_progress" });
+            setProjects((prev) => prev.map((item) => item.id === projectId ? { ...item, status: "in_progress" } : item));
         }
+
+        await addDoc(collection(db, "notifications"), {
+            recipientId: application.freelancerId,
+            type: "application_response",
+            message: `Your proposal was ${status} by the client.`,
+            read: false,
+            createdAt: now,
+            link: "/dashboard/freelancer/proposals",
+        });
         setApplications((prev) => ({
             ...prev,
             [projectId]: prev[projectId].map((a) => (a.id === applicationId ? { ...a, status } : a)),

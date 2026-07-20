@@ -1,68 +1,34 @@
-# Phases — Arush Marketplace
+# Project status — Arush Marketplace
 
-Status as of the last known state. Update this file as tasks complete or new ones are added —
-it should always reflect current reality, not the original plan.
+This document describes the repository as it exists after the workflow audit on 2026-07-20.
 
-## ✅ Done (built, and believed working unless flagged below)
-- Firebase Auth (email/password) + Firestore profiles
-- Link-based email verification (`app/verify-email/page.tsx`, `RequireRole` gate)
-- Signup collects: name, email, password, role, occupation, freelance work type (if freelancer)
-- Role-based dashboards (client / freelancer), theme-aware (dark/light)
-- i18n: 17 languages, client-side switching, `next-intl`
-- AI Brief Generator (client chat → structured brief)
-- AI Planning Agent → full PRD (goals, scope, milestones, tech stack, risks)
-- $10 Stripe one-time unlock → AI code scaffold generation
-- AI Proposal Generator (freelancer, per-project "Apply with AI")
-- Client Projects list page (view own projects, review/accept/decline applications)
-- Freelancer Proposals list page (track sent proposals, filter by status)
-- Shared Settings page (both roles): profile edit, language, password change
-- Real-time Messaging (`MessagesView`, conversations + messages Firestore collections)
-- Admin panel shell (`RequireAdmin`, `/admin`, real Firestore counts)
-- All AI text generation consolidated onto OpenRouter (`lib/aiClient.ts`)
-- Self-improving prompts via real feedback data (`lib/adeelMemory.ts`)
-- Standalone `arush-labs` portfolio/pitch site (3-product showcase, real social links, honest
-  "live vs not-yet-validated" status section)
+## Implemented workflows
 
-## 🔧 In progress / known broken (fix before building more on top)
-- **AI Design Sample (Gemini image generation)** — implemented but likely using an unverified/
-  incorrect Gemini API endpoint. Needs verification against current Gemini docs, or fallback to
-  a text-based design spec if image generation proves unreliable.
-- **Proposal generation bug** — "Apply with AI" reportedly not generating proposals; root cause
-  not yet confirmed (check for the endpoint-mismatch pattern first, per rules.md).
-- **Email verification resend messaging** — shows a confusing "Couldn't send" message even in
-  cases that may not be genuine failures; needs clearer success/rate-limit messaging.
-- **Razorpay subscriptions (Pro/Premium, 4 plans)** — prompted for, not confirmed complete.
-  Depends on: Razorpay Plan IDs created in dashboard, webhook endpoint configured, Firestore
-  `subscriptions` collection rules added.
-- **Credit system (Phase 1 of the pricing rebuild)** — `aiCredits` + `plan` fields on user
-  profile, `lib/creditSystem.ts` deduction logic — proposed, not confirmed built.
-- **Model routing (Gemini vs Groq/OpenRouter by task type)** — proposed as a cost-optimization
-  layer; superseded by the OpenRouter consolidation decision — re-evaluate whether this is still
-  wanted before building, since "single provider" and "route by task type" are somewhat in
-  tension.
+- Firebase email/password auth, email-verification gate, onboarding, and client/freelancer roles.
+- Client project scoping through Adeel AI, clarifying questions, and JSON PRD generation.
+- Stripe one-time payment flow for the AI code-scaffold unlock.
+- Client project review: application accept/decline, freelancer notification, and project status display.
+- Proposal acceptance now creates one deterministic conversation per project/freelancer pair, marks the project `in_progress`, and enables live Firestore messaging.
+- Shared settings, theme, client-side language selection, admin counts, profile embeddings, and freelancer recommendations.
 
-## 📋 Not started
-- Freelancer directory (client-facing, browse freelancers by category)
-- Signup form category/occupation was added; broader "community/credits for social follows"
-  onboarding flow not built
-- Real notification system (bell icon is currently decorative)
-- Adeel AI general assistant for freelancers (separate from per-project proposal generator)
-- Unread/All/Sent filters on Messages
-- PWA setup (installable app, manifest + service worker)
-- GitHub OAuth login (drafted earlier, never confirmed working end-to-end)
-- Phone number OTP login (Firebase console enabled, no UI built)
-- 8% freelancer commission / 3% client fee collection logic
-- Admin panel expansion: user/project/freelancer management, revenue dashboard, AI usage
-  analytics, community analytics, content management, audit logs
-- Subscription dashboard + three-column Free/Pro/Premium upgrade modal
-- AI Product Preview / Design Sample at full scoped ambition (multiple style options, PDF
-  export, etc.) — current Design Sample is a smaller first slice of this idea
+## Verified implementation corrections
 
-## Suggested near-term order
-1. Fix the 3 known-broken items above (Design Sample, proposal generation, verify-email
-   messaging) — these are active bugs undermining already-built features.
-2. Finish Razorpay subscriptions end-to-end (this is real revenue infrastructure).
-3. Get the product in front of 5–10 real users — validation matters more than new features
-   right now (see prd.md "What's Actually Validated").
-4. Only after real user feedback: prioritize the remaining 📋 list based on what users actually
-   ask for, not the full wishlist at once.
+- The messaging view now clears stale threads, reports snapshot/send failures, and prevents duplicate sends while a request is in flight.
+- The AI Design Sample route now uses Gemini's documented `models/gemini-3.1-flash-image:generateContent` endpoint and extracts images from `candidates[].content.parts[].inlineData`.
+
+## Remaining work / not yet production-complete
+
+- The freelancer dashboard is a static visual prototype: its search, filter, `Apply with AI`, and `Try Now` controls are not connected to Firestore or `/api/generate-proposal`. The proposal route exists, but the end-to-end UI workflow does not.
+- Gemini image generation requires a live `GEMINI_API_KEY` smoke test in the deployment environment.
+- Several Adeel AI routes (`scope-project`, Planning Agent, Design Sample, and scaffold) currently
+  accept unauthenticated browser requests. Require Firebase ID tokens server-side before exposing
+  the deployment publicly, and update each client fetch to send the token.
+- Razorpay subscriptions, commission/fee collection, expanded admin management, unread message filters, phone OTP, GitHub OAuth, and a standalone freelancer AI assistant remain unfinished.
+- The notification bell and several dashboard metrics are presentation-only until their corresponding data workflows are connected.
+
+## Recommended next implementation order
+
+1. Replace the static freelancer dashboard with a real open-project explorer and connect it to proposal generation/submission.
+2. Add Firebase security rules and integration tests for proposal acceptance and conversations.
+3. Run provider smoke tests with non-production keys for OpenRouter, Gemini, Firebase, and Stripe.
+4. Complete subscriptions and marketplace fee collection before enabling paid production traffic.

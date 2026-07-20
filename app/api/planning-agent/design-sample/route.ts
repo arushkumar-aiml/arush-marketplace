@@ -7,10 +7,14 @@ type DesignSampleRequest = {
 };
 
 type GeminiImageResponse = {
-    output_image?: {
-        data?: string;
-        mime_type?: string;
-    };
+    candidates?: Array<{
+        content?: {
+            parts?: Array<{
+                inlineData?: { data?: string; mimeType?: string };
+                inline_data?: { data?: string; mime_type?: string };
+            }>;
+        };
+    }>;
     error?: {
         message?: string;
     };
@@ -56,7 +60,7 @@ Show a realistic, modern SaaS web interface that best represents this product's 
 
     try {
         const response = await fetch(
-            "https://generativelanguage.googleapis.com/v1beta/interactions",
+            "https://generativelanguage.googleapis.com/v1/models/gemini-3.1-flash-image:generateContent",
             {
                 method: "POST",
                 headers: {
@@ -64,12 +68,10 @@ Show a realistic, modern SaaS web interface that best represents this product's 
                     "x-goog-api-key": apiKey,
                 },
                 body: JSON.stringify({
-                    model: "gemini-3.1-flash-image",
-                    input: [{ type: "text", text: prompt }],
-                    response_format: {
-                        type: "image",
-                        mime_type: "image/png",
-                        aspect_ratio: "16:9",
+                    contents: [{ parts: [{ text: prompt }] }],
+                    generationConfig: {
+                        responseModalities: ["IMAGE"],
+                        responseFormat: { image: { aspectRatio: "16:9" } },
                     },
                 }),
             }
@@ -88,8 +90,11 @@ Show a realistic, modern SaaS web interface that best represents this product's 
             );
         }
 
-        const imageData = data.output_image?.data;
-        const mimeType = data.output_image?.mime_type || "image/png";
+        const imagePart = data.candidates
+            ?.flatMap((candidate) => candidate.content?.parts ?? [])
+            .find((part) => part.inlineData?.data || part.inline_data?.data);
+        const imageData = imagePart?.inlineData?.data ?? imagePart?.inline_data?.data;
+        const mimeType = imagePart?.inlineData?.mimeType ?? imagePart?.inline_data?.mime_type ?? "image/png";
 
         if (!imageData) {
             console.error("Design sample route: Gemini returned no image", data);

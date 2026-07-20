@@ -22,19 +22,29 @@ export default function MessagesView() {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState("");
   const bottomRef = useRef<HTMLDivElement>(null);
 
   const activeConversation = conversations.find((c) => c.id === activeId);
 
   useEffect(() => {
-    if (!activeId) return;
+    if (!activeId) {
+      setMessages([]);
+      return;
+    }
     const q = query(
       collection(db, "conversations", activeId, "messages"),
       orderBy("createdAt", "asc")
     );
-    const unsubscribe = onSnapshot(q, (snap) => {
-      setMessages(snap.docs.map((d) => ({ id: d.id, ...d.data() }) as ChatMessage));
-    });
+    const unsubscribe = onSnapshot(
+      q,
+      (snap) => {
+        setMessages(snap.docs.map((d) => ({ id: d.id, ...d.data() }) as ChatMessage));
+        setError("");
+      },
+      () => setError("Messages could not be loaded. Please refresh and try again.")
+    );
     return () => unsubscribe();
   }, [activeId]);
 
@@ -44,20 +54,30 @@ export default function MessagesView() {
 
   async function handleSend() {
     const trimmed = input.trim();
-    if (!trimmed || !activeId || !user || !profile) return;
-    setInput("");
+    if (!trimmed || !activeId || !user || !profile || sending) return;
+    setSending(true);
+    setError("");
 
-    await addDoc(collection(db, "conversations", activeId, "messages"), {
-      senderId: user.uid,
-      senderName: profile.displayName,
-      text: trimmed,
-      createdAt: Date.now(),
-    });
+    try {
+      const createdAt = Date.now();
+      await addDoc(collection(db, "conversations", activeId, "messages"), {
+        senderId: user.uid,
+        senderName: profile.displayName,
+        text: trimmed,
+        createdAt,
+      });
 
-    await updateDoc(doc(db, "conversations", activeId), {
-      lastMessage: trimmed,
-      lastMessageAt: Date.now(),
-    });
+      await updateDoc(doc(db, "conversations", activeId), {
+        lastMessage: trimmed,
+        lastMessageAt: createdAt,
+      });
+      setInput("");
+    } catch (err) {
+      console.error("Unable to send message:", err);
+      setError("Your message was not sent. Please try again.");
+    } finally {
+      setSending(false);
+    }
   }
 
   function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
@@ -119,6 +139,7 @@ export default function MessagesView() {
             </div>
 
             <div style={{ flex: 1, overflowY: "auto", padding: "1.5rem", display: "flex", flexDirection: "column", gap: "0.9rem" }}>
+              {error && <p role="alert" style={{ margin: 0, color: "#DC2626", fontSize: "0.82rem" }}>{error}</p>}
               {messages.map((m) => {
                 const isMe = m.senderId === user?.uid;
                 return (
@@ -149,12 +170,14 @@ export default function MessagesView() {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
+                disabled={sending}
                 placeholder="Type a message..."
                 style={{ flex: 1, padding: "0.7rem 1rem", borderRadius: "10px", border: "1px solid #E8E9ED", outline: "none", fontSize: "0.9rem" }}
               />
               <button
                 onClick={handleSend}
-                style={{ width: "42px", height: "42px", borderRadius: "10px", background: "#2563EB", border: "none", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}
+                disabled={!input.trim() || sending}
+                style={{ width: "42px", height: "42px", borderRadius: "10px", background: "#2563EB", border: "none", display: "flex", alignItems: "center", justifyContent: "center", cursor: sending ? "default" : "pointer", opacity: sending ? 0.65 : 1 }}
               >
                 <Send size={17} color="white" />
               </button>
