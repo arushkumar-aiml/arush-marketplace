@@ -31,7 +31,7 @@ function PostProjectForm() {
                 rawDescription: description,
                 budget: Number(budget),
                 timelineDays: Number(timelineDays),
-                status: "draft",
+                status: "open",
                 createdAt: Date.now(),
             });
 

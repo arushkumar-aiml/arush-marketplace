@@ -87,7 +87,7 @@ export default function BriefPanel({ brief }: { brief: ProjectBrief | null }) {
         setCreatingProject(true);
         setCreateError("");
         try {
-            await addDoc(collection(db, "projects"), {
+            const projectRef = await addDoc(collection(db, "projects"), {
                 clientId: user.uid,
                 title: deriveTitle(brief.overview),
                 rawDescription: brief.overview,
@@ -98,6 +98,16 @@ export default function BriefPanel({ brief }: { brief: ProjectBrief | null }) {
                 aiScope: brief.overview,
                 aiSkillTags: brief.skills,
             });
+            void fetch("/api/ml/recommend-freelancers", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    projectId: projectRef.id,
+                    title: deriveTitle(brief.overview),
+                    description: brief.overview,
+                    skills: brief.skills,
+                }),
+            }).catch((error) => console.error("Freelancer recommendation error:", error));
             setProjectCreated(true);
         } catch (err: unknown) {
             console.error("Create project error:", err);

@@ -14,8 +14,13 @@ export async function getAuthenticatedUserId(req: NextRequest): Promise<string |
         return null;
     }
 
-    // Ensure the Firebase Admin app is initialized before accessing Auth.
-    getAdminDb();
-    const decodedToken = await getAuth().verifyIdToken(idToken);
-    return decodedToken.uid;
+    try {
+        // Ensure the Firebase Admin app is initialized before accessing Auth.
+        getAdminDb();
+        const decodedToken = await getAuth().verifyIdToken(idToken);
+        return decodedToken.uid;
+    } catch (error) {
+        console.warn("Firebase ID token verification failed", error);
+        return null;
+    }
 }

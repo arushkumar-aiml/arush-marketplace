@@ -25,7 +25,7 @@ Contact: hello@arushlabs.com
 - Content you create: project descriptions, proposals, messages sent to other users, feedback
   on AI-generated content (thumbs up/down and correction notes)
 - Payment information: processed directly by Stripe (for the one-time PRD/scaffold unlock) and
-  Razorpay (for subscription payments) — we do not store your card details ourselves
+  Stripe (for one-time unlocks and subscription payments) — we do not store card details ourselves
 
 ### Information collected automatically
 - Basic usage data via Firebase (login timestamps, feature usage)
@@ -49,7 +49,7 @@ our behalf under their own privacy/security terms:
 |---|---|---|
 | Firebase (Google) | Authentication, database, hosting-adjacent services | Account credentials, profile data, project/message content |
 | Stripe | One-time payment processing (USD) | Payment card details, billing email |
-| Razorpay | Subscription payment processing (INR) | Payment details, billing email |
+| Stripe | Payment and subscription processing | Payment details, billing email |
 | OpenRouter | AI text generation (briefs, PRDs, proposals) | The text you submit to Adeel AI (project descriptions, chat messages) — sent to OpenRouter's underlying model providers to generate a response |
 | Google Gemini API | AI image generation (design samples) | PRD summary data used to generate a visual mockup |
 | Vercel | Application hosting | Standard web request data |

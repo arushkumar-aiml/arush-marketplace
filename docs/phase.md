@@ -1,34 +1,24 @@
 # Project status — Arush Marketplace
 
-This document describes the repository as it exists after the workflow audit on 2026-07-20.
+Last updated: 2026-07-20
 
-## Implemented workflows
+## Implemented and wired
 
-- Firebase email/password auth, email-verification gate, onboarding, and client/freelancer roles.
-- Client project scoping through Adeel AI, clarifying questions, and JSON PRD generation.
-- Stripe one-time payment flow for the AI code-scaffold unlock.
-- Client project review: application accept/decline, freelancer notification, and project status display.
-- Proposal acceptance now creates one deterministic conversation per project/freelancer pair, marks the project `in_progress`, and enables live Firestore messaging.
-- Shared settings, theme, client-side language selection, admin counts, profile embeddings, and freelancer recommendations.
+- Firebase email/password authentication, verification gate, onboarding, and client/freelancer roles.
+- Manual client project posting and Adeel AI scoping; both produce open Firestore projects.
+- Client project overview, application review, accept/decline actions, notifications, and conversation creation.
+- Freelancer project discovery backed by real open projects, search, AI proposal generation, and persisted applications.
+- Planning Agent clarifying questions, JSON PRD generation, Gemini design samples, and Stripe-unlocked code scaffolds.
+- Semantic freelancer recommendations/search, profile embedding updates, pricing guidance, theme, language selection, settings, and admin statistics.
 
-## Verified implementation corrections
+## Still required before production
 
-- The messaging view now clears stale threads, reports snapshot/send failures, and prevents duplicate sends while a request is in flight.
-- The AI Design Sample route now uses Gemini's documented `models/gemini-3.1-flash-image:generateContent` endpoint and extracts images from `candidates[].content.parts[].inlineData`.
+- Add Firebase ID-token checks to the remaining unauthenticated AI planning routes and send tokens from their callers.
+- Define and deploy restrictive Firestore Security Rules; test client, freelancer, and admin access separately.
+- Add integration tests for project publishing, duplicate applications, proposal acceptance, conversations, AI responses, Stripe callbacks, and failure states.
+- Smoke-test Groq/OpenRouter, Gemini, Firebase, email, and Stripe using non-production credentials in the deployment environment.
+- Implement marketplace fees/payouts and any product analytics needed for paid public launch.
 
-## Remaining work / not yet production-complete
+## Verification
 
-- The freelancer dashboard is a static visual prototype: its search, filter, `Apply with AI`, and `Try Now` controls are not connected to Firestore or `/api/generate-proposal`. The proposal route exists, but the end-to-end UI workflow does not.
-- Gemini image generation requires a live `GEMINI_API_KEY` smoke test in the deployment environment.
-- Several Adeel AI routes (`scope-project`, Planning Agent, Design Sample, and scaffold) currently
-  accept unauthenticated browser requests. Require Firebase ID tokens server-side before exposing
-  the deployment publicly, and update each client fetch to send the token.
-- Razorpay subscriptions, commission/fee collection, expanded admin management, unread message filters, phone OTP, GitHub OAuth, and a standalone freelancer AI assistant remain unfinished.
-- The notification bell and several dashboard metrics are presentation-only until their corresponding data workflows are connected.
-
-## Recommended next implementation order
-
-1. Replace the static freelancer dashboard with a real open-project explorer and connect it to proposal generation/submission.
-2. Add Firebase security rules and integration tests for proposal acceptance and conversations.
-3. Run provider smoke tests with non-production keys for OpenRouter, Gemini, Firebase, and Stripe.
-4. Complete subscriptions and marketplace fee collection before enabling paid production traffic.
+`npx tsc --noEmit` passes after the wiring update. The repository's full ESLint run still contains existing warnings/errors outside the recently wired flow and should be cleaned up before enforcing lint in CI.

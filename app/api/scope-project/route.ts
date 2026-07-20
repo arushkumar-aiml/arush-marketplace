@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { callAI } from "../../../lib/aiClient";
+import { getAuthenticatedUserId } from "../../../lib/apiAuth";
 
 export async function POST(req: NextRequest) {
     try {
+        if (!await getAuthenticatedUserId(req)) {
+            return NextResponse.json({ error: "Authentication is required" }, { status: 401 });
+        }
         const { message } = await req.json();
 
         if (!message || typeof message !== "string") {

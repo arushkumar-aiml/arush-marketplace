@@ -3,14 +3,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import {
-    FileText,
-    MoreHorizontal,
-    Paperclip,
-    Mic,
     Send,
-    Link2,
-    Clock,
-    Wallet,
 } from "lucide-react";
 import { collection, addDoc } from "firebase/firestore";
 import { db } from "../../lib/firebase";
@@ -24,13 +17,6 @@ interface Message {
     text: string;
     time: string;
 }
-
-const quickActions = [
-    { label: "Add reference", icon: Link2 },
-    { label: "Attach files", icon: Paperclip },
-    { label: "Add budget range", icon: Wallet },
-    { label: "Specify timeline", icon: Clock },
-];
 
 export default function AIChatPanel({
     onBriefGenerated,
@@ -61,9 +47,10 @@ export default function AIChatPanel({
         setIsThinking(true);
 
         try {
+            if (!user) throw new Error("Please sign in before using Adeel AI.");
             const res = await fetch("/api/scope-project", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: { "Content-Type": "application/json", Authorization: `Bearer ${await user.getIdToken()}` },
                 body: JSON.stringify({ message: trimmed }),
             });
 
@@ -132,14 +119,6 @@ export default function AIChatPanel({
                         </div>
                     </div>
                 </div>
-                <div style={{ display: "flex", gap: "0.5rem" }}>
-                    <button style={{ width: "36px", height: "36px", display: "flex", alignItems: "center", justifyContent: "center", borderRadius: "8px", border: `1px solid ${colors.border}`, background: colors.bgPrimary, cursor: "pointer" }}>
-                        <FileText size={16} color={colors.textSecondary} />
-                    </button>
-                    <button style={{ width: "36px", height: "36px", display: "flex", alignItems: "center", justifyContent: "center", borderRadius: "8px", border: `1px solid ${colors.border}`, background: colors.bgPrimary, cursor: "pointer" }}>
-                        <MoreHorizontal size={16} color={colors.textSecondary} />
-                    </button>
-                </div>
             </div>
 
             <div style={{ flex: 1, overflowY: "auto", padding: "1.5rem", display: "flex", flexDirection: "column", gap: "1.25rem" }}>
@@ -190,12 +169,6 @@ export default function AIChatPanel({
                         placeholder="Describe your project..."
                         style={{ flex: 1, fontSize: "0.9rem", border: "none", outline: "none", background: "transparent", color: colors.textPrimary }}
                     />
-                    <button style={{ background: "none", border: "none", color: colors.textMuted, cursor: "pointer" }}>
-                        <Paperclip size={18} />
-                    </button>
-                    <button style={{ background: "none", border: "none", color: colors.textMuted, cursor: "pointer" }}>
-                        <Mic size={18} />
-                    </button>
                     <button
                         onClick={handleSend}
                         disabled={isThinking}
@@ -203,29 +176,6 @@ export default function AIChatPanel({
                     >
                         <Send size={16} color="#FFFFFF" />
                     </button>
-                </div>
-
-                <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
-                    {quickActions.map((a) => (
-                        <button
-                            key={a.label}
-                            style={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: "0.4rem",
-                                fontSize: "0.75rem",
-                                color: colors.textSecondary,
-                                border: `1px solid ${colors.border}`,
-                                borderRadius: "999px",
-                                padding: "0.4rem 0.75rem",
-                                background: colors.bgPrimary,
-                                cursor: "pointer",
-                            }}
-                        >
-                            <a.icon size={13} />
-                            {a.label}
-                        </button>
-                    ))}
                 </div>
             </div>
         </div>

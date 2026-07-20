@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { callAI } from "../../../../lib/aiClient";
 import { getPromptMemory } from "../../../../lib/adeelMemory";
+import { getAuthenticatedUserId } from "../../../../lib/apiAuth";
 
 function extractJson(rawText: string): string {
     const trimmed = rawText.trim();
@@ -19,6 +20,10 @@ export async function POST(req: NextRequest) {
     let originalMessage: string;
     let brief: unknown;
     let answers: unknown;
+
+    if (!await getAuthenticatedUserId(req)) {
+        return NextResponse.json({ error: "Authentication is required" }, { status: 401 });
+    }
 
     try {
         ({ originalMessage, brief, answers } = await req.json());

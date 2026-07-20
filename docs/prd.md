@@ -48,7 +48,7 @@ AI-generated starter code scaffold, before a freelancer is even matched.
 7. Standard marketplace mechanics: project posting, freelancer matching (skill-based %),
    accept/decline, applications, real-time messaging.
 
-## Business Model — Pricing (three tiers, INR, Razorpay for recurring)
+## Business Model — Pricing (current implementation uses Stripe)
 
 | | Free | Pro | Premium |
 |---|---|---|---|

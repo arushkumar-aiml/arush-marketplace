@@ -39,7 +39,7 @@ unauthorized access.
 
 ## 6. Payments and Fees
 - **One-time PRD/code-scaffold unlock:** processed via Stripe, in USD, non-recurring.
-- **Subscription plans (Pro/Premium):** processed via Razorpay, in INR, billed monthly, and
+- **Subscription plans (Pro/Premium):** processed via Stripe, billed monthly, and
   auto-renew until cancelled.
 - **Commission/fees:** [FILL IN — e.g. "Arush Labs charges an 8% commission on freelancer
   earnings and a 3% fee on client payments for completed projects."] — confirm exact current
