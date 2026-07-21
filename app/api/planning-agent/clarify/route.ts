@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { callAI } from "../../../../lib/aiClient";
 import { getAuthenticatedUserId } from "../../../../lib/apiAuth";
+import { parseAIJson } from "../../../../lib/parseAIJson";
 
 export async function POST(req: NextRequest) {
     try {
@@ -36,8 +37,12 @@ Respond ONLY with valid JSON, no markdown, no preamble, in exactly this shape:
 
         const rawText = await callAI({ prompt, temperature: 0.4, jsonMode: true });
 
-        const parsed = JSON.parse(rawText);
-        return NextResponse.json(parsed);
+        try {
+            return NextResponse.json(parseAIJson(rawText));
+        } catch (err: unknown) {
+            console.error("Clarify route: AI returned malformed JSON", err);
+            return NextResponse.json({ error: "Adeel AI returned malformed clarifying questions. Please try again." }, { status: 502 });
+        }
     } catch (err: unknown) {
         console.error("Clarify route error:", err);
         return NextResponse.json(

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { callAI } from "../../../lib/aiClient";
 import { getAuthenticatedUserId } from "../../../lib/apiAuth";
+import { parseAIJson } from "../../../lib/parseAIJson";
 
 export async function POST(req: NextRequest) {
     try {
@@ -19,7 +20,7 @@ export async function POST(req: NextRequest) {
 
 Generate a realistic scoping brief: a short overview, a realistic USD budget range, a realistic timeline range in weeks, and a list of required skills.
 
-Respond ONLY with valid JSON, no markdown, no preamble, in exactly this shape:
+Respond with ONLY valid JSON in exactly this shape. Use no markdown formatting, no code fences, and no explanation before or after the JSON:
 {
   "overview": "2-3 sentence summary of the project",
   "budgetMin": 500,
@@ -31,8 +32,12 @@ Respond ONLY with valid JSON, no markdown, no preamble, in exactly this shape:
 
         const rawText = await callAI({ prompt, temperature: 0.4, jsonMode: true });
 
-        const parsed = JSON.parse(rawText);
-        return NextResponse.json(parsed);
+        try {
+            return NextResponse.json(parseAIJson(rawText));
+        } catch (err: unknown) {
+            console.error("Scope-project route: AI returned malformed JSON", err);
+            return NextResponse.json({ error: "Adeel AI returned a malformed project brief. Please try again." }, { status: 502 });
+        }
     } catch (err: unknown) {
         console.error("Scope-project route error:", err);
         return NextResponse.json(

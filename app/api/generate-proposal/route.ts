@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { callAI } from "../../../lib/aiClient";
 import { getAuthenticatedUserId } from "../../../lib/apiAuth";
 import { deductCredits } from "../../../lib/creditSystem";
+import { parseAIJson } from "../../../lib/parseAIJson";
 
 const INSUFFICIENT_CREDITS_MESSAGE = "You've reached your monthly AI limit. Upgrade to Premium to unlock unlimited premium tools.";
 
@@ -49,15 +50,17 @@ Write a compelling, personalized project proposal (150-220 words) from this free
 - Close with a confident, friendly call to action
 - Sound human, not robotic. No markdown, no bullet points, plain paragraph text only.
 
-Respond ONLY with valid JSON, no markdown, no preamble, in exactly this shape:
+Respond with ONLY valid JSON in exactly this shape. Use no markdown formatting, no code fences, and no explanation before or after the JSON:
 {
   "proposal": "the full proposal text here"
 }`;
 
         const rawText = await callAI({ prompt, temperature: 0.6, jsonMode: true });
 
-        const parsed = JSON.parse(rawText);
-        return NextResponse.json(parsed);
+        let parsed: { proposal?: unknown };
+        try { parsed = parseAIJson(rawText); } catch { return NextResponse.json({ error: "Adeel AI returned a malformed proposal. Please try again." }, { status: 502 }); }
+        if (typeof parsed.proposal !== "string" || !parsed.proposal.trim()) return NextResponse.json({ error: "Adeel AI returned a malformed proposal. Please try again." }, { status: 502 });
+        return NextResponse.json({ proposal: parsed.proposal });
     } catch (err: unknown) {
         console.error("Generate proposal route error:", err);
         return NextResponse.json(
