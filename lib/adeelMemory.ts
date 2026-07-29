@@ -1,4 +1,4 @@
-import { adminDb } from "./firebaseAdmin";
+import { getAdminDb } from "./firebase-admin";
 
 type TrainerLog = {
     clientMessage?: unknown;
@@ -32,7 +32,7 @@ function summarizeOutput(output: unknown): string {
 
 export async function getPromptMemory(category: string): Promise<string> {
     try {
-        const logs = adminDb.collection("adeel-trainer-logs");
+        const logs = getAdminDb().collection("adeel-trainer-logs");
         const [goodSnapshot, downSnapshot] = await Promise.all([
             logs.where("feedback", "==", "up").orderBy("createdAt", "desc").limit(MAX_ITEMS).get(),
             logs.where("feedback", "==", "down").orderBy("createdAt", "desc").limit(DOWN_FEEDBACK_SCAN_LIMIT).get(),

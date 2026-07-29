@@ -12,6 +12,7 @@ import {
   Sparkles, 
   Briefcase, 
   Rocket, 
+  Zap,
 } from "lucide-react";
 import type { UserProfile, UserRole } from "../../types/user";
 
@@ -32,6 +33,10 @@ export default function OnboardingPage() {
   // Freelancer State
   const [skills, setSkills] = useState("");
   const [experience, setExperience] = useState("");
+
+  // Pro upgrade state
+  const [upgrading, setUpgrading] = useState(false);
+  const [upgradeError, setUpgradeError] = useState("");
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -244,20 +249,58 @@ export default function OnboardingPage() {
     </div>
   );
 
+  const handleUpgrade = async () => {
+    if (!user) return;
+    setUpgrading(true);
+    setUpgradeError("");
+    try {
+      const token = await user.getIdToken();
+      const response = await fetch("/api/create-subscription-session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      });
+      const data = await response.json();
+      if (!response.ok || !data.url) throw new Error(data.error || "Could not start checkout");
+      window.location.href = data.url;
+    } catch (error) {
+      setUpgradeError(error instanceof Error ? error.message : "Could not start checkout. Please try again.");
+      setUpgrading(false);
+    }
+  };
+
   const renderCompleteStep = () => (
     <div style={{ textAlign: "center", maxWidth: "500px", margin: "0 auto" }}>
       <div style={{ width: "80px", height: "80px", background: "#10B98122", borderRadius: "24px", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 2rem" }}>
         <CheckCircle2 size={40} color="#10B981" />
       </div>
       <h1 style={{ fontSize: "2rem", fontWeight: 800, color: "white", marginBottom: "1rem" }}>You&apos;re all set!</h1>
-      <p style={{ color: "#9CA3AF", lineHeight: 1.6, marginBottom: "2.5rem" }}>
+      <p style={{ color: "#9CA3AF", lineHeight: 1.6, marginBottom: "2rem" }}>
         Your personalized AI environment is ready. Welcome to the future of product development.
       </p>
+
+      <div style={{ background: "#111827", border: "1px solid rgba(255,255,255,0.08)", borderRadius: "16px", padding: "1.5rem", marginBottom: "1.5rem", textAlign: "left" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.75rem" }}>
+          <Zap size={18} color="#F59E0B" />
+          <span style={{ color: "white", fontWeight: 700 }}>Want unlimited AI access?</span>
+        </div>
+        <p style={{ color: "#9CA3AF", fontSize: "0.85rem", marginBottom: "1rem", lineHeight: 1.5 }}>
+          Upgrade to Pro for more AI credits, priority matching, and advanced tools. You can also do this later from your dashboard.
+        </p>
+        {upgradeError && <p style={{ color: "#FCA5A5", fontSize: "0.8rem", marginBottom: "0.75rem" }}>{upgradeError}</p>}
+        <button
+          onClick={handleUpgrade}
+          disabled={upgrading}
+          style={{ width: "100%", padding: "0.85rem", borderRadius: "10px", background: "#F59E0B", color: "#0B0C10", fontWeight: 700, border: "none", cursor: upgrading ? "default" : "pointer", opacity: upgrading ? 0.7 : 1 }}
+        >
+          {upgrading ? "Redirecting to checkout..." : "Upgrade to Pro"}
+        </button>
+      </div>
+
       <button 
         onClick={() => router.push(`/dashboard/${role}`)}
-        style={{ width: "100%", padding: "1rem", borderRadius: "12px", background: "#3B82F6", color: "white", fontWeight: 700, border: "none", cursor: "pointer" }}
+        style={{ width: "100%", padding: "1rem", borderRadius: "12px", background: "rgba(255,255,255,0.05)", color: "white", fontWeight: 700, border: "none", cursor: "pointer" }}
       >
-        Go to Dashboard
+        Skip for now — Go to Dashboard
       </button>
     </div>
   );

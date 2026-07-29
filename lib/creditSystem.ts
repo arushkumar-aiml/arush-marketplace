@@ -20,11 +20,13 @@ export async function deductCredits(userId: string, amount: number): Promise<boo
         }
 
         const currentCredits = userSnapshot.data()?.aiCredits;
-        if (typeof currentCredits !== "number" || currentCredits < amount) {
+        const effectiveCredits = typeof currentCredits === "number" ? currentCredits : 20;
+
+        if (effectiveCredits < amount) {
             return false;
         }
 
-        transaction.update(userRef, { aiCredits: currentCredits - amount });
+        transaction.update(userRef, { aiCredits: effectiveCredits - amount });
         return true;
     });
 }

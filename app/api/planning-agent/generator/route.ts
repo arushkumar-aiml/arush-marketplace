@@ -2,19 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { callAI } from "../../../../lib/aiClient";
 import { getPromptMemory } from "../../../../lib/adeelMemory";
 import { getAuthenticatedUserId } from "../../../../lib/apiAuth";
-
-function extractJson(rawText: string): string {
-    const trimmed = rawText.trim();
-
-    if (!trimmed.startsWith("```")) {
-        return trimmed;
-    }
-
-    return trimmed
-        .replace(/^```(?:json)?\s*/i, "")
-        .replace(/\s*```$/, "")
-        .trim();
-}
+import { parseAIJson } from "../../../../lib/parseAIJson";
 
 export async function POST(req: NextRequest) {
     let originalMessage: string;
@@ -90,7 +78,7 @@ Respond ONLY with valid JSON, no markdown, no preamble, in exactly this shape:
         });
 
         try {
-            return NextResponse.json(JSON.parse(extractJson(rawText)));
+            return NextResponse.json(parseAIJson(rawText));
         } catch (err: unknown) {
             console.error("Generate PRD route: AI returned invalid JSON", {
                 error: err,
