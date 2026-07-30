@@ -58,10 +58,11 @@ export default function VerifyEmailPage() {
       await sendEmailVerification(auth.currentUser, {
         url: `${window.location.origin}/verify-email`,
       });
-      setResendMessage("Verification email sent again. Check your inbox.");
+      setResendMessage("Verification email sent. Check your inbox — and your spam/junk folder, it sometimes lands there.");
       setResendCooldown(30);
     } catch {
-      setResendMessage("Couldn't resend right now. Try again in a moment.");
+      setResendMessage("The email may still have been sent — please check your spam/junk folder before trying again.");
+      setResendCooldown(30);
     }
   }
 
@@ -108,6 +109,7 @@ export default function VerifyEmailPage() {
         <p style={{ color: colors.textMuted, fontSize: "0.9rem", lineHeight: 1.6, marginBottom: "1.75rem" }}>
           We sent a verification link to <strong>{user?.email}</strong>. Click the
           link to activate your account — this page will update automatically.
+          If you don&apos;t see it within a few minutes, please check your spam/junk folder.
         </p>
 
         <button

@@ -2,7 +2,18 @@ import { NextRequest, NextResponse } from "next/server";
 import { adminDb } from "../../../../lib/firebase-admin";
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+let resendClient: Resend | null = null;
+
+function getResendClient(): Resend {
+    if (!resendClient) {
+        const apiKey = process.env.RESEND_API_KEY;
+        if (!apiKey) {
+            throw new Error("Missing RESEND_API_KEY environment variable");
+        }
+        resendClient = new Resend(apiKey);
+    }
+    return resendClient;
+}
 
 export async function POST(req: NextRequest) {
     try {
@@ -16,8 +27,12 @@ export async function POST(req: NextRequest) {
 
         await adminDb.collection("otps").doc(uid).set({ code, email, expiresAt });
 
-        await resend.emails.send({
-            from: "onboarding@yourdomain.com", // Resend ke free domain se bhi bhej sakte ho: onboarding@resend.dev
+        // NOTE: "onboarding@resend.dev" is Resend's shared testing domain — it works
+        // immediately with no setup, but emails may land in spam and can't use your
+        // own brand name. Once you verify your own domain in the Resend dashboard,
+        // replace this with e.g. "Arush Labs <noreply@arushlabs.com>".
+        await getResendClient().emails.send({
+            from: "onboarding@resend.dev",
             to: email,
             subject: "Your verification code",
             html: `<p>Your verification code is:</p><h2 style="letter-spacing:4px;">${code}</h2><p>This code expires in 10 minutes.</p>`,

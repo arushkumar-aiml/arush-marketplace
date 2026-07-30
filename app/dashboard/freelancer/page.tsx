@@ -8,10 +8,12 @@ import Sidebar from "../../../components/dashboard/Sidebar";
 import RequireRole from "../../../components/RequireRole";
 import { db } from "../../../lib/firebase";
 import { useAuth } from "../../../lib/useAuth";
+import { useTheme } from "../../../lib/useTheme";
 import type { Project } from "../../../types/project";
 
 function FreelancerDashboardContent() {
     const { user, profile } = useAuth();
+    const { colors } = useTheme();
     const [projects, setProjects] = useState<Project[]>([]);
     const [search, setSearch] = useState("");
     const [loading, setLoading] = useState(true);
@@ -45,14 +47,15 @@ function FreelancerDashboardContent() {
         finally { setWorkingId(null); }
     }
 
-    return <div style={{ display: "flex", minHeight: "100vh", background: "#030712" }}><Sidebar /><main style={{ flex: 1, padding: "2.5rem", maxWidth: "1100px", width: "100%", margin: "0 auto" }}>
-        <header style={{ marginBottom: "2rem" }}><h1 style={{ color: "white", fontSize: "1.75rem", margin: 0 }}>Discover projects</h1><p style={{ color: "#9CA3AF" }}>Only real open projects are shown here. Apply with a personalized Adeel AI proposal.</p></header>
-        <div style={{ position: "relative", maxWidth: "500px", marginBottom: "1.5rem" }}><Search size={16} color="#9CA3AF" style={{ position: "absolute", left: ".85rem", top: ".8rem" }} /><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search projects by title, brief or skills" style={{ width: "100%", boxSizing: "border-box", padding: ".75rem .75rem .75rem 2.5rem", borderRadius: "10px", border: "1px solid rgba(255,255,255,.1)", background: "#111827", color: "white" }} /></div>
-        {message && <p style={{ color: message.includes("successfully") ? "#6EE7B7" : "#FCA5A5", marginBottom: "1rem" }}>{message}</p>}
-        {loading ? <p style={{ color: "#9CA3AF" }}>Loading open projects…</p> : visibleProjects.length === 0 ? <div style={emptyStyle}><Briefcase size={22} /><p>{projects.length ? "No projects match your search." : "There are no open projects yet."}</p><Link href="/dashboard/freelancer/proposals" style={{ color: "#60A5FA" }}>View my proposals</Link></div> : <div style={{ display: "grid", gap: "1rem" }}>{visibleProjects.map((project) => <article key={project.id} style={projectStyle}><div><h2 style={{ color: "white", fontSize: "1.05rem", margin: "0 0 .5rem" }}>{project.title}</h2><p style={{ color: "#9CA3AF", lineHeight: 1.5, margin: 0 }}>{project.rawDescription}</p>{project.aiSkillTags?.length ? <p style={{ color: "#A5B4FC", fontSize: ".8rem" }}>{project.aiSkillTags.join(" · ")}</p> : null}</div><div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "1rem", borderTop: "1px solid rgba(255,255,255,.07)", paddingTop: ".9rem", marginTop: ".9rem" }}><span style={{ display: "flex", gap: "1rem", color: "#9CA3AF", fontSize: ".8rem" }}><span><Wallet size={13} /> ${project.budget.toLocaleString()}</span><span><Clock size={13} /> {project.timelineDays} days</span></span><button onClick={() => applyWithAI(project)} disabled={workingId !== null} style={buttonStyle}><Sparkles size={14} /> {workingId === project.id ? "Writing proposal…" : "Apply with AI"}</button></div></article>)}</div>}
+    const projectStyle = { background: colors.bgPrimary, border: `1px solid ${colors.border}`, borderRadius: "14px", padding: "1.25rem" } as const;
+    const emptyStyle = { background: colors.bgPrimary, border: `1px solid ${colors.border}`, borderRadius: "14px", padding: "2rem", textAlign: "center" as const, color: colors.textMuted };
+    const buttonStyle = { display: "inline-flex", alignItems: "center", gap: ".4rem", background: colors.accentBlue, color: "white", border: 0, borderRadius: "8px", padding: ".55rem .8rem", fontWeight: 700, cursor: "pointer" } as const;
+
+    return <div style={{ display: "flex", minHeight: "100vh", background: colors.bgCanvas }}><Sidebar /><main style={{ flex: 1, padding: "2.5rem", maxWidth: "1100px", width: "100%", margin: "0 auto" }}>
+        <header style={{ marginBottom: "2rem" }}><h1 style={{ color: colors.textPrimary, fontSize: "1.75rem", margin: 0 }}>Discover projects</h1><p style={{ color: colors.textMuted }}>Only real open projects are shown here. Apply with a personalized Adeel AI proposal.</p></header>
+        <div style={{ position: "relative", maxWidth: "500px", marginBottom: "1.5rem" }}><Search size={16} color={colors.textMuted} style={{ position: "absolute", left: ".85rem", top: ".8rem" }} /><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search projects by title, brief or skills" style={{ width: "100%", boxSizing: "border-box", padding: ".75rem .75rem .75rem 2.5rem", borderRadius: "10px", border: `1px solid ${colors.border}`, background: colors.bgPrimary, color: colors.textPrimary }} /></div>
+        {message && <p style={{ color: message.includes("successfully") ? colors.success : colors.danger, marginBottom: "1rem" }}>{message}</p>}
+        {loading ? <p style={{ color: colors.textMuted }}>Loading open projects…</p> : visibleProjects.length === 0 ? <div style={emptyStyle}><Briefcase size={22} /><p>{projects.length ? "No projects match your search." : "There are no open projects yet."}</p><Link href="/dashboard/freelancer/proposals" style={{ color: colors.accentBlue }}>View my proposals</Link></div> : <div style={{ display: "grid", gap: "1rem" }}>{visibleProjects.map((project) => <article key={project.id} style={projectStyle}><div><h2 style={{ color: colors.textPrimary, fontSize: "1.05rem", margin: "0 0 .5rem" }}>{project.title}</h2><p style={{ color: colors.textMuted, lineHeight: 1.5, margin: 0 }}>{project.rawDescription}</p>{project.aiSkillTags?.length ? <p style={{ color: colors.accentBlue, fontSize: ".8rem" }}>{project.aiSkillTags.join(" · ")}</p> : null}</div><div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "1rem", borderTop: `1px solid ${colors.border}`, paddingTop: ".9rem", marginTop: ".9rem" }}><span style={{ display: "flex", gap: "1rem", color: colors.textMuted, fontSize: ".8rem" }}><span><Wallet size={13} /> ₹{project.budget.toLocaleString()}</span><span><Clock size={13} /> {project.timelineDays} days</span></span><button onClick={() => applyWithAI(project)} disabled={workingId !== null} style={buttonStyle}><Sparkles size={14} /> {workingId === project.id ? "Writing proposal…" : "Apply with AI"}</button></div></article>)}</div>}
     </main></div>;
 }
-const projectStyle = { background: "#111827", border: "1px solid rgba(255,255,255,.08)", borderRadius: "14px", padding: "1.25rem" } as const;
-const emptyStyle = { background: "#111827", border: "1px solid rgba(255,255,255,.08)", borderRadius: "14px", padding: "2rem", textAlign: "center", color: "#9CA3AF" } as const;
-const buttonStyle = { display: "inline-flex", alignItems: "center", gap: ".4rem", background: "#3B82F6", color: "white", border: 0, borderRadius: "8px", padding: ".55rem .8rem", fontWeight: 700, cursor: "pointer" } as const;
 export default function FreelancerDashboardPage() { return <RequireRole role="freelancer"><FreelancerDashboardContent /></RequireRole>; }
