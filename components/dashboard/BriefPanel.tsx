@@ -17,7 +17,7 @@ function deriveTitle(overview: string): string {
     return firstSentence.slice(0, 67).trim() + "...";
 }
 
-export default function BriefPanel({ brief }: { brief: ProjectBrief | null }) {
+export default function BriefPanel({ brief, role }: { brief: ProjectBrief | null; role: "client" | "freelancer" }) {
     const router = useRouter();
     const { user } = useAuth();
     const { colors } = useTheme();
@@ -76,7 +76,7 @@ export default function BriefPanel({ brief }: { brief: ProjectBrief | null }) {
         if (!brief) return;
         sessionStorage.setItem("adeel-planning-brief", JSON.stringify(brief));
         sessionStorage.setItem("adeel-planning-message", brief.originalMessage || "");
-        router.push("/dashboard/client/planning-agent");
+        router.push(`/dashboard/${role}/planning-agent`);
     }
 
     async function handleCreateProject() {
@@ -285,58 +285,60 @@ export default function BriefPanel({ brief }: { brief: ProjectBrief | null }) {
                         Upgrade to Full PRD
                     </button>
 
-                    {projectCreated ? (
-                        <div
-                            style={{
-                                width: "100%",
-                                background: colors.successSoft,
-                                color: colors.success,
-                                fontSize: "0.85rem",
-                                fontWeight: 600,
-                                borderRadius: "12px",
-                                padding: "0.85rem",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                gap: "0.5rem",
-                            }}
-                        >
-                            <Check size={15} />
-                            Project posted! Freelancers can now apply.
-                        </div>
-                    ) : (
-                        <button
-                            onClick={handleCreateProject}
-                            disabled={creatingProject}
-                            style={{
-                                width: "100%",
-                                background: colors.accentBlue,
-                                color: "#FFFFFF",
-                                fontSize: "0.9rem",
-                                fontWeight: 600,
-                                borderRadius: "12px",
-                                border: "none",
-                                padding: "0.85rem",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                gap: "0.5rem",
-                                cursor: creatingProject ? "default" : "pointer",
-                                opacity: creatingProject ? 0.7 : 1,
-                            }}
-                        >
-                            {creatingProject ? (
-                                <>
-                                    <Loader2 size={15} className="animate-spin" />
-                                    Creating...
-                                </>
-                            ) : (
-                                <>
-                                    <Sparkles size={15} />
-                                    Create Project with This Brief
-                                </>
-                            )}
-                        </button>
+                    {role === "client" && (
+                        projectCreated ? (
+                            <div
+                                style={{
+                                    width: "100%",
+                                    background: colors.successSoft,
+                                    color: colors.success,
+                                    fontSize: "0.85rem",
+                                    fontWeight: 600,
+                                    borderRadius: "12px",
+                                    padding: "0.85rem",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    gap: "0.5rem",
+                                }}
+                            >
+                                <Check size={15} />
+                                Project posted! Freelancers can now apply.
+                            </div>
+                        ) : (
+                            <button
+                                onClick={handleCreateProject}
+                                disabled={creatingProject}
+                                style={{
+                                    width: "100%",
+                                    background: colors.accentBlue,
+                                    color: "#FFFFFF",
+                                    fontSize: "0.9rem",
+                                    fontWeight: 600,
+                                    borderRadius: "12px",
+                                    border: "none",
+                                    padding: "0.85rem",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    gap: "0.5rem",
+                                    cursor: creatingProject ? "default" : "pointer",
+                                    opacity: creatingProject ? 0.7 : 1,
+                                }}
+                            >
+                                {creatingProject ? (
+                                    <>
+                                        <Loader2 size={15} className="animate-spin" />
+                                        Creating...
+                                    </>
+                                ) : (
+                                    <>
+                                        <Sparkles size={15} />
+                                        Create Project with This Brief
+                                    </>
+                                )}
+                            </button>
+                        )
                     )}
 
                     {createError && (

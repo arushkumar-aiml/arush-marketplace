@@ -3,10 +3,10 @@
 import RequireRole from "../../../../components/RequireRole";
 import PlanningAgentContent from "../../../../components/dashboard/PlanningAgentContent";
 
-export default function ClientPlanningAgentPage() {
+export default function FreelancerPlanningAgentPage() {
     return (
-        <RequireRole role="client">
-            <PlanningAgentContent dashboardBasePath="/dashboard/client" />
+        <RequireRole role="freelancer">
+            <PlanningAgentContent dashboardBasePath="/dashboard/freelancer" />
         </RequireRole>
     );
 }
