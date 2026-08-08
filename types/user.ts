@@ -51,6 +51,7 @@ export interface UserProfile {
 
     // Freelancer-only fields
     skills?: string[];
+    serviceCategories?: string[];
     experience?: string;
     portfolioUrl?: string;
     bio?: string;

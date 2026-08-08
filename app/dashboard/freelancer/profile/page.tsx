@@ -6,6 +6,7 @@ import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../../../../lib/firebase";
 import { useAuth } from "../../../../lib/useAuth";
 import { useTheme } from "../../../../lib/useTheme";
+import { SERVICE_CATEGORIES } from "../../../../lib/categories";
 import RequireRole from "../../../../components/RequireRole";
 import Sidebar from "../../../../components/dashboard/Sidebar";
 import DashboardHeader from "../../../../components/dashboard/DashboardHeader";
@@ -16,6 +17,7 @@ function ProfileForm() {
     const router = useRouter();
 
     const [skills, setSkills] = useState("");
+    const [serviceCategories, setServiceCategories] = useState<string[]>([]);
     const [bio, setBio] = useState("");
     const [portfolioUrl, setPortfolioUrl] = useState("");
     const [hourlyRate, setHourlyRate] = useState("");
@@ -24,9 +26,16 @@ function ProfileForm() {
     const [saved, setSaved] = useState(false);
     const [loading, setLoading] = useState(false);
 
+    function toggleCategory(service: string) {
+        setServiceCategories((prev) =>
+            prev.includes(service) ? prev.filter((s) => s !== service) : [...prev, service]
+        );
+    }
+
     useEffect(() => {
         if (profile) {
             setSkills((profile.skills || []).join(", "));
+            setServiceCategories(profile.serviceCategories || []);
             setBio(profile.bio || "");
             setPortfolioUrl(profile.portfolioUrl || "");
             setHourlyRate(profile.hourlyRate ? String(profile.hourlyRate) : "");
@@ -75,6 +84,7 @@ function ProfileForm() {
 
             await updateDoc(doc(db, "users", user.uid), {
                 skills: skillsArray,
+                serviceCategories,
                 bio,
                 portfolioUrl,
                 hourlyRate: hourlyRate ? Number(hourlyRate) : null,
@@ -121,6 +131,44 @@ function ProfileForm() {
                                 onChange={(e) => setSkills(e.target.value)}
                                 style={{ width: "100%", padding: "0.75rem", borderRadius: "8px", border: `1px solid ${colors.border}`, boxSizing: "border-box", background: colors.bgSecondary, color: colors.textPrimary }}
                             />
+                        </div>
+
+                        <div>
+                            <label style={{ display: "block", fontSize: "0.875rem", color: colors.textSecondary, marginBottom: "0.5rem" }}>
+                                Service categories ({serviceCategories.length} selected)
+                            </label>
+                            <div style={{ maxHeight: "260px", overflowY: "auto", border: `1px solid ${colors.border}`, borderRadius: "8px", padding: "0.75rem", background: colors.bgSecondary }}>
+                                {SERVICE_CATEGORIES.map((group) => (
+                                    <div key={group.group} style={{ marginBottom: "0.85rem" }}>
+                                        <div style={{ fontSize: "0.75rem", fontWeight: 700, color: colors.textMuted, marginBottom: "0.4rem", textTransform: "uppercase" }}>
+                                            {group.group}
+                                        </div>
+                                        <div style={{ display: "flex", flexWrap: "wrap", gap: "0.4rem" }}>
+                                            {group.services.map((service) => {
+                                                const active = serviceCategories.includes(service);
+                                                return (
+                                                    <button
+                                                        key={service}
+                                                        type="button"
+                                                        onClick={() => toggleCategory(service)}
+                                                        style={{
+                                                            fontSize: "0.75rem",
+                                                            padding: "0.35rem 0.7rem",
+                                                            borderRadius: "999px",
+                                                            border: `1px solid ${active ? colors.accentBlue : colors.border}`,
+                                                            background: active ? colors.accentBlueSoft : colors.bgPrimary,
+                                                            color: active ? colors.accentBlue : colors.textSecondary,
+                                                            cursor: "pointer",
+                                                        }}
+                                                    >
+                                                        {service}
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
 
                         <div>

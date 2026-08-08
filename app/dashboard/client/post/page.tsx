@@ -7,6 +7,7 @@ import { Sparkles, Wallet, Clock, ListChecks, PenLine } from "lucide-react";
 import { db } from "../../../../lib/firebase";
 import { useAuth } from "../../../../lib/useAuth";
 import { useTheme } from "../../../../lib/useTheme";
+import { SERVICE_CATEGORIES } from "../../../../lib/categories";
 import RequireRole from "../../../../components/RequireRole";
 
 interface GeneratedBrief {
@@ -28,6 +29,7 @@ function PostProjectForm() {
   const [genError, setGenError] = useState("");
 
   const [title, setTitle] = useState("");
+  const [category, setCategory] = useState("");
   const [description, setDescription] = useState("");
   const [budget, setBudget] = useState("");
   const [timelineDays, setTimelineDays] = useState("");
@@ -81,6 +83,7 @@ function PostProjectForm() {
       const projectRef = await addDoc(collection(db, "projects"), {
         clientId: user.uid,
         title,
+        category: category || null,
         rawDescription: description,
         budget: Number(budget),
         timelineDays: Number(timelineDays),
@@ -194,6 +197,22 @@ function PostProjectForm() {
               type="text" required value={title} onChange={(e) => setTitle(e.target.value)}
               style={inputStyle(colors)}
             />
+          </div>
+
+          <div>
+            <label style={{ display: "block", fontSize: "0.85rem", color: colors.textSecondary, marginBottom: "0.5rem" }}>
+              Category
+            </label>
+            <select value={category} onChange={(e) => setCategory(e.target.value)} style={inputStyle(colors)}>
+              <option value="">Select a category (optional)</option>
+              {SERVICE_CATEGORIES.map((group) => (
+                <optgroup key={group.group} label={group.group}>
+                  {group.services.map((service) => (
+                    <option key={service} value={service}>{service}</option>
+                  ))}
+                </optgroup>
+              ))}
+            </select>
           </div>
 
           <div>

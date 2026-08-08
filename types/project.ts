@@ -14,6 +14,7 @@ export interface Project {
     timelineDays: number;
     status: ProjectStatus;
     createdAt: number;
+    category?: string;
 
     aiScope?: string;
     aiSkillTags?: string[];
